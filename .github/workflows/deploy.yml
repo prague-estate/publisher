@@ -1,0 +1,53 @@
+name: deploy-production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.1
+      - uses: actions/setup-python@v5.0.0
+        with:
+          python-version: '3.12'
+
+      - name: deploy
+        uses: cross-the-world/ssh-scp-ssh-pipelines@v1.1.4
+        env:
+          TARGET_DIR: /home/${{ secrets.USERNAME_PRODUCTION }}
+          VENV_BIN: venv/bin
+        with:
+          host: ${{ secrets.HOST_PRODUCTION }}
+          user: ${{ secrets.USERNAME_PRODUCTION }}
+          pass: ${{ secrets.PASSWORD_PRODUCTION }}
+          port: 22
+          connect_timeout: 10s
+          first_ssh: |-
+            mkdir -p publisher
+            mkdir -p logs
+            test -d venv || python3.12 -m venv venv
+            touch .env
+
+          scp: |-
+            './etc/*' => $TARGET_DIR/etc/      
+            './publisher/*' => $TARGET_DIR/publisher/
+            ./poetry.lock => $TARGET_DIR
+            ./pyproject.toml => $TARGET_DIR
+
+          last_ssh: |-
+            source $VENV_BIN/activate 
+            pip install --no-cache-dir poetry pip setuptools --upgrade
+            poetry install --only main --no-root
+            pip cache purge 
+            
+            echo 'API_TOKEN="${{ secrets.API_TOKEN }}"' > .env
+            echo 'BOT_TOKEN=${{ secrets.BOT_TOKEN_PRODUCTION }}' >> .env
+            echo 'PUBLISH_CHANNEL_SALE_ID=${{ secrets.CHANNEL_SALE_ID_PRODUCTION }}' >> .env
+            echo 'PUBLISH_CHANNEL_LEASE_ID=${{ secrets.CHANNEL_LEASE_ID_PRODUCTION }}' >> .env
+
+            echo '' >> crontab.txt
+            crontab crontab.txt

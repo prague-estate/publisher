@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "prague-puplisher"
+version = "0.1.0"
+description = ""
+authors = ["Simon <spam@esemi.ru>"]
+license = "GNU GENERAL PUBLIC LICENSE V3"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.9.2"
+pydantic-settings = "^2.5.2"
+aiohttp = {extras = ["speedups"], version = "^3.10.5"}
+aiogram = "^3.13.1"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.11.2"
+wemake-python-styleguide = "^0.19.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+python_version = 3.12
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.isort]
+line_length = 125
+profile = "black"

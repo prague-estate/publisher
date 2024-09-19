@@ -1,0 +1,1 @@
+* * * * * flock -n publisher.lock venv/bin/python -m publisher.publisher >> logs/publisher.log 2>&1
