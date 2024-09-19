@@ -3,8 +3,10 @@
 [![tests](https://github.com/prague-estate/publisher/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/tests.yml)
 [![linters](https://github.com/prague-estate/publisher/actions/workflows/linters.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/linters.yml)
 
+
 ### Pre-requirements
 - [Python 3.12+](https://www.python.org/downloads/)
+- [Redis](https://redis.io/docs/getting-started/installation/)
 
 
 ### Local setup
@@ -40,7 +42,9 @@ python -m publisher.publisher
 add-apt-repository ppa:deadsnakes/ppa
 apt-get update
 apt install -y software-properties-common python3.12 python3.12-dev python3.12-venv 
-apt install -y libpq-dev gcc python3-pip supervisor
+apt install -y libpq-dev gcc python3-pip redis
 apt-get upgrade
 adduser publisher
+
+vi /etc/logrotate.d/prague-publisher
 ```
