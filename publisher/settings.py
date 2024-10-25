@@ -17,6 +17,7 @@ class AppSettings(BaseSettings, extra='ignore'):
 
     DEBUG: bool = Field(default=False)
     BOT_TOKEN: str
+    TIMEOUT: int = 35
     PUBLISH_CHANNEL_SALE_ID: int = Field(default=-1002190184244)
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
 
