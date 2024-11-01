@@ -8,6 +8,7 @@ from aiogram import Bot
 
 from publisher import api, storage
 from publisher.settings import app_settings
+from publisher.types import Estate
 
 logger = logging.getLogger(__file__)
 
@@ -46,18 +47,18 @@ async def _publisher() -> Counter:
     return counters
 
 
-async def _apply_new_only_filter(ads: list[dict]) -> list[dict]:
+async def _apply_new_only_filter(ads: list[Estate]) -> list[Estate]:
     # todo test
     return [
         new_ads
         for new_ads in ads
-        if await storage.is_not_posted_yet(new_ads['id'])
+        if await storage.is_not_posted_yet(new_ads.id)
     ]
 
 
-async def _post_ads(ads: list[dict], destination: int) -> int:
+async def _post_ads(ads: list[Estate], destination: int) -> int:
     await storage.mark_as_posted(ads_ids=[
-        ads_for_mark['id']
+        ads_for_mark.id
         for ads_for_mark in ads
     ])
 
@@ -66,7 +67,7 @@ async def _post_ads(ads: list[dict], destination: int) -> int:
         for ads_for_post in ads:
             await bot.send_message(
                 chat_id=destination,
-                text=ads_for_post['title'],
+                text=ads_for_post.title,
             )
 
     # todo test

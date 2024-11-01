@@ -7,6 +7,7 @@ from dataclasses import dataclass
 class Estate:
     """Estate dataclass."""
 
+    id: int
     category: str
     source_name: str
     source_uid: str
