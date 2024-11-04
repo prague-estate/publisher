@@ -11,19 +11,22 @@ db_pool: aioredis.Redis = aioredis.from_url(
 )
 
 POSTED_ADS_KEY = 'prague-publisher:posted_ads:id'
+TTL_POSTED_ADS = 60 * 60 * 24 * 90  # 3 month
 
 
 async def mark_as_posted(ads_ids: list[int]) -> int:
     """Mark ads as posted."""
-    # todo impl
-    # todo use TTL for auto-cleanup after 3 months
-    # todo test
-    return 0
+    cnt = 0
+    for one_id in ads_ids:
+        await db_pool.set(f'{POSTED_ADS_KEY}:{one_id}', 1, ex=TTL_POSTED_ADS)
+        cnt += 1
+
+    return cnt
 
 
 async def is_not_posted_yet(ads_id: int) -> bool:
     """Check what ads was already posted."""
-    # todo test
     is_posted = await db_pool.exists(f'{POSTED_ADS_KEY}:{ads_id}')
 
     return not is_posted
+
