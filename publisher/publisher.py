@@ -33,7 +33,7 @@ async def _publisher() -> Counter:
         logger.info('got {0} {1} ads'.format(len(sale_ads), category))
         counters[f'{category} total'] = len(sale_ads)
 
-        new_sale_ads = await _apply_new_only_filter(sale_ads)
+        new_sale_ads = _apply_new_only_filter(sale_ads)
         logger.info('got {0} new {1} ads'.format(len(new_sale_ads), category))
         counters[f'{category} new'] = len(new_sale_ads)
 
@@ -47,17 +47,17 @@ async def _publisher() -> Counter:
     return counters
 
 
-async def _apply_new_only_filter(ads: list[Estate]) -> list[Estate]:
+def _apply_new_only_filter(ads: list[Estate]) -> list[Estate]:
     # todo test
     return [
         new_ads
         for new_ads in ads
-        if await storage.is_not_posted_yet(new_ads.id)
+        if storage.is_not_posted_yet(new_ads.id)
     ]
 
 
 async def _post_ads(ads: list[Estate], destination: int) -> int:
-    await storage.mark_as_posted(ads_ids=[
+    storage.mark_as_posted(ads_ids=[
         ads_for_mark.id
         for ads_for_mark in ads
     ])

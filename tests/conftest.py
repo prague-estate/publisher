@@ -6,14 +6,9 @@ from publisher.storage import mark_as_posted, db_pool
 from publisher.types import Estate
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def event_loop():
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+    yield asyncio.get_event_loop()
 
 
 @pytest.fixture()
@@ -63,14 +58,14 @@ def fixture_estates_list(fixture_estate_item, fixture_one_more_estate_item):
 
 
 @pytest.fixture()
-async def fixture_empty_posted_ads_id():
-    await db_pool.flushdb()
+def fixture_empty_posted_ads_id():
+    db_pool.flushdb()
     yield
-    await db_pool.flushdb()
+    db_pool.flushdb()
 
 
 @pytest.fixture()
-async def fixture_prefilled_posted_ads_id(fixture_empty_posted_ads_id) -> list[int]:
+def fixture_prefilled_posted_ads_id(fixture_empty_posted_ads_id) -> list[int]:
     ads_ids = [1, 2, 3]
-    await mark_as_posted(ads_ids)
+    mark_as_posted(ads_ids)
     yield ads_ids

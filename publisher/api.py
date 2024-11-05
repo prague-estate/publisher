@@ -6,7 +6,7 @@ import aiohttp
 from publisher.settings import app_settings
 from publisher.types import Estate
 
-BASIC_URL = 'http://127.0.0.1:9001/estates/'
+BASIC_URL = f'{app_settings.API_URL}/estates/'
 
 logger = logging.getLogger(__file__)
 
@@ -22,7 +22,7 @@ async def fetch_estates(category: str, limit: int) -> list[Estate]:
             async with session.get(
                 url=f'{BASIC_URL}/{category}',
                 params=request_params,
-                headers={'auth-token': 'dev-token'},
+                headers={'auth-token': app_settings.API_TOKEN},
             ) as resp:
                 raw_ads_list = (await resp.json())['estates']
 
