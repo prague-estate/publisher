@@ -11,7 +11,7 @@ db_pool: Redis = Redis.from_url(
 )
 
 POSTED_ADS_KEY = 'prague-publisher:posted_ads:id'
-TTL_POSTED_ADS = 60 * 60 * 24 * 90  # 3 month
+TTL_POSTED_ADS = 60 * 60 * 24 * 90  # 3 month  # noqa: WPS432
 
 
 def mark_as_posted(ads_ids: list[int]) -> int:
@@ -29,4 +29,3 @@ def is_not_posted_yet(ads_id: int) -> bool:
     is_posted = db_pool.exists(f'{POSTED_ADS_KEY}:{ads_id}')
 
     return not is_posted
-

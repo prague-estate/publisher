@@ -18,14 +18,14 @@ def fixture_estate_item():
         category='sale',
         source_name='sreality',
         source_uid='11',
-        title='title',
+        title='title 1',
         address='address',
         price=100500,
         usable_area=53,
         district_number=5005,
         energy_rating='G',
         image_url='https://d18-a.sdn.cz/d_18/c_img_QJ_J5/kMPBBm.jpeg?fl=res',
-        page_url='https://www.sreality.cz/en/detail/mode/type/rooms/adress/514519628',
+        page_url='https://www.sreality.cz/detail/prodej/byt/2+kk/praha-liben-pod-labutkou/3788997196',
         updated_at='Tue, 05 Nov 2024 07:57:50 GMT',
     )
 
@@ -37,14 +37,14 @@ def fixture_one_more_estate_item():
         category='sale',
         source_name='sreality',
         source_uid='33',
-        title='title',
+        title='title 2',
         address='address',
         price=23232,
         usable_area=53,
         district_number=5005,
         energy_rating='F',
         image_url='https://d18-a.sdn.cz/d_18/c_img_QJ_J5/kMPBBm.jpeg?fl=res',
-        page_url='https://www.sreality.cz/en/detail/mode/type/rooms/adress/514519628',
+        page_url='https://www.sreality.cz/detail/prodej/byt/3+kk/praha-smichov-ke-koulce/1464591692',
         updated_at='Tue, 05 Nov 2024 07:57:50 GMT',
     )
 
