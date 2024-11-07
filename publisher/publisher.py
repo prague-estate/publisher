@@ -82,6 +82,7 @@ async def _post_ads(ads: list[Estate], destination: int) -> int:
                 reply_markup=ads_link_btn,
                 disable_web_page_preview=False,
             )
+            await asyncio.sleep(3)
             cnt += 1
 
     return cnt
@@ -91,7 +92,7 @@ def _message_presenter(ads: Estate) -> str:
     """Create a post for the bot."""
     messages = [
         f'[{ads.title}]({ads.page_url}), {ads.usable_area} m²',
-        f'{ads.price} {app_settings.CURRENCY}',
+        f'{ads.price:,} {app_settings.CURRENCY}'.replace(",", " "),
     ]
 
     return markdown.text(*messages, sep='\n')
