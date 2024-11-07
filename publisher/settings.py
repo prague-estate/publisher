@@ -25,8 +25,6 @@ class AppSettings(BaseSettings, extra='ignore'):
     API_URL: AnyUrl = Field(default='http://127.0.0.1:9001')
     REDIS_DSN: str = Field('redis://localhost:6379/1')
 
-    CURRENCY: str = 'Kč'
-
 
 app_settings = AppSettings(
     _env_file=os.path.join(APP_PATH, '.env'),  # type:ignore
