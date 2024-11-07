@@ -46,6 +46,7 @@ async def _publisher() -> Counter:
             )
 
     logger.info(f'publisher end {counters=}')
+
     return counters
 
 
@@ -63,12 +64,12 @@ async def _post_ads(ads: list[Estate], destination: int) -> int:
         for ads_for_mark in ads
     ])
 
-    # todo post ads to destination channel
+    cnt = 0
     async with Bot(app_settings.BOT_TOKEN) as bot:
         for ads_for_post in ads:
             message = _message_presenter(ads_for_post)
 
-            ads_link_btn_txt = InlineKeyboardButton(text='go to ads', url=ads_for_post.page_url)
+            ads_link_btn_txt = InlineKeyboardButton(text='Go to advertisement', url=ads_for_post.page_url)
             ads_link_btn = InlineKeyboardMarkup(
                 inline_keyboard=[[ads_link_btn_txt]],
                 resize_keyboard=True,
@@ -81,15 +82,15 @@ async def _post_ads(ads: list[Estate], destination: int) -> int:
                 reply_markup=ads_link_btn,
                 disable_web_page_preview=False,
             )
-    # todo test
-    return 0
+            cnt += 1
+
+    return cnt
 
 
 def _message_presenter(ads: Estate) -> str:
     """Create a post for the bot."""
-    # todo test
     messages = [
-        f'[{ads.title}]({ads.page_url})',
+        f'[{ads.title}]({ads.page_url}), {ads.usable_area} m²',
         f'{ads.price} {app_settings.CURRENCY}',
     ]
 
