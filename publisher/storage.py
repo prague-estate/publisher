@@ -1,6 +1,6 @@
 """Local storage functions."""
 
-from redis import Redis
+from redis import Redis  # type: ignore
 
 from publisher.settings import app_settings
 

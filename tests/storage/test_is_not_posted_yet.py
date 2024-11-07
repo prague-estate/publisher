@@ -1,8 +1,13 @@
-import pytest
-
 from publisher.storage import is_not_posted_yet
 
 
-@pytest.mark.parametrize("test_input,expected", [(1, False), (2, False), (3, False), (4, True)])
-def test_is_not_posted_yet_happy_path(test_input, expected, fixture_prefilled_posted_ads_id):
-    assert is_not_posted_yet(test_input) == expected
+def test_is_not_posted_yet_happy_path(
+    fixture_empty_posted_ads_id,
+    fixture_prefilled_posted_ads_id: list[int],
+):
+    for ads_id in fixture_prefilled_posted_ads_id:
+        assert is_not_posted_yet(ads_id) is False
+
+
+def test_is_not_posted_yet_not_found(fixture_empty_posted_ads_id):
+    assert is_not_posted_yet(1) is True

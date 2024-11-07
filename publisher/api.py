@@ -13,7 +13,6 @@ logger = logging.getLogger(__file__)
 
 async def fetch_estates(category: str, limit: int) -> list[Estate]:
     """Fetch estates by API."""
-    # todo test
     request_params = {
         'limit': limit,
     }

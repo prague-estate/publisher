@@ -31,7 +31,7 @@ def fixture_estate_item():
 
 
 @pytest.fixture()
-def fixture_one_more_estate_item():
+def  fixture_one_more_estate_item():
     yield Estate(
         id=2,
         category='sale',
@@ -65,7 +65,7 @@ def fixture_empty_posted_ads_id():
 
 
 @pytest.fixture()
-def fixture_prefilled_posted_ads_id(fixture_empty_posted_ads_id) -> list[int]:
+def fixture_prefilled_posted_ads_id() -> list[int]:
     ads_ids = [1, 2, 3]
     mark_as_posted(ads_ids)
     yield ads_ids

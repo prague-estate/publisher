@@ -5,7 +5,7 @@ from collections import Counter
 from typing import Any
 
 from aiogram import Bot
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
 from aiogram.utils import markdown
 
 from publisher import api, storage
@@ -17,13 +17,13 @@ logger = logging.getLogger(__file__)
 
 def run(args: Any = None) -> None:
     """Run sreality scrapper."""
-    asyncio.run(_publisher())
+    asyncio.run(_publisher(limit=100))
 
 
-async def _publisher() -> Counter:
+async def _publisher(limit: int = 1) -> Counter:
     """Fetch ads by API and post them to channels."""
     logger.info('publisher start')
-    counters = Counter(total=0)
+    counters: Counter = Counter()
 
     dst_channels = {
         'sale': app_settings.PUBLISH_CHANNEL_SALE_ID,
@@ -31,7 +31,7 @@ async def _publisher() -> Counter:
     }
 
     for category, dst_channel in dst_channels.items():
-        sale_ads = await api.fetch_estates(category=category, limit=100)
+        sale_ads = await api.fetch_estates(category=category, limit=limit)
         logger.info('got {0} {1} ads'.format(len(sale_ads), category))
         counters[f'{category} total'] = len(sale_ads)
 
@@ -59,11 +59,6 @@ def _apply_new_only_filter(ads: list[Estate]) -> list[Estate]:
 
 
 async def _post_ads(ads: list[Estate], destination: int) -> int:
-    storage.mark_as_posted(ads_ids=[
-        ads_for_mark.id
-        for ads_for_mark in ads
-    ])
-
     cnt = 0
     async with Bot(app_settings.BOT_TOKEN) as bot:
         for ads_for_post in ads:
@@ -75,15 +70,20 @@ async def _post_ads(ads: list[Estate], destination: int) -> int:
                 resize_keyboard=True,
             )
 
+            storage.mark_as_posted(ads_ids=[ads_for_post.id])
+
             await bot.send_message(
                 chat_id=destination,
                 text=message,
                 parse_mode='Markdown',
                 reply_markup=ads_link_btn,
                 disable_web_page_preview=False,
+                link_preview_options=LinkPreviewOptions(
+                    prefer_large_media=True,
+                ),
             )
-            await asyncio.sleep(3)
             cnt += 1
+            await asyncio.sleep(3)
 
     return cnt
 
