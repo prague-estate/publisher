@@ -20,6 +20,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     TIMEOUT: int = 35
     PUBLISH_CHANNEL_SALE_ID: int = Field(default=-1002190184244)
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
+    PUBLISH_ADS_LIMIT: int = Field(default=100)
 
     API_TOKEN: str = Field(default='dev-token')
     API_URL: AnyUrl = Field(default='http://127.0.0.1:9001')

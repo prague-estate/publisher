@@ -17,7 +17,7 @@ logger = logging.getLogger(__file__)
 
 def run(args: Any = None) -> None:
     """Run sreality scrapper."""
-    asyncio.run(_publisher(limit=100))
+    asyncio.run(_publisher(limit=app_settings.PUBLISH_ADS_LIMIT))
 
 
 async def _publisher(limit: int = 1) -> Counter:
@@ -35,7 +35,7 @@ async def _publisher(limit: int = 1) -> Counter:
         logger.info('got {0} {1} ads'.format(len(sale_ads), category))
         counters[f'{category} total'] = len(sale_ads)
 
-        new_sale_ads = _apply_new_only_filter(sale_ads)
+        new_sale_ads = _apply_new_only_filter(sale_ads)[::-1]
         logger.info('got {0} new {1} ads'.format(len(new_sale_ads), category))
         counters[f'{category} new'] = len(new_sale_ads)
 
