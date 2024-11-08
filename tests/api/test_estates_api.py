@@ -1,4 +1,5 @@
 import pytest
+from unittest import mock
 
 from publisher.api import fetch_estates
 from publisher.types import Estate
@@ -22,3 +23,10 @@ async def test_fetch_estates_category(category: str):
     response = await fetch_estates(category=category, limit=1)
 
     assert response[0].category == category
+
+
+async def test_fetch_estates_failed():
+    with mock.patch('publisher.api.aiohttp.ClientSession.get') as mock_get:
+        mock_get.side_effect = KeyError()
+        response = await fetch_estates(category='sale', limit=1)
+        assert response == []

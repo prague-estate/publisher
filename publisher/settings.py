@@ -1,7 +1,7 @@
 """Application settings."""
 import os
 
-from pydantic import AnyUrl, Field, RedisDsn
+from pydantic import AnyUrl, Field
 from pydantic_settings import BaseSettings
 
 APP_PATH = os.path.abspath(
@@ -23,7 +23,7 @@ class AppSettings(BaseSettings, extra='ignore'):
 
     API_TOKEN: str = Field(default='dev-token')
     API_URL: AnyUrl = Field(default='http://127.0.0.1:9001')
-    REDIS_DSN: RedisDsn = Field('redis://localhost:6379/1')
+    REDIS_DSN: str = Field('redis://localhost:6379/1')
 
 
 app_settings = AppSettings(
