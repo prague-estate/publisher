@@ -91,11 +91,8 @@ async def _post_ads(ads: list[Estate], destination: int) -> int:
 def _message_presenter(ads: Estate) -> str:
     """Create a post for the bot."""
     messages = [
-        '{0} {1} m²'.format(
+        '{0}\n{1} Kč'.format(
             markdown.link(ads.title, ads.page_url),
-            ads.usable_area,
-        ),
-        '{0} Kč'.format(
             f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
         ),
     ]
