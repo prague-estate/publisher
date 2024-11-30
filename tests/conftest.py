@@ -16,16 +16,16 @@ def fixture_estate_item():
     yield Estate(
         id=1,
         category='sale',
-        source_name='sreality',
-        source_uid='11',
-        title='title 1',
+        source_name='expats',
+        source_uid='287289',
+        title='Apartment for rent, 1+1 - (Studio)_*[]`>#=|{}!\, 35m',
         address='address',
         price=100500,
-        usable_area=53,
-        district_number=5005,
+        usable_area=35,
+        district_number=5,
         energy_rating='G',
         image_url='https://d18-a.sdn.cz/d_18/c_img_QJ_J5/kMPBBm.jpeg?fl=res',
-        page_url='https://www.sreality.cz/detail/prodej/byt/2+kk/praha-liben-pod-labutkou/3788997196',
+        page_url='https://www.expats.cz/praguerealestate/for-rent/apartments/287289-1-plus-1-studio-in-prague',
         updated_at='Tue, 05 Nov 2024 07:57:50 GMT',
     )
 

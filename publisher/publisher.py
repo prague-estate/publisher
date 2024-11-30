@@ -1,17 +1,20 @@
 """Get estates and publish them to specified telegram channels."""
 import asyncio
 import logging
+import re
 from collections import Counter
 from typing import Any
 
 from aiogram import Bot
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
 from aiogram.utils import markdown
+from aiogram.utils.text_decorations import markdown_decoration
 
 from publisher import api, storage
 from publisher.settings import app_settings
 from publisher.types import Estate
 
+MARKDOWN_RISK_CHARS = re.compile(r'[_*\[\]()`>#=|{}!\\]')  # noqa: P103
 logger = logging.getLogger(__file__)
 
 
@@ -92,12 +95,21 @@ def _message_presenter(ads: Estate) -> str:
     """Create a post for the bot."""
     messages = [
         '{0}\n{1} Kč'.format(
-            markdown.link(ads.title, ads.page_url),
+            _get_link_without_quote(ads.title, ads.page_url),
             f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
         ),
     ]
 
     return markdown.text(*messages, sep='\n')
+
+
+def _get_link_without_quote(title: str, url: str) -> str:
+    clear_title = re.sub(
+        pattern=MARKDOWN_RISK_CHARS,
+        repl='',
+        string=title,
+    )
+    return markdown_decoration.link(value=clear_title, link=url)
 
 
 if __name__ == '__main__':
