@@ -18,6 +18,9 @@ ignore =
     # Using etree to parse untrusted XML data
     S410,
 
+    # Found string literal over-use: 0 > 3
+    WPS226,
+
     #  Found too long ``try`` body length
     WPS229,
 
@@ -27,12 +30,13 @@ ignore =
     # Found class without a base class - dataclass used
     WPS306,
 
-    # Found string literal over-use: 0 > 3
-    WPS226,
-
 
 per-file-ignores =
     # WPS115 Found upper-case constant in a class
+    # WPS202 Found too many module members
+    # WPS347 Found vague import that may cause confusion: F
     # WPS432 Found magic number
 
+    publisher/bot.py: WPS202, WPS347,
     publisher/settings.py: WPS115, WPS432,
+    publisher/storage.py: WPS202,

@@ -51,3 +51,5 @@ jobs:
 
             echo '' >> crontab.txt
             crontab crontab.txt
+            
+            supervisorctl restart estate-bot

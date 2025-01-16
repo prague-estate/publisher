@@ -1,5 +1,6 @@
-from publisher.publisher import _publisher
 from collections import Counter
+
+from publisher.publisher import _publisher
 
 
 async def test_publisher_smoke():

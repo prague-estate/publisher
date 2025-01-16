@@ -58,7 +58,7 @@ def fixture_estates_list(fixture_estate_item, fixture_one_more_estate_item):
 
 
 @pytest.fixture()
-def fixture_empty_posted_ads_id():
+def fixture_empty_storage():
     db_pool.flushdb()
     yield
     db_pool.flushdb()
