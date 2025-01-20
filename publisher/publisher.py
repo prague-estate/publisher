@@ -14,12 +14,7 @@ from publisher.types import Estate, Subscription
 logger = logging.getLogger(__file__)
 
 
-def run(args: Any = None) -> None:
-    """Run publisher session."""
-    asyncio.run(_publisher(limit=app_settings.PUBLISH_ADS_LIMIT))
-
-
-async def _publisher(limit: int = 1) -> Counter:
+async def publisher(limit: int = 1) -> Counter:
     """Fetch ads by API and post them to channels."""
     logger.info('publisher start')
     counters: Counter = Counter()
@@ -142,4 +137,4 @@ if __name__ == '__main__':
         level=logging.DEBUG if app_settings.DEBUG else logging.INFO,
         format='%(asctime)s %(levelname)-8s %(message)s',  # noqa: WPS323
     )
-    run()
+    asyncio.run(publisher(limit=app_settings.PUBLISH_ADS_LIMIT))

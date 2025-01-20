@@ -22,7 +22,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     TIMEOUT: int = 35
     PUBLISH_CHANNEL_SALE_ID: int = Field(default=-1002190184244)
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
-    PUBLISH_ADS_LIMIT: int = Field(default=100)
+    PUBLISH_ADS_LIMIT: int = Field(default=500)
 
     API_TOKEN: str = Field(default='dev-token')
     API_URL: str = Field(default='http://127.0.0.1:9001')
@@ -34,13 +34,13 @@ app_settings = AppSettings(
 )
 
 prices_settings = {
-    50: Price(cost=50, days=7, title='Buy week subscription'),
-    150: Price(cost=150, days=31, title='Buy month subscription 🌟 '),
-    750: Price(cost=750, days=365, title='Buy year subscription'),
+    50: Price(cost=50, days=7, title='Buy week access'),
+    150: Price(cost=150, days=31, title='Buy month access 🌟 '),
+    750: Price(cost=750, days=365, title='Buy year access'),
 }
 if app_settings.DEBUG:
     prices_settings[1] = Price(
         cost=1,
         days=1,
-        title='Test 1 day subscription',
+        title='Test 1-day access',
     )
