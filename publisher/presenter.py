@@ -13,7 +13,6 @@ from publisher.types import Estate
 MARKDOWN_RISK_CHARS = re.compile(r'[_*\[\]()`>#=|{}!\\]')  # noqa: P103
 
 _bot_messages: dict[str, str] = {
-    'welcome': 'todo',
     'support': 'For any questions and bugs write direct to @esemiko',
     'support.button': 'About',
     'currency': 'Kč',

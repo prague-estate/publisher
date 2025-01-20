@@ -1,7 +1,6 @@
 """Telegram bot handlers."""
 import asyncio
 import logging
-from typing import Any
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
@@ -18,24 +17,10 @@ bot_instance = Bot(app_settings.BOT_TOKEN)
 dp = Dispatcher()
 
 
-async def main(args: Any = None) -> None:
-    """Run bot."""
-    await dp.start_polling(bot_instance)
-
-
 @dp.message(Command('start'))
-async def start(message: Message) -> None:
-    """Welcome message and optional grant promo."""
-    logger.info('Welcome')
-    await message.answer(
-        text=get_message('welcome'),
-        reply_markup=get_main_menu(message.chat.id),
-    )
-
-
 @dp.message(Command('support'))
 @dp.message(F.text == get_message('support.button'))
-async def support(message: Message) -> None:
+async def about(message: Message) -> None:
     """Support link."""
     logger.info('About')
     await message.answer(
@@ -82,7 +67,9 @@ async def filter_change_enable(query: CallbackQuery) -> None:
     else:
         storage.update_user_filter(query.from_user.id, enabled=True)
 
-    await query.message.edit_reply_markup(reply_markup=get_filters_menu(query.from_user.id))  # type: ignore
+    await query.message.edit_reply_markup(  # type: ignore
+        reply_markup=get_filters_menu(query.from_user.id),
+    )
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data.startswith('buy:'))
@@ -92,7 +79,7 @@ async def buy(query: CallbackQuery) -> None:
     try:
         price_amount = int(query.data.split(':')[-1])  # type: ignore
         price = prices_settings[price_amount]
-    except (AttributeError, IndexError, ValueError):
+    except (AttributeError, IndexError, ValueError, KeyError):
         logger.error(f'Invalid buy request {query}')
         return
 
@@ -176,4 +163,4 @@ if __name__ == '__main__':
         level=logging.DEBUG if app_settings.DEBUG else logging.INFO,
         format='%(asctime)s %(levelname)-8s %(message)s',  # noqa: WPS323
     )
-    asyncio.run(main())
+    asyncio.run(dp.start_polling(bot_instance))
