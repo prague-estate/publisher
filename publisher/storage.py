@@ -84,7 +84,6 @@ def update_user_filter(user_id: int, **kwargs: str | int | bool | None) -> None:
 
 def get_active_subscriptions() -> list[Subscription]:
     """Return active subscriptions."""
-    # todo test
     active_subs = []
     for user_id in db_pool.smembers(SUBSCRIPTIONS_ACTIVE_KEY):  # type: ignore
         sub = get_subscription(user_id)
@@ -95,7 +94,6 @@ def get_active_subscriptions() -> list[Subscription]:
 
 def get_subscription(user_id: int) -> Subscription | None:
     """Return user subscription if exists."""
-    # todo test
     subscription_data: dict | None = db_pool.hgetall(name=f'{SUBSCRIPTION_KEY}:{user_id}')  # type: ignore
     if not subscription_data:
         return None
@@ -108,7 +106,6 @@ def get_subscription(user_id: int) -> Subscription | None:
 
 def renew_subscription(user_id: int, days: int) -> Subscription:
     """Create or renew user subscription."""
-    # todo test
     renew_period = timedelta(days=days)
     sub = get_subscription(user_id)
     sub_key = f'{SUBSCRIPTION_KEY}:{user_id}'
@@ -148,7 +145,6 @@ def renew_subscription(user_id: int, days: int) -> Subscription:
 
 def stop_subscription(user_id: int) -> None:
     """Downgrade user subscription."""
-    # todo test
     sub_key = f'{SUBSCRIPTION_KEY}:{user_id}'
     db_pool.hset(
         name=sub_key,
