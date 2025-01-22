@@ -4,6 +4,9 @@ import logging
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandObject, CommandStart
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 
 from publisher import presenter, storage, translation
@@ -13,7 +16,13 @@ from publisher.types import Subscription
 logger = logging.getLogger(__file__)
 
 bot_instance = Bot(app_settings.BOT_TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(storage=RedisStorage.from_url(app_settings.REDIS_DSN))
+
+
+class Form(StatesGroup):
+    """Change filters states."""
+
+    max_price = State()
 
 
 @dp.message(CommandStart(deep_link=True))
@@ -83,16 +92,20 @@ async def user_filters(message: Message) -> None:
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:back')
-async def filter_go_back(query: CallbackQuery) -> None:
+async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) -> None:
     """Show filters."""
     logger.info('filter_go_back')
+
+    if state:
+        await state.clear()
+
     await query.message.edit_text(  # type: ignore
         text=translation.get_message('filters.description'),
         reply_markup=presenter.get_filters_menu(query.from_user.id),
     )
 
 
-@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:enabled')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:enabled:change')
 async def filter_change_enabled(query: CallbackQuery) -> None:
     """Change enabled status."""
     logger.info('filter_change_notifications')
@@ -107,7 +120,7 @@ async def filter_change_enabled(query: CallbackQuery) -> None:
     )
 
 
-@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:edit')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:show')
 async def filter_change_category(query: CallbackQuery) -> None:
     """Show change category."""
     logger.info('filter_change_category')
@@ -117,8 +130,8 @@ async def filter_change_category(query: CallbackQuery) -> None:
     )
 
 
-@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:enable:rent')
-@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:enable:sale')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:lease')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:sale')
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:reset')
 async def filter_change_category_switch(query: CallbackQuery) -> None:
     """Process change category."""
@@ -136,6 +149,70 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
         logger.info(f'filter_change_category_switch: enable {category_for_enable}')
         storage.update_user_filter(user_id=query.from_user.id, category=category_for_enable)
         return await filter_change_category(query)
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:max_price:show')
+async def filter_change_max_price(query: CallbackQuery) -> None:
+    """Show change max price."""
+    logger.info('filter_change_max_price')
+
+    filters_config = storage.get_user_filters(query.from_user.id)
+
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.max_price').format(
+            presenter.get_price_human_value(filters_config.max_price),
+        ),
+        reply_markup=presenter.get_filters_max_price_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:max_price:reset')
+async def filter_change_max_price_reset(query: CallbackQuery) -> None:
+    """Reset max price filter to default value."""
+    logger.info(f'filter_change_max_price_reset {query.data=}')
+    filters_config = storage.get_user_filters(query.from_user.id)
+    if filters_config.max_price is not None:
+        storage.update_user_filter(user_id=query.from_user.id, max_price=None)
+        return await filter_change_max_price(query)
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:max_price:change')
+async def filter_change_max_price_change(query: CallbackQuery, state: FSMContext) -> None:
+    """Change max price filter value input."""
+    logger.info('filter_change_max_price_change')
+    await state.set_state(Form.max_price)
+
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.max_price.input'),
+        reply_markup=presenter.get_filters_max_price_internal_menu(),
+    )
+
+
+@dp.message(Form.max_price)
+async def filter_change_max_price_change_process(message: Message, state: FSMContext) -> None:
+    """Change max price filter value processing."""
+    logger.info('filter_change_max_price_change_process')
+
+    try:
+        threshold = int(message.text.strip().lower())  # type: ignore
+    except (ValueError, AttributeError):
+        threshold = 0
+
+    if threshold <= 0:
+        await message.reply(translation.get_message('filters.description.max_price.invalid'))
+        return
+
+    storage.update_user_filter(user_id=message.chat.id, max_price=threshold)
+    await state.clear()
+
+    filters_config = storage.get_user_filters(message.chat.id)
+
+    await message.answer(  # type: ignore
+        text=translation.get_message('filters.description.max_price').format(
+            presenter.get_price_human_value(filters_config.max_price),
+        ),
+        reply_markup=presenter.get_filters_max_price_menu(message.chat.id),
+    )
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'trial:activate')

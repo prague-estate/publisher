@@ -3,20 +3,20 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.storage import update_user_filter, get_user_filters
+from publisher.storage import get_user_filters, update_user_filter
 
 
 @pytest.mark.parametrize('payload, current_state, expected_state', [
     ('filters:category:reset', None, None),
     ('filters:category:reset', 'sale', None),
 
-    ('filters:category:enable:sale', None, 'sale'),
-    ('filters:category:enable:sale', 'sale', 'sale'),
-    ('filters:category:enable:sale', 'rent', 'sale'),
+    ('filters:category:sale', None, 'sale'),
+    ('filters:category:sale', 'sale', 'sale'),
+    ('filters:category:sale', 'lease', 'sale'),
 
-    ('filters:category:enable:rent', None, 'rent'),
-    ('filters:category:enable:rent', 'rent', 'rent'),
-    ('filters:category:enable:rent', 'sale', 'rent'),
+    ('filters:category:lease', None, 'lease'),
+    ('filters:category:lease', 'lease', 'lease'),
+    ('filters:category:lease', 'sale', 'lease'),
 ])
 async def test_filter_change_category_switch_happy_path(payload, current_state, expected_state):
     query_mock = AsyncMock()

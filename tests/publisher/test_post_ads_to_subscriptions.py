@@ -25,6 +25,7 @@ async def test_post_ads_to_subscriptions_subs_not_compatible(fixture_estate_item
 
 async def test_post_ads_to_subscriptions_happy_path(fixture_estate_item):
     sub = renew_subscription(user_id=1, days=1)
+    update_user_filter(user_id=1)
 
     res = await _post_ads_to_subscriptions(
         [fixture_estate_item],

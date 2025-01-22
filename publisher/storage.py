@@ -15,7 +15,7 @@ db_pool: Redis = Redis.from_url(
 )
 
 POSTED_ADS_KEY = 'prague-publisher:posted_ads:id'
-TTL_POSTED_ADS = 60 * 60 * 24 * 90  # 3 month  # noqa: WPS432
+TTL_POSTED_ADS = 60 * 60 * 24 * 180  # 6 months  # noqa: WPS432
 INVOICE_KEY = 'prague-publisher:invoice:hash'
 TTL_INVOICE = 60 * 60  # 1 hour
 USER_FILTERS_KEY = 'prague-publisher:user_filters:id'
@@ -69,8 +69,8 @@ def get_user_filters(user_id: int) -> UserFilters:
     if saved_data.get('enabled') is not None:
         default_data['enabled'] = bool(int(saved_data.get('enabled')))  # type: ignore
 
-    if saved_data.get('max_cost') is not None:
-        default_data['max_cost'] = int(saved_data.get('max_cost'))  # type: ignore
+    if saved_data.get('max_price') is not None:
+        default_data['max_price'] = int(saved_data.get('max_price'))  # type: ignore
 
     return UserFilters(
         **default_data,

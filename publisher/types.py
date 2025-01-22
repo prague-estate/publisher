@@ -44,13 +44,11 @@ class Subscription:
     @property
     def is_active(self) -> bool:
         """Is active subscription."""
-        # todo test
         return self.expired_at >= date.today()
 
     @property
     def is_expired_soon(self) -> bool:
         """Is expired soon subscription."""
-        # todo test
         if not self.is_active:
             return False
 
@@ -64,7 +62,9 @@ class UserFilters:
 
     user_id: int
     category: str | None = None
-    max_cost: int | None = None
+    max_price: int | None = None
+    layouts: set[str] | None = None
+    districts: set[int] | None = None
     enabled: bool = False
 
     @property
@@ -74,11 +74,13 @@ class UserFilters:
 
     def is_compatible(self, estate: Estate) -> bool:
         """Is estate item passed by filters."""
-        # todo test
         if self.category and estate.category != self.category:
             return False
 
-        if self.max_cost and estate.price > self.max_cost:  # noqa: WPS531
+        if self.max_price and estate.price > self.max_price:  # noqa: WPS531
+            return False
+
+        if self.districts and estate.district_number not in self.districts:  # noqa: WPS531
             return False
 
         return True

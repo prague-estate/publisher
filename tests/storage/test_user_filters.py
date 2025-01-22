@@ -10,7 +10,7 @@ def test_get_user_filters_not_found():
     assert response.is_enabled is False
     assert response.enabled is False
     assert response.category is None
-    assert response.max_cost is None
+    assert response.max_price is None
 
 
 def test_get_user_filters_happy_path():
@@ -22,7 +22,7 @@ def test_get_user_filters_happy_path():
     assert response.is_enabled is False
     assert response.enabled is False
     assert response.category == 'sale'
-    assert response.max_cost is None
+    assert response.max_price is None
 
 
 @pytest.mark.parametrize('payload, expected', [
@@ -41,11 +41,11 @@ def test_update_user_filter_category(payload, expected):
     (0, 0),
     (None, None),
 ])
-def test_update_user_filter_max_cost(payload, expected):
-    update_user_filter(1, max_cost=payload)
+def test_update_user_filter_max_price(payload, expected):
+    update_user_filter(1, max_price=payload)
 
     response = get_user_filters(1)
-    assert getattr(response, 'max_cost') == expected
+    assert getattr(response, 'max_price') == expected
 
 
 @pytest.mark.parametrize('payload, expected', [

@@ -1,5 +1,4 @@
 """Bot message presenters."""
-
 import re
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
@@ -58,16 +57,21 @@ def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
 def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return user filters inline keyboard."""
     filters_config = storage.get_user_filters(user_id)
+
     kb = [
-        InlineKeyboardButton(
-            text=get_message('filters.button.category'),
-            callback_data='filters:category:edit',
-        ),
         InlineKeyboardButton(
             text=get_message('filters.button.notifications.{0}'.format(
                 'enabled' if filters_config.is_enabled else 'disabled',
             )),
-            callback_data='filters:enabled',
+            callback_data='filters:enabled:change',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.category'),
+            callback_data='filters:category:show',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.max_price'),
+            callback_data='filters:max_price:show',
         ),
     ]
 
@@ -86,30 +90,76 @@ def get_filters_category_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message(_get_category_slug('rent', filters_config.category)),
-            callback_data='filters:category:enable:rent',
+            text=get_message('filters.button.category.all.{0}'.format(
+                'enabled' if filters_config.category is None else 'disabled',
+            )),
+            callback_data='filters:category:reset',
         ),
         InlineKeyboardButton(
-            text=get_message(_get_category_slug('sale', filters_config.category)),
-            callback_data='filters:category:enable:sale',
+            text=get_message('filters.button.category.lease.{0}'.format(
+                'enabled' if filters_config.category == 'lease' else 'disabled',
+            )),
+            callback_data='filters:category:lease',
         ),
-    ]
-
-    if filters_config.category is not None:
-        kb.append(
-            InlineKeyboardButton(
-                text=get_message('filters.button.reset'),
-                callback_data='filters:category:reset',
-            ),
-        )
-
-    kb.append(
+        InlineKeyboardButton(
+            text=get_message('filters.button.category.sale.{0}'.format(
+                'enabled' if filters_config.category == 'sale' else 'disabled',
+            )),
+            callback_data='filters:category:sale',
+        ),
         InlineKeyboardButton(
             text=get_message('filters.button.back'),
             callback_data='filters:back',
         ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
     )
 
+
+def get_filters_max_price_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return change max price dialog."""
+    filters_config = storage.get_user_filters(user_id)
+
+    kb = [
+        InlineKeyboardButton(
+            text=get_message('filters.button.max_price.all.{0}'.format(
+                'enabled' if filters_config.max_price is None else 'disabled',
+            )),
+            callback_data='filters:max_price:reset',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.max_price.custom.{0}'.format(
+                'enabled' if filters_config.max_price is not None else 'disabled',
+            )),
+            callback_data='filters:max_price:change',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.back'),
+            callback_data='filters:back',
+        ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
+def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
+    """Return change max price internal menu."""
+    kb = [
+        InlineKeyboardButton(
+            text=get_message('filters.button.back'),
+            callback_data='filters:back',
+        ),
+    ]
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [button]
@@ -131,6 +181,13 @@ def get_estate_description(ads: Estate) -> str:
     return markdown.text(*messages, sep='\n')
 
 
+def get_price_human_value(threshold: int | None) -> str:
+    """Return human-friendly price string."""
+    if not threshold or threshold < 0:
+        return 'not set'
+    return f'{threshold:,}'.replace(',', ' ')  # noqa: C819
+
+
 def _get_link_without_quote(title: str, url: str) -> str:
     clear_title = re.sub(
         pattern=MARKDOWN_RISK_CHARS,
@@ -138,13 +195,3 @@ def _get_link_without_quote(title: str, url: str) -> str:
         string=title,
     )
     return markdown_decoration.link(value=clear_title, link=url)
-
-
-def _get_category_slug(category: str, current_state: str | None) -> str:
-    if current_state is None:
-        return 'filters.button.category.{0}.enabled'.format(category)
-
-    return 'filters.button.category.{0}.{1}'.format(
-        category,
-        'enabled' if category == current_state else 'disabled',
-    )

@@ -38,5 +38,6 @@ per-file-ignores =
     # WPS432 Found magic number
 
     publisher/bot.py: WPS202, WPS347,
+    publisher/presenter.py: WPS202,
     publisher/settings.py: WPS115, WPS432,
     publisher/storage.py: WPS202,

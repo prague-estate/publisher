@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.storage import update_user_filter, get_user_filters
+from publisher.storage import get_user_filters, update_user_filter
 
 
 @pytest.mark.parametrize('filters_enabled, expected_state', [

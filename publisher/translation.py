@@ -18,7 +18,10 @@ _bot_messages: dict[str, str] = {
     'trial.already_used': 'Trial access was already used!',
 
     'filters.description': 'Set up your estate objects filters for automatic notifications.',
-    'filters.description.category': 'Select search category',
+    'filters.description.category': 'Set specified category for search',
+    'filters.description.max_price': 'Set maximum price of estate.\n\nCurrent threshold: {0} Kč',
+    'filters.description.max_price.input': 'Input maximum price of searched estate in Kč',
+    'filters.description.max_price.invalid': 'Input positive number or cancel by click "Back" button above',
 
     'filters.button': 'Filters',
 
@@ -26,12 +29,19 @@ _bot_messages: dict[str, str] = {
     'filters.button.notifications.disabled': 'Notifications: ⏸',
 
     'filters.button.category': 'Category ⚙',
+    'filters.button.category.all.enabled': '✅All',
+    'filters.button.category.all.disabled': 'All',
     'filters.button.category.sale.enabled': '✅Sale',
     'filters.button.category.sale.disabled': 'Sale',
-    'filters.button.category.rent.enabled': '✅Rent',
-    'filters.button.category.rent.disabled': 'Rent',
+    'filters.button.category.lease.enabled': '✅Rent',
+    'filters.button.category.lease.disabled': 'Rent',
 
-    'filters.button.reset': '🔄Reset',
+    'filters.button.max_price': 'Max price ⚙',
+    'filters.button.max_price.all.enabled': '✅All',
+    'filters.button.max_price.all.disabled': 'All',
+    'filters.button.max_price.custom.enabled': '✅Custom',
+    'filters.button.max_price.custom.disabled': 'Custom',
+
     'filters.button.back': '⬅Back',
 }
 

@@ -24,6 +24,7 @@ async def publisher(limit: int = 1) -> Counter:
         'lease': app_settings.PUBLISH_CHANNEL_LEASE_ID,
     }
     active_subs = storage.get_active_subscriptions()
+    logger.info('got {0} active subs'.format(len(active_subs)))
 
     for category, dst_channel in dst_channels.items():
         sale_ads = await api.fetch_estates(category=category, limit=limit)
@@ -87,12 +88,12 @@ async def _post_ads_to_channel(ads: list[Estate], destination: int) -> int:
 
 
 async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]) -> int:
-    # todo test
     cnt = 0
     async with Bot(app_settings.BOT_TOKEN) as bot_instance:
         for ads_for_post in ads:
             for sub in subs:
                 user_filters = storage.get_user_filters(sub.user_id)
+                logger.info(f'send notification test {sub=} {ads_for_post=} {user_filters=}')
                 if not user_filters.is_enabled or not user_filters.is_compatible(ads_for_post):
                     continue
 
@@ -126,6 +127,7 @@ async def _send_notify_to_user(bot_instance: Bot, user_id: int, **kwargs: Any) -
         )
     except exceptions.TelegramBadRequest as exc:
         if 'chat not found' in exc.message:
+            logger.warning('disable user notification - chat not found')
             storage.update_user_filter(user_id, enabled=False)
             return
 
