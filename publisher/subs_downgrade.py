@@ -35,7 +35,7 @@ async def run() -> Counter:
                 bot_instance=bot_instance,
                 chat_id=sub_expire_soon.user_id,
                 text=presenter.get_message('subscription.expired'),
-                reply_markup=presenter.get_prices_menu(),
+                reply_markup=presenter.get_prices_menu(sub_expire_soon.user_id),
             )
 
         for sub_for_stop in subs_for_downgrade:

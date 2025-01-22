@@ -1,13 +1,13 @@
-from publisher.storage import get_invoice, create_invoice, delete_invoice
+from publisher.storage import create_invoice, delete_invoice, get_invoice
 
 
-def test_create_invoice(fixture_empty_storage):
+def test_create_invoice():
     response = create_invoice(user_id=1, price=17, days=1)
 
     assert len(response) > 10
 
 
-def test_get_invoice(fixture_empty_storage):
+def test_get_invoice():
     hash_ = create_invoice(user_id=1, price=17, days=1)
 
     response = get_invoice(hash_)
@@ -17,7 +17,7 @@ def test_get_invoice(fixture_empty_storage):
     assert response.days == 1
 
 
-def test_delete_invoice(fixture_empty_storage):
+def test_delete_invoice():
     hash_ = create_invoice(user_id=1, price=17, days=1)
 
     delete_invoice(hash_)

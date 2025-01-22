@@ -28,6 +28,13 @@ class AppSettings(BaseSettings, extra='ignore'):
     API_URL: str = Field(default='http://127.0.0.1:9001')
     REDIS_DSN: str = Field('redis://localhost:6379/1')
 
+    TRIAL_PERIOD_DAYS: int = 7
+    PROMO_CODES: dict[str, int] = {
+        'trial': 7,
+        'vas3k': 14,
+        'semrush': 14,
+    }
+
 
 app_settings = AppSettings(
     _env_file=os.path.join(APP_PATH, '.env'),  # type:ignore
@@ -35,7 +42,7 @@ app_settings = AppSettings(
 
 prices_settings = {
     50: Price(cost=50, days=7, title='Buy week access'),
-    150: Price(cost=150, days=31, title='Buy month access 🌟 '),
+    150: Price(cost=150, days=31, title='Buy month access 🌟'),
     750: Price(cost=750, days=365, title='Buy year access'),
 }
 if app_settings.DEBUG:

@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher, F
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 
 from publisher import storage
@@ -17,11 +17,34 @@ bot_instance = Bot(app_settings.BOT_TOKEN)
 dp = Dispatcher()
 
 
+@dp.message(CommandStart(deep_link=True))
+async def start(message: Message, command: CommandObject) -> None:
+    """Apply promo trial if exists."""
+    promo = str(command.args).strip().lower()
+    logger.info(f'Start {promo=}')
+    await about(message)
+
+    promo_days: int | None = app_settings.PROMO_CODES.get(promo)
+
+    if promo_days and not storage.has_used_trial(message.chat.id, promo):
+        logger.info('apply promo code')
+        sub: Subscription = storage.renew_subscription(
+            user_id=message.chat.id,
+            days=promo_days,
+        )
+        storage.mark_used_trial(message.chat.id, promo)
+
+        await message.answer(  # type: ignore
+            text=get_message('payment.accepted').format(sub.expired_at.isoformat()),
+            reply_markup=get_main_menu(message.chat.id),
+        )
+
+
 @dp.message(Command('start'))
 @dp.message(Command('support'))
 @dp.message(F.text == get_message('support.button'))
 async def about(message: Message) -> None:
-    """Support link."""
+    """About project."""
     logger.info('About')
     await message.answer(
         text=get_message('support'),
@@ -42,7 +65,7 @@ async def user_subscription(message: Message) -> None:
 
     await message.answer(
         text=text,
-        reply_markup=get_prices_menu(),
+        reply_markup=get_prices_menu(message.chat.id),
     )
 
 
@@ -69,6 +92,26 @@ async def filter_change_enable(query: CallbackQuery) -> None:
 
     await query.message.edit_reply_markup(  # type: ignore
         reply_markup=get_filters_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'trial:activate')
+async def got_trial(query: CallbackQuery) -> None:
+    """Process free trial."""
+    if storage.has_used_trial(query.from_user.id, 'trial'):
+        logger.error('Trial already used')
+        await query.answer(text=get_message('trial.already_used'))
+        return
+
+    sub: Subscription = storage.renew_subscription(
+        user_id=query.from_user.id,
+        days=app_settings.TRIAL_PERIOD_DAYS,
+    )
+    storage.mark_used_trial(query.from_user.id, 'trial')
+
+    await query.message.answer(  # type: ignore
+        text=get_message('payment.accepted').format(sub.expired_at.isoformat()),
+        reply_markup=get_main_menu(query.from_user.id),
     )
 
 

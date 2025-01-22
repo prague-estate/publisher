@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from publisher.storage import mark_as_posted, db_pool
+from publisher.storage import db_pool, mark_as_posted
 from publisher.types import Estate
 
 
@@ -57,7 +57,7 @@ def fixture_estates_list(fixture_estate_item, fixture_one_more_estate_item):
     ]
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True, scope='function')
 def fixture_empty_storage():
     db_pool.flushdb()
     yield

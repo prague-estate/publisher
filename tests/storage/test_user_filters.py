@@ -3,7 +3,7 @@ import pytest
 from publisher.storage import get_user_filters, update_user_filter
 
 
-def test_get_user_filters_not_found(fixture_empty_storage):
+def test_get_user_filters_not_found():
     response = get_user_filters(1)
 
     assert response.user_id == 1
@@ -13,7 +13,7 @@ def test_get_user_filters_not_found(fixture_empty_storage):
     assert response.max_cost is None
 
 
-def test_get_user_filters_happy_path(fixture_empty_storage):
+def test_get_user_filters_happy_path():
     update_user_filter(1, category='sale')
 
     response = get_user_filters(1)
@@ -29,7 +29,7 @@ def test_get_user_filters_happy_path(fixture_empty_storage):
     ('test', 'test'),
     (None, None),
 ])
-def test_update_user_filter_category(fixture_empty_storage, payload, expected):
+def test_update_user_filter_category(payload, expected):
     update_user_filter(1, category=payload)
 
     response = get_user_filters(1)
@@ -41,7 +41,7 @@ def test_update_user_filter_category(fixture_empty_storage, payload, expected):
     (0, 0),
     (None, None),
 ])
-def test_update_user_filter_max_cost(fixture_empty_storage, payload, expected):
+def test_update_user_filter_max_cost(payload, expected):
     update_user_filter(1, max_cost=payload)
 
     response = get_user_filters(1)
@@ -53,7 +53,7 @@ def test_update_user_filter_max_cost(fixture_empty_storage, payload, expected):
     (False, False),
     (None, False),
 ])
-def test_update_user_filter_enabled(fixture_empty_storage, payload, expected):
+def test_update_user_filter_enabled(payload, expected):
     update_user_filter(1, enabled=payload)
 
     response = get_user_filters(1)

@@ -31,6 +31,8 @@ _bot_messages: dict[str, str] = {
     'filters.button.notifications.enabled': 'Notifications: ✅',
     'filters.button.notifications.disabled': 'Notifications: ⏸',
     'filters.button.max_price': 'Max price (Kč)',
+    'trial.already_used': 'Trial access was already used!',
+    'trial': 'Free trial access',
 }
 
 
@@ -57,10 +59,19 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     )
 
 
-def get_prices_menu() -> InlineKeyboardMarkup:
+def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return bot prices inline keyboard."""
+    kb = []
+    if not storage.has_used_trial(user_id, 'trial'):
+        kb.append([
+            InlineKeyboardButton(
+                text=get_message('trial'),
+                callback_data='trial:activate',
+            ),
+        ])
+
     return InlineKeyboardMarkup(
-        inline_keyboard=[
+        inline_keyboard=kb + [
             [InlineKeyboardButton(
                 text=price.title,
                 callback_data=f'buy:{price.cost}',

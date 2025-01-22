@@ -19,8 +19,21 @@ TTL_POSTED_ADS = 60 * 60 * 24 * 90  # 3 month  # noqa: WPS432
 INVOICE_KEY = 'prague-publisher:invoice:hash'
 TTL_INVOICE = 60 * 60  # 1 hour
 USER_FILTERS_KEY = 'prague-publisher:user_filters:id'
+USER_USED_TRIAL_KEY = 'prague-publisher:user:trial:used:id'
 SUBSCRIPTION_KEY = 'prague-publisher:subscription:id'
 SUBSCRIPTIONS_ACTIVE_KEY = 'prague-publisher:subscription:active'
+
+
+def has_used_trial(user_id: int, promo: str) -> bool:
+    """Return user trial used state."""
+    # todo test
+    return db_pool.exists(f'{USER_USED_TRIAL_KEY}:{user_id}:{promo}')  # type: ignore
+
+
+def mark_used_trial(user_id: int, promo: str) -> None:
+    """Mark user trial used."""
+    # todo test
+    db_pool.set(f'{USER_USED_TRIAL_KEY}:{user_id}:{promo}', 1)
 
 
 def mark_as_posted(ads_ids: list[int]) -> int:

@@ -3,7 +3,14 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from publisher import bot
-from publisher.storage import create_invoice, get_invoice, renew_subscription, update_user_filter, get_user_filters
+from publisher.storage import (
+    create_invoice,
+    get_invoice,
+    get_subscription,
+    get_user_filters,
+    renew_subscription,
+    update_user_filter,
+)
 
 
 @pytest.mark.parametrize('handler_name', [
@@ -14,7 +21,6 @@ from publisher.storage import create_invoice, get_invoice, renew_subscription, u
 @pytest.mark.parametrize('subscription_active', [True, False])
 @pytest.mark.parametrize('filters_enabled', [True, False])
 async def test_handler_answer_smoke(
-    fixture_empty_storage,
     handler_name: str,
     subscription_active: bool,
     filters_enabled: bool,
@@ -29,6 +35,30 @@ async def test_handler_answer_smoke(
     await getattr(bot, handler_name)(message=message_mock)
 
     message_mock.answer.assert_called_once()
+
+
+@pytest.mark.parametrize('promo, expected', [
+    (None, False),
+    ('invalid', False),
+    ('vas3k', True),
+])
+async def test_start_with_promo(
+    promo: str | None,
+    expected: bool,
+):
+    message_mock = AsyncMock()
+    message_mock.chat.id = 1
+    command_mock = AsyncMock()
+    command_mock.args = promo
+
+    await bot.start(message=message_mock, command=command_mock)
+
+    if expected:
+        assert message_mock.answer.call_count == 2
+        assert get_subscription(user_id=1).is_active
+    else:
+        assert message_mock.answer.call_count == 1
+        assert get_subscription(user_id=1) is None
 
 
 async def test_payment_success_happy_path():
@@ -66,6 +96,7 @@ async def test_payment_success_invoice_not_found():
 async def test_filter_change_enable_happy_path(filters_enabled: bool, expected_state: bool):
     query_mock = AsyncMock()
     query_mock.from_user.id = 1
+    update_user_filter(query_mock.from_user.id, enabled=filters_enabled)
 
     await bot.filter_change_enable(query_mock)
 
@@ -102,3 +133,13 @@ async def test_pre_checkout_query_handler_happy_path():
     await bot.pre_checkout_query_handler(query_mock)
 
     query_mock.answer.assert_called_once()
+
+
+async def test_got_trial_happy_path():
+    query_mock = AsyncMock()
+    query_mock.from_user.id = 1
+
+    await bot.got_trial(query_mock)
+
+    query_mock.message.answer.assert_called_once()
+    assert get_subscription(user_id=1).is_active

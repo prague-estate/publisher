@@ -4,7 +4,7 @@ from publisher import storage
 from publisher.subs_downgrade import run
 
 
-async def test_subs_downgrade_happy_path(fixture_empty_storage):
+async def test_subs_downgrade_happy_path():
     storage.renew_subscription(user_id=1, days=3)
     storage.renew_subscription(user_id=2, days=2)
     storage.renew_subscription(user_id=3, days=1)

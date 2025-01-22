@@ -5,7 +5,7 @@ from publisher.publisher import _send_notify_to_user
 from publisher.settings import app_settings
 
 
-async def test_send_notify_to_user_smoke(fixture_empty_storage):
+async def test_send_notify_to_user_smoke():
     storage.update_user_filter(1, enabled=True)
     assert storage.get_user_filters(1).is_enabled is True
 

@@ -1,5 +1,6 @@
-import pytest
 from unittest import mock
+
+import pytest
 
 from publisher.api import fetch_estates
 from publisher.types import Estate
