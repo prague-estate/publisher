@@ -8,37 +8,10 @@ from aiogram.utils.text_decorations import markdown_decoration
 
 from publisher import storage
 from publisher.settings import prices_settings
+from publisher.translation import get_message
 from publisher.types import Estate
 
 MARKDOWN_RISK_CHARS = re.compile(r'[_*\[\]()`>#=|{}!\\]')  # noqa: P103
-
-_bot_messages: dict[str, str] = {
-    'support': 'For any questions and bugs write direct to @esemiko',
-    'support.button': 'About',
-    'currency': 'Kč',
-    'subscription.button.active': 'Subscription',
-    'subscription.button.inactive': '🔴 Subscription',
-    'subscription.active': 'Your subscription active through {0}.\nChoose renew option below:',
-    'subscription.inactive': 'You have no active subscription yet!\nChoose payment option below:',
-    'subscription.expired': 'Your subscription will expire soon!\nShould renew early below:',
-    'subscription.downgraded': 'Your subscription was expired!\nChoose payment option below:',
-    'invoice.description': 'New estates notifications in your telegram. Fast. Frictionless.',
-    'invoice.expired': 'Invoice expired!',
-    'invoice.invalid': 'Invoice invalid!',
-    'payment.accepted': 'Your subscription has been extended through {0}!',
-    'filters.description': 'Set up your estate objects filters for automatic notifications.',
-    'filters.button': 'Filters',
-    'filters.button.notifications.enabled': 'Notifications: ✅',
-    'filters.button.notifications.disabled': 'Notifications: ⏸',
-    'filters.button.max_price': 'Max price (Kč)',
-    'trial.already_used': 'Trial access was already used!',
-    'trial': 'Free trial access',
-}
-
-
-def get_message(slug: str) -> str:
-    """Return message by placeholder."""
-    return _bot_messages[slug]
 
 
 def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
@@ -85,23 +58,58 @@ def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
 def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return user filters inline keyboard."""
     filters_config = storage.get_user_filters(user_id)
-    kb = []
-    if filters_config.is_enabled:
+    kb = [
+        InlineKeyboardButton(
+            text=get_message('filters.button.category'),
+            callback_data='filters:category:edit',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.notifications.{0}'.format(
+                'enabled' if filters_config.is_enabled else 'disabled',
+            )),
+            callback_data='filters:enabled',
+        ),
+    ]
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
+def get_filters_category_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return change category dialog."""
+    filters_config = storage.get_user_filters(user_id)
+
+    kb = [
+        InlineKeyboardButton(
+            text=get_message(_get_category_slug('rent', filters_config.category)),
+            callback_data='filters:category:enable:rent',
+        ),
+        InlineKeyboardButton(
+            text=get_message(_get_category_slug('sale', filters_config.category)),
+            callback_data='filters:category:enable:sale',
+        ),
+    ]
+
+    if filters_config.category is not None:
         kb.append(
             InlineKeyboardButton(
-                text=get_message('filters.button.notifications.enabled'),
-                callback_data='filters:enabled',
-            ),
-        )
-    else:
-        kb.append(
-            InlineKeyboardButton(
-                text=get_message('filters.button.notifications.disabled'),
-                callback_data='filters:enabled',
+                text=get_message('filters.button.reset'),
+                callback_data='filters:category:reset',
             ),
         )
 
-    # todo
+    kb.append(
+        InlineKeyboardButton(
+            text=get_message('filters.button.back'),
+            callback_data='filters:back',
+        ),
+    )
+
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [button]
@@ -130,3 +138,13 @@ def _get_link_without_quote(title: str, url: str) -> str:
         string=title,
     )
     return markdown_decoration.link(value=clear_title, link=url)
+
+
+def _get_category_slug(category: str, current_state: str | None) -> str:
+    if current_state is None:
+        return 'filters.button.category.{0}.enabled'.format(category)
+
+    return 'filters.button.category.{0}.{1}'.format(
+        category,
+        'enabled' if category == current_state else 'disabled',
+    )

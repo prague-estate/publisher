@@ -6,7 +6,7 @@ from typing import Any
 
 from aiogram import Bot, exceptions
 
-from publisher import presenter, storage
+from publisher import presenter, storage, translation
 from publisher.settings import app_settings
 
 logger = logging.getLogger(__file__)
@@ -34,7 +34,7 @@ async def run() -> Counter:
             await _send_notify(
                 bot_instance=bot_instance,
                 chat_id=sub_expire_soon.user_id,
-                text=presenter.get_message('subscription.expired'),
+                text=translation.get_message('subscription.expired'),
                 reply_markup=presenter.get_prices_menu(sub_expire_soon.user_id),
             )
 
@@ -45,7 +45,7 @@ async def run() -> Counter:
             await _send_notify(
                 bot_instance=bot_instance,
                 chat_id=sub_for_stop.user_id,
-                text=presenter.get_message('subscription.downgraded'),
+                text=translation.get_message('subscription.downgraded'),
                 reply_markup=presenter.get_main_menu(sub_for_stop.user_id),
             )
 

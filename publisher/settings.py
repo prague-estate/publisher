@@ -41,9 +41,9 @@ app_settings = AppSettings(
 )
 
 prices_settings = {
-    50: Price(cost=50, days=7, title='Buy week access'),
-    150: Price(cost=150, days=31, title='Buy month access 🌟'),
-    750: Price(cost=750, days=365, title='Buy year access'),
+    50: Price(cost=50, days=7, title='Week access'),
+    150: Price(cost=150, days=31, title='Month access 🌟'),
+    750: Price(cost=750, days=365, title='Year access'),
 }
 if app_settings.DEBUG:
     prices_settings[1] = Price(

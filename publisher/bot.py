@@ -6,8 +6,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 
-from publisher import storage
-from publisher.presenter import get_filters_menu, get_main_menu, get_message, get_prices_menu
+from publisher import presenter, storage, translation
 from publisher.settings import app_settings, prices_settings
 from publisher.types import Subscription
 
@@ -35,53 +34,66 @@ async def start(message: Message, command: CommandObject) -> None:
         storage.mark_used_trial(message.chat.id, promo)
 
         await message.answer(  # type: ignore
-            text=get_message('payment.accepted').format(sub.expired_at.isoformat()),
-            reply_markup=get_main_menu(message.chat.id),
+            text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
+            reply_markup=presenter.get_main_menu(message.chat.id),
         )
 
 
 @dp.message(Command('start'))
 @dp.message(Command('support'))
-@dp.message(F.text == get_message('support.button'))
+@dp.message(F.text == translation.get_message('support.button'))
 async def about(message: Message) -> None:
     """About project."""
     logger.info('About')
     await message.answer(
-        text=get_message('support'),
-        reply_markup=get_main_menu(message.chat.id),
+        text=translation.get_message('support'),
+        reply_markup=presenter.get_main_menu(message.chat.id),
     )
 
 
-@dp.message(F.text.in_({get_message('subscription.button.active'), get_message('subscription.button.inactive')}))
+@dp.message(F.text.in_({
+    translation.get_message('subscription.button.active'),
+    translation.get_message('subscription.button.inactive'),
+}))
 async def user_subscription(message: Message) -> None:
     """Subscription info."""
     logger.info('Subscription')
 
     sub = storage.get_subscription(message.chat.id)
     if sub and sub.is_active:
-        text = get_message('subscription.active').format(sub.expired_at.isoformat())
+        text = translation.get_message('subscription.active').format(sub.expired_at.isoformat())
     else:
-        text = get_message('subscription.inactive')
+        text = translation.get_message('subscription.inactive')
 
     await message.answer(
         text=text,
-        reply_markup=get_prices_menu(message.chat.id),
+        reply_markup=presenter.get_prices_menu(message.chat.id),
     )
 
 
-@dp.message(F.text == get_message('filters.button'))
+@dp.message(F.text == translation.get_message('filters.button'))
 async def user_filters(message: Message) -> None:
     """User filters setup."""
     logger.info('User filters')
 
     await message.answer(
-        text=get_message('filters.description'),
-        reply_markup=get_filters_menu(message.chat.id),
+        text=translation.get_message('filters.description'),
+        reply_markup=presenter.get_filters_menu(message.chat.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:back')
+async def filter_go_back(query: CallbackQuery) -> None:
+    """Show filters."""
+    logger.info('filter_go_back')
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description'),
+        reply_markup=presenter.get_filters_menu(query.from_user.id),
     )
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:enabled')
-async def filter_change_enable(query: CallbackQuery) -> None:
+async def filter_change_enabled(query: CallbackQuery) -> None:
     """Change enabled status."""
     logger.info('filter_change_notifications')
     filters_config = storage.get_user_filters(query.from_user.id)
@@ -91,8 +103,39 @@ async def filter_change_enable(query: CallbackQuery) -> None:
         storage.update_user_filter(query.from_user.id, enabled=True)
 
     await query.message.edit_reply_markup(  # type: ignore
-        reply_markup=get_filters_menu(query.from_user.id),
+        reply_markup=presenter.get_filters_menu(query.from_user.id),
     )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:edit')
+async def filter_change_category(query: CallbackQuery) -> None:
+    """Show change category."""
+    logger.info('filter_change_category')
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.category'),
+        reply_markup=presenter.get_filters_category_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:enable:rent')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:enable:sale')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:reset')
+async def filter_change_category_switch(query: CallbackQuery) -> None:
+    """Process change category."""
+    logger.info(f'filter_change_category_switch {query.data=}')
+    category_for_enable: str = query.data.split(':')[-1]  # type: ignore
+    filters_config = storage.get_user_filters(query.from_user.id)
+
+    if category_for_enable == 'reset':
+        logger.info('filter_change_category_switch: reset')
+        if filters_config.category is not None:
+            storage.update_user_filter(user_id=query.from_user.id, category=None)
+            return await filter_change_category(query)
+
+    elif filters_config.category != category_for_enable:
+        logger.info(f'filter_change_category_switch: enable {category_for_enable}')
+        storage.update_user_filter(user_id=query.from_user.id, category=category_for_enable)
+        return await filter_change_category(query)
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'trial:activate')
@@ -100,7 +143,7 @@ async def got_trial(query: CallbackQuery) -> None:
     """Process free trial."""
     if storage.has_used_trial(query.from_user.id, 'trial'):
         logger.error('Trial already used')
-        await query.answer(text=get_message('trial.already_used'))
+        await query.answer(text=translation.get_message('trial.already_used'))
         return
 
     sub: Subscription = storage.renew_subscription(
@@ -110,8 +153,8 @@ async def got_trial(query: CallbackQuery) -> None:
     storage.mark_used_trial(query.from_user.id, 'trial')
 
     await query.message.answer(  # type: ignore
-        text=get_message('payment.accepted').format(sub.expired_at.isoformat()),
-        reply_markup=get_main_menu(query.from_user.id),
+        text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
+        reply_markup=presenter.get_main_menu(query.from_user.id),
     )
 
 
@@ -138,7 +181,7 @@ async def buy(query: CallbackQuery) -> None:
     ))
     await query.message.answer_invoice(  # type: ignore
         title=price.title,
-        description=get_message('invoice.description'),
+        description=translation.get_message('invoice.description'),
         payload=invoice_hash,
         currency='XTR',
         prices=[
@@ -151,7 +194,7 @@ async def buy(query: CallbackQuery) -> None:
 
 
 @dp.pre_checkout_query()
-async def pre_checkout_query_handler(query: PreCheckoutQuery) -> None:
+async def pre_checkout_query(query: PreCheckoutQuery) -> None:
     """Pre checkout check."""
     logger.info(f'Pre checkout request {query=}')
 
@@ -159,12 +202,12 @@ async def pre_checkout_query_handler(query: PreCheckoutQuery) -> None:
     logger.info(f'{invoice=}')
     if not invoice:
         logger.error('Invoice not found')
-        await query.answer(ok=False, error_message=get_message('invoice.expired'))
+        await query.answer(ok=False, error_message=translation.get_message('invoice.expired'))
         return
 
     if invoice.user_id != query.from_user.id or invoice.price != query.total_amount:
         logger.error('Invoice invalid')
-        await query.answer(ok=False, error_message=get_message('invoice.invalid'))
+        await query.answer(ok=False, error_message=translation.get_message('invoice.invalid'))
         return
 
     await query.answer(ok=True)
@@ -196,8 +239,8 @@ async def payment_success(message: Message, bot: Bot) -> None:
     )
 
     await message.answer(
-        text=get_message('payment.accepted').format(sub.expired_at.isoformat()),
-        reply_markup=get_main_menu(message.chat.id),
+        text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
+        reply_markup=presenter.get_main_menu(message.chat.id),
     )
 
 
