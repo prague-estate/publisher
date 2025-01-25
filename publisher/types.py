@@ -14,6 +14,7 @@ class Estate:
     source_uid: str
     title: str
     address: str
+    layout: str
     price: int
     usable_area: int
     district_number: int
