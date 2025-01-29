@@ -6,14 +6,14 @@ _bot_messages: dict[str, str] = {
     'currency': 'Kč',
     'subscription.button.active': 'Subscription',
     'subscription.button.inactive': '🔴 Unsubscribe',
-    'subscription.active': 'Your subscription active through {0}.\nChoose renew option below:',  # todo первый раз вижу конструкцию through. она норм?
+    'subscription.active': 'Your subscription active until {0}.\nChoose renew option below:',
     'subscription.inactive': 'You have no active subscription yet!\nChoose payment option below:',
     'subscription.expired': 'Your subscription will expire soon!\nYou can renew early below:',
     'subscription.downgraded': 'Your subscription was expired!\nChoose payment option below:',
     'invoice.description': 'New estates notifications in your telegram. Fast. Frictionless.',
     'invoice.expired': 'Invoice expired!',
     'invoice.invalid': 'Invoice invalid!',
-    'payment.accepted': 'Your subscription has been extended through {0}!',  # todo ask
+    'payment.accepted': 'Your subscription has been extended until {0}!',
     'trial': 'Free trial access',
     'trial.already_used': 'Trial access was already used!',
 
