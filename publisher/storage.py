@@ -2,6 +2,7 @@
 import uuid
 from dataclasses import asdict
 from datetime import date, timedelta
+from typing import Any
 
 from redis import Redis  # type: ignore
 
@@ -26,13 +27,11 @@ SUBSCRIPTIONS_ACTIVE_KEY = 'prague-publisher:subscription:active'
 
 def has_used_trial(user_id: int, promo: str) -> bool:
     """Return user trial used state."""
-    # todo test
     return db_pool.exists(f'{USER_USED_TRIAL_KEY}:{user_id}:{promo}')  # type: ignore
 
 
 def mark_used_trial(user_id: int, promo: str) -> None:
     """Mark user trial used."""
-    # todo test
     db_pool.set(f'{USER_USED_TRIAL_KEY}:{user_id}:{promo}', 1)
 
 
@@ -69,15 +68,24 @@ def get_user_filters(user_id: int) -> UserFilters:
     if saved_data.get('enabled') is not None:
         default_data['enabled'] = bool(int(saved_data.get('enabled')))  # type: ignore
 
-    if saved_data.get('max_price') is not None:
+    if saved_data.get('max_price', None):
         default_data['max_price'] = int(saved_data.get('max_price'))  # type: ignore
+
+    if saved_data.get('districts') is not None:
+        default_data['districts'] = {
+            int(number)
+            for number in saved_data.get('districts', '').split(':')
+        }
+
+    if saved_data.get('layouts') is not None:
+        default_data['layouts'] = set(saved_data.get('layouts', '').split(':'))
 
     return UserFilters(
         **default_data,
     )
 
 
-def update_user_filter(user_id: int, **kwargs: str | int | bool | None) -> None:
+def update_user_filter(user_id: int, **kwargs: Any) -> None:
     """Update user estate filters."""
     filters_key = f'{USER_FILTERS_KEY}:{user_id}'
     for filter_name, filter_value in kwargs.items():
@@ -87,6 +95,12 @@ def update_user_filter(user_id: int, **kwargs: str | int | bool | None) -> None:
 
         if isinstance(filter_value, bool):
             filter_value = int(filter_value)
+
+        if isinstance(filter_value, set):
+            filter_value = ':'.join([
+                str(filter_value_item)
+                for filter_value_item in filter_value
+            ])
 
         db_pool.hset(
             name=f'{USER_FILTERS_KEY}:{user_id}',

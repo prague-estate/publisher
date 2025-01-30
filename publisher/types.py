@@ -13,8 +13,8 @@ class Estate:
     source_name: str
     source_uid: str
     title: str
-    address: str
     layout: str
+    address: str
     price: int
     usable_area: int
     district_number: int
@@ -82,6 +82,9 @@ class UserFilters:
             return False
 
         if self.districts and estate.district_number not in self.districts:  # noqa: WPS531
+            return False
+
+        if self.layouts and estate.layout not in self.layouts:  # noqa: WPS531
             return False
 
         return True

@@ -58,3 +58,33 @@ def test_update_user_filter_enabled(payload, expected):
 
     response = get_user_filters(1)
     assert getattr(response, 'enabled') == expected
+
+
+@pytest.mark.parametrize('payload, expected', [
+    (None, None),
+    ({21}, {21}),
+    ({1, 5, 21}, {1, 5, 21}),
+])
+def test_update_user_filter_districts(payload, expected):
+    update_user_filter(1, districts=payload)
+
+    response = get_user_filters(1)
+    assert getattr(response, 'districts') == expected
+
+
+@pytest.mark.parametrize('payload, expected', [
+    (None, None),
+    (
+        {'1_kk', '1_1', '2_kk', '2_1', '3_kk', '3_1', '4_kk', '4_more', 'others'},
+        {'1_kk', '1_1', '2_kk', '2_1', '3_kk', '3_1', '4_kk', '4_more', 'others'},
+    ),
+    (
+        {'2_1', 'others'},
+        {'2_1', 'others'},
+    ),
+])
+def test_update_user_filter_layouts(payload, expected):
+    update_user_filter(1, layouts=payload)
+
+    response = get_user_filters(1)
+    assert getattr(response, 'layouts') == expected
