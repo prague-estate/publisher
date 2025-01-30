@@ -79,7 +79,7 @@ async def _post_ads_to_channel(ads: list[Estate], destination: int) -> int:
                 reply_markup=ads_link_btn,
                 disable_web_page_preview=False,
                 link_preview_options=LinkPreviewOptions(
-                    prefer_large_media=True,
+                    prefer_small_media=True,
                 ),
             )
             cnt += 1

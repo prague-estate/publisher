@@ -171,13 +171,19 @@ def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
 
 def get_estate_description(ads: Estate) -> str:
     """Create a post for the bot."""
-    messages = [
-        '{0}\n{1} {2}'.format(
-            _get_link_without_quote(ads.title, ads.page_url),
-            f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
-            get_message('currency'),
-        ),
-    ]
+    messages = ['{0}\n{1}'.format(
+        _get_link_without_quote(ads.title, ads.page_url),
+        ads.address,
+    )]
+    messages.append(markdown.bold('{0} {1}'.format(
+        f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
+        get_message('currency'),
+    )))
+    messages.append(markdown.text('{0}  {1} m²'.format(
+        ads.layout.replace('_', '+'),
+        ads.usable_area,
+    )))
+
     return markdown.text(*messages, sep='\n')
 
 
