@@ -180,7 +180,7 @@ def get_estate_description(ads: Estate) -> str:
         get_message('currency'),
     )))
     messages.append(markdown.text('{0}  {1} m²'.format(
-        ads.layout.replace('_', '+'),
+        _get_layout_human_value(ads.layout),
         ads.usable_area,
     )))
 
@@ -192,6 +192,21 @@ def get_price_human_value(threshold: int | None) -> str:
     if not threshold or threshold < 0:
         return 'not set'
     return f'{threshold:,}'.replace(',', ' ')  # noqa: C819
+
+
+def _get_layout_human_value(layout: str) -> str:
+    """Return human-friendly layout string."""
+    mapa = {
+        'one_kk': '1+kk',
+        'one_one': '1+1',
+        'two_kk': '2+kk',
+        'two_one': '2+1',
+        'three_kk': '3+kk',
+        'three_one': '3+1',
+        'four_kk': '4+kk',
+        'four_more': '4 & more',
+    }
+    return mapa.get(layout, 'unique layout')
 
 
 def _get_link_without_quote(title: str, url: str) -> str:

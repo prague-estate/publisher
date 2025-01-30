@@ -20,7 +20,7 @@ def fixture_estate_item():
         source_uid='287289',
         title='Apartment for rent, 1+1 - (Studio)_*[]`>#=|{}!\, 35m',
         address='U průhonu, Praha 7 - Holešovice',
-        layout='1+1',
+        layout='one_one',
         price=100500,
         usable_area=35,
         district_number=5,
