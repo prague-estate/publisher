@@ -29,7 +29,7 @@ _bot_messages: dict[str, str] = {
     'filters.description.district': 'Select interesting districts',
 
     'filters.button': 'Filters',
-    'filters.button.back': '⬅Back',
+    'filters.button.back': '⬅ Back',
 
     'filters.button.notifications.enabled': 'Notifications: ✅',
     'filters.button.notifications.disabled': 'Notifications: ⏸',
