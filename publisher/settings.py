@@ -35,6 +35,20 @@ class AppSettings(BaseSettings, extra='ignore'):
         'semrush': 14,
     }
 
+    ENABLED_LAYOUTS: list[str] = [
+        'one_kk',
+        'one_one',
+        'two_kk',
+        'two_one',
+        'three_kk',
+        'three_one',
+        'four_kk',
+        'four_more',
+        'others',
+    ]
+
+    ENABLED_DISTRICTS: list[int] = list(range(1, 22))
+
 
 app_settings = AppSettings(
     _env_file=os.path.join(APP_PATH, '.env'),  # type:ignore

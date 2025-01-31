@@ -120,6 +120,117 @@ async def filter_change_enabled(query: CallbackQuery) -> None:
     )
 
 
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:district:show')
+async def filter_change_district(query: CallbackQuery) -> None:
+    """Show change district."""
+    logger.info('filter_change_district')
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.district'),
+        reply_markup=presenter.get_filters_district_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:district:reset')
+@dp.callback_query(lambda callback: callback.data and callback.data.startswith('filters:district:switch:'))
+async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: WPS213
+    """Process change district."""
+    filters_config = storage.get_user_filters(query.from_user.id)
+    logger.info(f'filter_change_district_switch {query.data=} {filters_config.districts=}')
+    district_for_switch = query.data.split(':')[-1]  # type: ignore
+
+    if district_for_switch == 'reset':
+        logger.info('filter_change_district_switch: reset')
+        if filters_config.districts is not None:
+            storage.update_user_filter(user_id=query.from_user.id, districts=None)
+            await filter_change_district(query)
+        return None
+
+    if not district_for_switch.isdigit() or int(district_for_switch) not in app_settings.ENABLED_DISTRICTS:
+        logger.error('invalid district value got!')
+        return None
+
+    district_for_switch = int(district_for_switch)
+    if filters_config.districts is None:
+        logger.info('filter_change_district_switch: enable from not set')
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            districts={district_for_switch},
+        )
+        return await filter_change_district(query)
+
+    elif district_for_switch in filters_config.districts:
+        new_value = (filters_config.districts - {district_for_switch}) or None
+        logger.info(f'filter_change_district_switch: disable, {new_value=}')
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            districts=new_value,
+        )
+        return await filter_change_district(query)
+
+    new_value = filters_config.districts | {district_for_switch}
+    logger.info(f'filter_change_district_switch: enable, {new_value=}')
+    storage.update_user_filter(
+        user_id=query.from_user.id,
+        districts=new_value,
+    )
+    return await filter_change_district(query)
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:layout:show')
+async def filter_change_layout(query: CallbackQuery) -> None:
+    """Show change layout."""
+    logger.info('filter_change_layout')
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.layout'),
+        reply_markup=presenter.get_filters_layout_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:layout:reset')
+@dp.callback_query(lambda callback: callback.data and callback.data.startswith('filters:layout:switch:'))
+async def filter_change_layout_switch(query: CallbackQuery) -> None:  # noqa: WPS213
+    """Process change layout."""
+    filters_config = storage.get_user_filters(query.from_user.id)
+    logger.info(f'filter_change_layout_switch {query.data=} {filters_config.layouts=}')
+    layout_for_switch: str = query.data.split(':')[-1]  # type: ignore
+
+    if layout_for_switch == 'reset':
+        logger.info('filter_change_layout_switch: reset')
+        if filters_config.layouts is not None:
+            storage.update_user_filter(user_id=query.from_user.id, layouts=None)
+            await filter_change_layout(query)
+        return None
+
+    if layout_for_switch not in app_settings.ENABLED_LAYOUTS:
+        logger.error('invalid layout value got!')
+        return None
+
+    if filters_config.layouts is None:
+        logger.info('filter_change_layout_switch: enable from not set')
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            layouts={layout_for_switch},
+        )
+        return await filter_change_layout(query)
+
+    elif layout_for_switch in filters_config.layouts:
+        new_value = (filters_config.layouts - {layout_for_switch}) or None
+        logger.info(f'filter_change_layout_switch: disable, {new_value=}')
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            layouts=new_value,
+        )
+        return await filter_change_layout(query)
+
+    new_value = filters_config.layouts | {layout_for_switch}
+    logger.info(f'filter_change_layout_switch: enable, {new_value=}')
+    storage.update_user_filter(
+        user_id=query.from_user.id,
+        layouts=new_value,
+    )
+    return await filter_change_layout(query)
+
+
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:category:show')
 async def filter_change_category(query: CallbackQuery) -> None:
     """Show change category."""
