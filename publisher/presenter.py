@@ -259,18 +259,32 @@ def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
 
 def get_estate_description(ads: Estate) -> str:
     """Create a post for the bot."""
-    messages = ['{0}\n{1}'.format(
-        _get_link_without_quote(ads.title, ads.page_url),
-        ads.address,
-    )]
-    messages.append(markdown.bold('{0} {1}'.format(
-        f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
-        get_message('currency'),
-    )))
-    messages.append(markdown.text('{0}  {1} m²'.format(
-        _get_layout_human_value(ads.layout),
-        ads.usable_area,
-    )))
+    messages = [
+        f'New flat for {ads.category}:',
+    ]
+    messages.append(
+        _get_link_without_quote(ads.address, ads.page_url),
+    )
+    messages.append(
+        markdown.text('{0} {1}'.format(
+            f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
+            get_message('currency'),
+        )),
+    )
+    messages.append(
+        markdown.text('{0}  m²\n{1}'.format(
+            ads.usable_area,
+            _get_layout_human_value(ads.layout),
+        )),
+    )
+    messages.append(
+        markdown.text('by {0}'.format(
+            _get_link_without_quote(
+                _get_source_name_link(ads.source_name),
+                ads.page_url,
+            ),
+        )),
+    )
 
     return markdown.text(*messages, sep='\n')
 
@@ -295,6 +309,21 @@ def _get_layout_human_value(layout: str) -> str:
         'four_more': '4 & more',
     }
     return mapa.get(layout, 'unique layout')
+
+
+def _get_source_name_link(source_name: str) -> str:
+    """Add to source name domain."""
+    # todo test
+    mapa = {
+        'sreality': 'sreality.cz',
+        'bezrealitky': 'bezrealitky.cz',
+        'svoboda': 'svoboda-williams.com',
+        'expats': 'expats.cz',
+        'idnes': 'reality.idnes.cz',
+        'engelvoelkers': 'engelvoelkers.com',
+        'remax': 'remax-czech.cz',
+    }
+    return mapa.get(source_name, 'secret source')
 
 
 def _get_link_without_quote(title: str, url: str) -> str:
