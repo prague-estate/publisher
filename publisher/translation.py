@@ -4,6 +4,7 @@ _bot_messages: dict[str, str] = {
     'support': '🏠 Set your filters and receive notifications about flats for sale or for rent from all over Prague in one place. Here. ⬇️\n\nFor any questions and bugs write direct to @esemiko',
     'support.button': 'About',
     'currency': 'Kč',
+    'promo.button': 'Promo links [admin only]',
 
     'subscription.button.active': 'Subscription',
     'subscription.button.inactive': '🔴 Unsubscribe',

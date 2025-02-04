@@ -8,6 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
+from aiogram.utils.deep_linking import create_start_link
 
 from publisher import presenter, storage, translation
 from publisher.settings import app_settings, prices_settings
@@ -57,6 +58,31 @@ async def about(message: Message) -> None:
     await message.answer(
         text=translation.get_message('support'),
         reply_markup=presenter.get_main_menu(message.chat.id),
+    )
+
+
+@dp.message(F.text == translation.get_message('promo.button'))
+async def admin_promo_links(message: Message) -> None:
+    """Show available promo links."""
+    logger.info('Admin: promo')
+
+    if not app_settings.is_admin(message.chat.id):
+        logger.error('not admin request!')
+        return
+
+    response_message = '\n'.join([
+        '[{0}]({1}) for {2} days'.format(
+            code,
+            await create_start_link(bot_instance, code),
+            days,
+        )
+        for code, days in app_settings.PROMO_CODES.items()
+    ])
+
+    await message.answer(
+        text=response_message,
+        reply_markup=presenter.get_main_menu(message.chat.id),
+        parse_mode='Markdown',
     )
 
 

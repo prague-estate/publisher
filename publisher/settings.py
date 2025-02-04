@@ -28,11 +28,14 @@ class AppSettings(BaseSettings, extra='ignore'):
     API_URL: str = Field(default='http://127.0.0.1:9001')
     REDIS_DSN: str = Field('redis://localhost:6379/1')
 
-    TRIAL_PERIOD_DAYS: int = 7
+    ADMINS: str = ''
+
+    TRIAL_PERIOD_DAYS: int = 14
     PROMO_CODES: dict[str, int] = {
-        'trial': 7,
-        'vas3k': 14,
-        'semrush': 14,
+        'vas3k': 31,
+        'semrush': 31,
+        'github': 7,
+        'landing': 7,
     }
 
     ENABLED_LAYOUTS: list[str] = [
@@ -49,6 +52,10 @@ class AppSettings(BaseSettings, extra='ignore'):
 
     ENABLED_DISTRICTS: list[int] = list(range(1, 22))
 
+    def is_admin(self, user_id: int) -> bool:
+        """Check the user is admin or not."""
+        return bool(str(user_id) in self.ADMINS.split(';'))
+
 
 app_settings = AppSettings(
     _env_file=os.path.join(APP_PATH, '.env'),  # type:ignore
@@ -56,12 +63,12 @@ app_settings = AppSettings(
 
 prices_settings = {
     50: Price(cost=50, days=7, title='Week access'),
-    150: Price(cost=150, days=31, title='Month access 🌟'),
+    100: Price(cost=100, days=31, title='Month access 🌟'),
     750: Price(cost=750, days=365, title='Year access'),
 }
 if app_settings.DEBUG:
     prices_settings[1] = Price(
         cost=1,
-        days=1,
-        title='Test 1-day access',
+        days=7,
+        title='Test 7-day access',
     )
