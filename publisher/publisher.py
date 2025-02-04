@@ -5,7 +5,7 @@ from collections import Counter
 from typing import Any
 
 from aiogram import Bot, exceptions
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from publisher import api, presenter, storage
 from publisher.settings import app_settings
@@ -72,15 +72,12 @@ async def _post_ads_to_channel(ads: list[Estate], destination: int) -> int:
                 resize_keyboard=True,
             )
 
-            await bot_instance.send_message(
+            await bot_instance.send_photo(
                 chat_id=destination,
-                text=presenter.get_estate_description(ads_for_post),
+                caption=presenter.get_estate_description(ads_for_post),
+                photo=ads_for_post.image_url,
                 parse_mode='Markdown',
                 reply_markup=ads_link_btn,
-                disable_web_page_preview=False,
-                link_preview_options=LinkPreviewOptions(
-                    prefer_small_media=True,
-                ),
             )
             cnt += 1
             await asyncio.sleep(3)
@@ -107,13 +104,10 @@ async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]
                 await _send_notify_to_user(
                     bot_instance=bot_instance,
                     user_id=sub.user_id,
-                    text=presenter.get_estate_description(ads_for_post),
+                    photo=ads_for_post.image_url,
+                    caption=presenter.get_estate_description(ads_for_post),
                     parse_mode='Markdown',
                     reply_markup=ads_link_btn,
-                    disable_web_page_preview=False,
-                    link_preview_options=LinkPreviewOptions(
-                        prefer_large_media=True,
-                    ),
                 )
                 cnt += 1
     return cnt
@@ -121,7 +115,7 @@ async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]
 
 async def _send_notify_to_user(bot_instance: Bot, user_id: int, **kwargs: Any) -> None:
     try:
-        await bot_instance.send_message(
+        await bot_instance.send_photo(
             chat_id=user_id,
             **kwargs,
         )
