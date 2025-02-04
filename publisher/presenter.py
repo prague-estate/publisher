@@ -19,14 +19,23 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     sub = storage.get_subscription(user_id)
     is_active = bool(sub and sub.is_active)
 
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text=get_message('subscription.button.active' if is_active else 'subscription.button.inactive')),
-                KeyboardButton(text=get_message('filters.button')),
-            ],
-            [KeyboardButton(text=get_message('support.button'))],
+    keyboard = [
+        [
+            KeyboardButton(
+                text=get_message('subscription.button.active' if is_active else 'subscription.button.inactive'),
+            ),
+            KeyboardButton(text=get_message('filters.button')),
         ],
+        [KeyboardButton(text=get_message('support.button'))],
+    ]
+
+    if app_settings.is_admin(user_id):
+        keyboard.append(
+            [KeyboardButton(text=get_message('promo.button'))],
+        )
+
+    return ReplyKeyboardMarkup(
+        keyboard=keyboard,
         is_persistent=True,
         resize_keyboard=True,
     )
