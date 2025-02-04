@@ -261,30 +261,22 @@ def get_estate_description(ads: Estate) -> str:
     """Create a post for the bot."""
     messages = [
         f'New flat for {ads.category}:',
-    ]
-    messages.append(
         _get_link_without_quote(ads.address, ads.page_url),
-    )
-    messages.append(
-        markdown.text('{0} {1}'.format(
+        markdown.bold('{0} {1}'.format(
             f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
             get_message('currency'),
         )),
-    )
-    messages.append(
         markdown.text('{0}  m²\n{1}'.format(
             ads.usable_area,
             _get_layout_human_value(ads.layout),
         )),
-    )
-    messages.append(
         markdown.text('by {0}'.format(
             _get_link_without_quote(
                 _get_source_name_link(ads.source_name),
                 ads.page_url,
             ),
         )),
-    )
+    ]
 
     return markdown.text(*messages, sep='\n')
 
@@ -313,7 +305,6 @@ def _get_layout_human_value(layout: str) -> str:
 
 def _get_source_name_link(source_name: str) -> str:
     """Add to source name domain."""
-    # todo test
     mapa = {
         'sreality': 'sreality.cz',
         'bezrealitky': 'bezrealitky.cz',
