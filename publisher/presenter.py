@@ -20,6 +20,7 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     is_active = bool(sub and sub.is_active)
 
     keyboard = [
+        [KeyboardButton(text=get_message('estates.button'))],
         [
             KeyboardButton(
                 text=get_message('subscription.button.active' if is_active else 'subscription.button.inactive'),
@@ -31,7 +32,7 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
 
     if app_settings.is_admin(user_id):
         keyboard.append(
-            [KeyboardButton(text=get_message('promo.button'))],
+            [KeyboardButton(text=get_message('admin.button'))],
         )
 
     return ReplyKeyboardMarkup(
@@ -266,15 +267,28 @@ def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
     )
 
 
-def get_estate_description(ads: Estate) -> str:
+def get_estate_post_settings(ads_for_post: Estate) -> dict[str, Any]:
+    """Set up estate message settings."""
+    ads_link_btn = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text='Go to advertisement', url=ads_for_post.page_url)],
+        ],
+        resize_keyboard=True,
+    )
+    return {
+        'caption': _get_estate_description(ads_for_post),
+        'photo': ads_for_post.image_url,
+        'parse_mode': 'Markdown',
+        'reply_markup': ads_link_btn,
+    }
+
+
+def _get_estate_description(ads: Estate) -> str:
     """Create a post for the bot."""
     messages = [
         f'New flat for {ads.category}:',
         _get_link_without_quote(ads.address, ads.page_url),
-        markdown.bold('{0} {1}'.format(
-            f'{ads.price:,}'.replace(',', ' '),  # noqa: C819
-            get_message('currency'),
-        )),
+        markdown.bold(get_price_human_value(ads.price)),
         markdown.text('{0}  m²\n{1}'.format(
             ads.usable_area,
             _get_layout_human_value(ads.layout),
@@ -290,11 +304,11 @@ def get_estate_description(ads: Estate) -> str:
     return markdown.text(*messages, sep='\n')
 
 
-def get_price_human_value(threshold: int | None) -> str:
+def get_price_human_value(price: int | None) -> str:
     """Return human-friendly price string."""
-    if not threshold or threshold < 0:
+    if not price or price < 0:
         return 'not set'
-    return '{0:,} {1}'.format(threshold, get_message('currency')).replace(',', ' ')  # noqa: C819
+    return '{0:,} {1}'.format(price, get_message('currency')).replace(',', ' ')  # noqa: C819
 
 
 def _get_layout_human_value(layout: str) -> str:

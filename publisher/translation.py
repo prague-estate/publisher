@@ -4,7 +4,12 @@ _bot_messages: dict[str, str] = {
     'support': '🏠 Set your filters and receive notifications about flats for sale or for rent from all over Prague in one place. Here. ⬇️\n\nFor any questions and bugs write direct to @esemiko',
     'support.button': 'About',
     'currency': 'Kč',
-    'promo.button': 'Promo links [admin only]',
+
+    'admin.button': 'Info for admins',
+    'estates.button': 'Show flats',
+    'estates.not_found': 'No apartments found by your filters.\nTry making them wider?',
+    'estates.enable_filters_request': 'Enable notifications to receive new properties by your filters',
+    'estates.wait_fot_new': 'Enable notifications to receive new properties by your filters',
 
     'subscription.button.active': 'Subscription',
     'subscription.button.inactive': '🔴 Unsubscribe',
