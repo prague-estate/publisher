@@ -1,6 +1,7 @@
+import pytest
+
 from publisher.presenter import _get_source_name_link
 
-import pytest
 
 @pytest.mark.parametrize('payload, expected', [
     ('sreality', 'sreality.cz'),

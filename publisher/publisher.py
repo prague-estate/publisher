@@ -2,10 +2,8 @@
 import asyncio
 import logging
 from collections import Counter
-from typing import Any
 
 from aiogram import Bot, exceptions
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from publisher import api, presenter, storage
 from publisher.settings import app_settings
@@ -65,19 +63,10 @@ async def _post_ads_to_channel(ads: list[Estate], destination: int) -> int:
     cnt = 0
     async with Bot(app_settings.BOT_TOKEN) as bot_instance:
         for ads_for_post in ads:
-            ads_link_btn = InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [InlineKeyboardButton(text='Go to advertisement', url=ads_for_post.page_url)],
-                ],
-                resize_keyboard=True,
-            )
-
+            post_settings = presenter.get_estate_post_settings(ads_for_post)
             await bot_instance.send_photo(
                 chat_id=destination,
-                caption=presenter.get_estate_description(ads_for_post),
-                photo=ads_for_post.image_url,
-                parse_mode='Markdown',
-                reply_markup=ads_link_btn,
+                **post_settings,
             )
             cnt += 1
             await asyncio.sleep(3)
@@ -95,29 +84,20 @@ async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]
                     continue
 
                 logger.debug(f'send notification by subscription {sub=} {ads_for_post=} {user_filters=}')
-                ads_link_btn = InlineKeyboardMarkup(
-                    inline_keyboard=[
-                        [InlineKeyboardButton(text='Go to advertisement', url=ads_for_post.page_url)],
-                    ],
-                    resize_keyboard=True,
-                )
                 await _send_notify_to_user(
                     bot_instance=bot_instance,
                     user_id=sub.user_id,
-                    photo=ads_for_post.image_url,
-                    caption=presenter.get_estate_description(ads_for_post),
-                    parse_mode='Markdown',
-                    reply_markup=ads_link_btn,
+                    ads_for_post=ads_for_post,
                 )
                 cnt += 1
     return cnt
 
 
-async def _send_notify_to_user(bot_instance: Bot, user_id: int, **kwargs: Any) -> None:
+async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Estate) -> None:
     try:
         await bot_instance.send_photo(
             chat_id=user_id,
-            **kwargs,
+            **presenter.get_estate_post_settings(ads_for_post),
         )
     except exceptions.TelegramBadRequest as exc:
         if 'chat not found' in exc.message:

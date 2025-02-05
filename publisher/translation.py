@@ -1,10 +1,15 @@
 """Bot texts."""
 
 _bot_messages: dict[str, str] = {
-    'support': '🏠 Set your filters and receive notifications about flats for sale or for rent from all over Prague in one place. Here. ⬇️\n\nFor any questions and bugs write direct to @esemiko',
+    'support': '🏠 Set your filters and receive notifications about flats from all over Prague in one place.\n\nFor any questions and bugs write direct to @esemiko',
     'support.button': 'About',
     'currency': 'Kč',
-    'promo.button': 'Promo links [admin only]',
+
+    'admin.button': 'Info for admins',
+    'estates.button': '🔎 Show flats',
+    'estates.not_found': 'No apartments found by your filters.\nTry making them wider?',
+    'estates.enable_filters_request': 'Enable notifications to receive new properties by your filters',
+    'estates.wait_fot_new': 'New ads based on your criteria will appear in this channel as soon as they are found',
 
     'subscription.button.active': 'Subscription',
     'subscription.button.inactive': '🔴 Unsubscribe',
@@ -13,7 +18,7 @@ _bot_messages: dict[str, str] = {
     'subscription.expired': 'Your subscription will expire soon!\nYou can renew early below:',
     'subscription.downgraded': 'Your subscription was expired!\nChoose payment option below:',
 
-    'invoice.description': 'New estates notifications in your telegram. Fast. Frictionless.',
+    'invoice.description': 'New estates notifications in your telegram. Fast as a shark 🦈',
     'invoice.expired': 'Invoice expired!',
     'invoice.invalid': 'Invoice invalid!',
 
@@ -22,7 +27,7 @@ _bot_messages: dict[str, str] = {
     'trial.already_used': 'Trial access was already used!',
 
     'filters.description': 'Set up your filters for notifications.',
-    'filters.description.category': 'Set the category:',
+    'filters.description.category': 'Set the category',
     'filters.description.max_price': 'Set the highest price.\n\nCurrent threshold: {0}',
     'filters.description.max_price.input': 'Input the highest price in Kč',
     'filters.description.max_price.invalid': 'Input a value greater than zero or cancel by click "Back" button above.',

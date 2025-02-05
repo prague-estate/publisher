@@ -10,9 +10,9 @@ from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.utils.deep_linking import create_start_link
 
-from publisher import presenter, storage, translation
+from publisher import api, presenter, storage, translation
 from publisher.settings import app_settings, prices_settings
-from publisher.types import Subscription
+from publisher.types import Estate, Subscription
 
 logger = logging.getLogger(__file__)
 
@@ -51,6 +51,7 @@ async def start(message: Message, command: CommandObject) -> None:
 
 @dp.message(Command('start'))
 @dp.message(Command('support'))
+@dp.message(Command('paysupport'))
 @dp.message(F.text == translation.get_message('support.button'))
 async def about(message: Message) -> None:
     """About project."""
@@ -61,26 +62,74 @@ async def about(message: Message) -> None:
     )
 
 
-@dp.message(F.text == translation.get_message('promo.button'))
-async def admin_promo_links(message: Message) -> None:
-    """Show available promo links."""
-    logger.info('Admin: promo')
+@dp.message(F.text == translation.get_message('estates.button'))
+async def show_estates(message: Message) -> None:  # noqa: WPS217
+    """Show estates by user filters."""
+    logger.info('Estates')
 
-    if not app_settings.is_admin(message.chat.id):
-        logger.error('not admin request!')
+    subscription = storage.get_subscription(message.chat.id)
+    if not subscription or not subscription.is_active:
+        await user_subscription(message)
         return
 
-    response_message = '\n'.join([
+    filters_config = storage.get_user_filters(message.chat.id)
+    last_ads = await api.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
+
+    selected_ads: list[Estate] = []
+    for ads in last_ads:
+        if filters_config.is_compatible(ads):
+            selected_ads.append(ads)
+        if len(selected_ads) >= app_settings.SHOW_ADS_LIMIT:
+            break
+
+    if not selected_ads:
+        await message.answer(
+            text=translation.get_message('estates.not_found'),
+            reply_markup=presenter.get_main_menu(message.chat.id),
+        )
+        return
+
+    for ads_for_post in selected_ads[::-1]:
+        settings = presenter.get_estate_post_settings(ads_for_post)
+        await message.answer_photo(**settings)
+
+    if filters_config.enabled:
+        await message.answer(
+            text=translation.get_message('estates.wait_fot_new'),
+            reply_markup=presenter.get_main_menu(message.chat.id),
+        )
+
+    else:
+        await message.answer(
+            text=translation.get_message('estates.enable_filters_request'),
+        )
+        await user_filters(message)
+
+
+@dp.message(F.text == translation.get_message('admin.button'))
+async def admin_info(message: Message) -> None:
+    """Show info for admins."""
+    logger.info('Admin info')
+
+    if not app_settings.is_admin(message.chat.id):
+        logger.error('not by admin request!')
+        return
+
+    response_messages = [
+        'Available promo links',
+    ]
+
+    response_messages += [
         '[{0}]({1}) for {2} days'.format(
             code,
             await create_start_link(bot_instance, code),
             days,
         )
         for code, days in app_settings.PROMO_CODES.items()
-    ])
+    ]
 
     await message.answer(
-        text=response_message,
+        text='\n'.join(response_messages),
         reply_markup=presenter.get_main_menu(message.chat.id),
         parse_mode='Markdown',
     )
