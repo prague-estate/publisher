@@ -1,11 +1,11 @@
 """Bot texts."""
 
 _bot_messages: dict[str, str] = {
-    'start.set_filters': '🏠 Set your filters and receive notifications about flats from all over Prague in one place.',
+    'start.set_filters': '🏠 Set your filters and receive new rental or sale ads from all over Prague in one place.',
     'start.subscribe_first': '🏠 Welcome to PragueEstate bot!\n      Please, subscribe first! 🔴 ⬇️\n😎 First week is for free!',
 
-    'notify.disabled': 'TODO Notification disabled',
-    'notify.enabled': 'TODO Мы пришлём вам новые нотификации как только так сразу по вашим фильтрам:\n\n{0}',
+    'notify.disabled': "We'll stop bothering you with notices.\n We hope you've found your dream home! 🏠",
+    'notify.enabled': "We'll send you new ads as soon as they're posted!\nBased on your filters:\n\n{0}",
 
     'menu.subscription.inactive': '🔴 Subscribe',
     'menu.subscription.active': '🟢 Subscription',
@@ -17,11 +17,24 @@ _bot_messages: dict[str, str] = {
 
     'currency': 'Kč',
 
-    'about': 'TODO\nFor any questions and bugs write direct to @esemiko',
+    'about': '''
+Hello and welcome!
+Here is a bot that can check for you if there are new ads to find a flat in Prague. To rent or to buy.
 
-    'estates.example': 'Its a last estate by your criteria.',
+It's gonna look in here:
+sreality.cz
+bezrealitky.cz
+svoboda-williams.com
+expats.cz
+reality.idnes.cz
+engelvoelkers.com
+remax-czech.cz
 
-    'filters.set.enable_notifications': 'TODO Filters set! Enable notify for getting new flats',
+For any questions and bugs write direct to @esemiko''',
+
+    'estates.example': "⬆️ Here's the latest advert for your criteria.",
+
+    'filters.set.enable_notifications': 'Filters are set!\nEnable notifications to receive new ads.',
 
     'subscription.active': 'Your subscription active until {0}.\nChoose renew option below:',
     'subscription.inactive': 'You have no active subscription yet!\nChoose payment option below:',
@@ -35,15 +48,15 @@ _bot_messages: dict[str, str] = {
     'trial': 'Free trial access (1 week)',
     'trial.already_used': 'Trial access was already used!',
 
-    'filters.description': 'Set up your filters for notifications.',
-    'filters.description.category': 'Set the category',
+    'filters.description': '⬇️ Set up your filters for notifications.',
+    'filters.description.category': 'Set the category:',
     'filters.description.max_price': 'Set the highest price.\n\nCurrent threshold: {0}',
-    'filters.description.max_price.input': 'Input the highest price in Kč',
+    'filters.description.max_price.input': 'Input the highest price in Kč:',
     'filters.description.max_price.invalid': 'Input a value greater than zero or cancel by click "Back" button above.',
-    'filters.description.layout': 'Select interesting layouts',
-    'filters.description.district': 'Select interesting districts',
+    'filters.description.layout': 'Select required layouts:',
+    'filters.description.district': 'Select required districts:',
 
-    'filters.button.back': '⬅ Back',
+    'filters.button.back': '⬅️ Back',
     'filters.button.close': 'Close',
 
     'filters.button.category.enabled': 'Category ✅',
