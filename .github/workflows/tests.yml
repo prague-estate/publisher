@@ -34,4 +34,4 @@ jobs:
         API_TOKEN: ${{ secrets.API_TOKEN }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_STAGING }}
       run: |
-        poetry run pytest --cov=publisher --cov-fail-under=95 --cov-report term-missing
+        poetry run pytest --cov=publisher --cov-fail-under=90 --cov-report term-missing

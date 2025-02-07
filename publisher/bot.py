@@ -36,7 +36,7 @@ async def start(message: Message, command: CommandObject) -> None:
 
     if promo_days and not storage.has_used_trial(message.chat.id, promo):
         logger.info('apply promo code')
-        sub: Subscription = storage.renew_subscription(
+        sub = storage.renew_subscription(
             user_id=message.chat.id,
             days=promo_days,
         )
@@ -46,8 +46,8 @@ async def start(message: Message, command: CommandObject) -> None:
             text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
         )
 
-    sub = storage.get_subscription(message.chat.id)
-    if sub and sub.is_active:
+    actual_sub = storage.get_subscription(message.chat.id)
+    if actual_sub and actual_sub.is_active:
         await message.answer(  # type: ignore
             text=translation.get_message('start.set_filters'),
             reply_markup=presenter.get_main_menu(message.chat.id),
@@ -154,11 +154,11 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
     if state:
         await state.clear()
 
-    await query.message.delete()
+    await query.message.delete()  # type: ignore
 
     filters_config = storage.get_user_filters(query.from_user.id)
     if not filters_config.is_enabled:
-        await query.message.answer(
+        await query.message.answer(  # type: ignore
             text=translation.get_message('filters.set.enable_notifications'),
             reply_markup=presenter.get_main_menu(query.from_user.id),
         )
@@ -166,7 +166,7 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
 
     sub = storage.get_subscription(query.from_user.id)
     if sub and sub.is_active:
-        await _show_last_estate(filters_config, query.message)
+        await _show_last_estate(filters_config, query.message)  # type: ignore
 
     await query.message.answer(  # type: ignore
         text=translation.get_message('notify.enabled').format(
@@ -529,7 +529,6 @@ async def _show_last_estate(filters: UserFilters, message: Message) -> None:
             await message.answer(
                 text=translation.get_message('estates.example'),
             )
-
             return
 
 

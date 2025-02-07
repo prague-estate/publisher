@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 from publisher import bot
 
 
-async def test_buy_happy_path():
+async def test_filter_go_back_happy_path():
     query_mock = AsyncMock()
     query_mock.from_user.id = 1
     query_mock.data = 'filters:back'
