@@ -10,7 +10,6 @@ from publisher.storage import renew_subscription, update_user_filter
     'about',
     'user_subscription',
     'user_filters',
-    'show_estates',
 ])
 @pytest.mark.parametrize('subscription_active', [True, False])
 @pytest.mark.parametrize('filters_enabled', [True, False])

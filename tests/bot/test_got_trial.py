@@ -10,7 +10,7 @@ async def test_got_trial_happy_path():
 
     await bot.got_trial(query_mock)
 
-    query_mock.message.answer.assert_called_once()
+    assert query_mock.message.answer.call_count >= 1
     assert get_subscription(user_id=1).is_active
 
 

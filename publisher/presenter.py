@@ -9,7 +9,7 @@ from aiogram.utils.text_decorations import markdown_decoration
 from publisher import storage
 from publisher.settings import app_settings, prices_settings
 from publisher.translation import get_message
-from publisher.types import Estate
+from publisher.types import Estate, UserFilters
 
 MARKDOWN_RISK_CHARS = re.compile(r'[_*\[\]()`>#=|{}!\\]')  # noqa: P103
 
@@ -19,20 +19,31 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     sub = storage.get_subscription(user_id)
     is_active = bool(sub and sub.is_active)
 
-    keyboard = [
-        [KeyboardButton(text=get_message('estates.button'))],
-        [
-            KeyboardButton(
-                text=get_message('subscription.button.active' if is_active else 'subscription.button.inactive'),
-            ),
-            KeyboardButton(text=get_message('filters.button')),
-        ],
-        [KeyboardButton(text=get_message('support.button'))],
-    ]
+    user_filters = storage.get_user_filters(user_id)
+
+    if is_active:
+        keyboard = [
+            [
+                KeyboardButton(text=get_message('menu.filters')),
+                KeyboardButton(text=get_message('menu.notify.{0}'.format(
+                    'active' if user_filters.is_enabled else 'inactive',
+                ))),
+            ],
+            [
+                KeyboardButton(text=get_message('menu.subscription.active')),
+                KeyboardButton(text=get_message('menu.about')),
+            ],
+        ]
+
+    else:
+        keyboard = [[
+            KeyboardButton(text=get_message('menu.subscription.inactive')),
+            KeyboardButton(text=get_message('menu.about')),
+        ]]
 
     if app_settings.is_admin(user_id):
         keyboard.append(
-            [KeyboardButton(text=get_message('admin.button'))],
+            [KeyboardButton(text=get_message('menu.admin'))],
         )
 
     return ReplyKeyboardMarkup(
@@ -71,12 +82,6 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.notifications.{0}'.format(
-                'enabled' if filters_config.is_enabled else 'disabled',
-            )),
-            callback_data='filters:enabled:change',
-        ),
-        InlineKeyboardButton(
             text=get_message('filters.button.category.{0}'.format(
                 'enabled' if filters_config.category else 'disabled',
             )),
@@ -99,6 +104,11 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
                 'enabled' if filters_config.districts else 'disabled',
             )),
             callback_data='filters:district:show',
+        ),
+        InlineKeyboardButton(
+            # todo handler for this
+            text=get_message('filters.button.close'),
+            callback_data='filters:close',
         ),
     ]
 
@@ -196,7 +206,7 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
         )],
     ]
 
-    for district_names in _get_batches(app_settings.ENABLED_DISTRICTS, size=3):
+    for district_names in _get_batches(app_settings.ENABLED_DISTRICTS, size=2):
         kb.append([
             InlineKeyboardButton(
                 text=get_message('filters.button.district.number.{0}'.format(
@@ -265,6 +275,49 @@ def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
         ],
         resize_keyboard=True,
     )
+
+
+def get_filters_representation(user_filters: UserFilters) -> str:
+    """Return user filters representation."""
+    messages = []
+
+    if user_filters.category:
+        messages.append(f'Category: `{user_filters.category}`')
+    else:
+        messages.append('Category: `all`')
+
+    if user_filters.max_price:
+        messages.append('Price: `max {0}`'.format(
+            get_price_human_value(user_filters.max_price),
+        ))
+    else:
+        messages.append('Price: `not set`')
+
+    if user_filters.layouts:
+        layouts = [
+            '`{0}`'.format(
+                get_message('filters.button.layout.{0}.disabled'.format(layout_name)),
+            )
+            for layout_name in user_filters.layouts
+            if layout_name in app_settings.ENABLED_LAYOUTS
+        ]
+        messages.append('Layouts: {0}'.format(', '.join(layouts)))
+    else:
+        messages.append('Layouts: `all`')
+
+    if user_filters.districts:
+        districts = [
+            '`{0}`'.format(
+                get_message('filters.button.district.number.disabled').format(district_number),
+            )
+            for district_number in user_filters.districts
+            if district_number in app_settings.ENABLED_DISTRICTS
+        ]
+        messages.append('Districts: {0}'.format(', '.join(districts)))
+    else:
+        messages.append('Districts: `all`')
+
+    return '\n'.join(messages)
 
 
 def get_estate_post_settings(ads_for_post: Estate) -> dict[str, Any]:

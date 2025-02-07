@@ -36,8 +36,10 @@ per-file-ignores =
     # WPS202 Found too many module members
     # WPS347 Found vague import that may cause confusion: F
     # WPS432 Found magic number
+    # WPS462 Wrong multiline string usage
 
     publisher/bot.py: WPS202, WPS347,
     publisher/presenter.py: WPS202,
     publisher/settings.py: WPS115, WPS432,
     publisher/storage.py: WPS202,
+    publisher/translation.py: WPS462,
