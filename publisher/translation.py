@@ -2,7 +2,7 @@
 
 _bot_messages: dict[str, str] = {
     'start.set_filters': '🏠 Set your filters and receive notifications about flats from all over Prague in one place.',
-    'start.subscribe_first': 'TODO',
+    'start.subscribe_first': '🏠 Welcome to PragueEstate bot!\n      Please, subscribe first! 🔴 ⬇️\n😎 First week is for free!',
 
     'notify.disabled': 'TODO Notification disabled',
     'notify.enabled': 'TODO Мы пришлём вам новые нотификации как только так сразу по вашим фильтрам:\n\n{0}',
@@ -32,7 +32,7 @@ _bot_messages: dict[str, str] = {
     'invoice.expired': 'Invoice expired!',
     'invoice.invalid': 'Invoice invalid!',
     'payment.accepted': 'Your subscription has been extended until {0}!',
-    'trial': 'Free trial access',
+    'trial': 'Free trial access (1 week)',
     'trial.already_used': 'Trial access was already used!',
 
     'filters.description': 'Set up your filters for notifications.',
