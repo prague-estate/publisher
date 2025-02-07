@@ -24,7 +24,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
     PUBLISH_ADS_LIMIT: int = Field(default=1000)
     FETCH_ADS_LIMIT: int = Field(default=1000)
-    SHOW_ADS_LIMIT: int = Field(default=3)
+    SHOW_ADS_LIMIT: int = Field(default=1)
 
     API_TOKEN: str = Field(default='dev-token')
     API_URL: str = Field(default='http://127.0.0.1:9001')
@@ -52,7 +52,7 @@ class AppSettings(BaseSettings, extra='ignore'):
         'others',
     ]
 
-    ENABLED_DISTRICTS: list[int] = list(range(1, 22))
+    ENABLED_DISTRICTS: list[int] = list(range(1, 23))
 
     def is_admin(self, user_id: int) -> bool:
         """Check the user is admin or not."""

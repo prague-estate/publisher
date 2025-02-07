@@ -12,7 +12,7 @@ from aiogram.utils.deep_linking import create_start_link
 
 from publisher import api, presenter, storage, translation
 from publisher.settings import app_settings, prices_settings
-from publisher.types import Estate, Subscription
+from publisher.types import Subscription, UserFilters
 
 logger = logging.getLogger(__file__)
 
@@ -27,12 +27,11 @@ class Form(StatesGroup):
 
 
 @dp.message(CommandStart(deep_link=True))
+@dp.message(Command('start'))
 async def start(message: Message, command: CommandObject) -> None:
     """Apply promo trial if exists."""
     promo = str(command.args).strip().lower()
     logger.info(f'Start {promo=}')
-    await about(message)
-
     promo_days: int | None = app_settings.PROMO_CODES.get(promo)
 
     if promo_days and not storage.has_used_trial(message.chat.id, promo):
@@ -45,68 +44,35 @@ async def start(message: Message, command: CommandObject) -> None:
 
         await message.answer(  # type: ignore
             text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
-            reply_markup=presenter.get_main_menu(message.chat.id),
         )
 
-
-@dp.message(Command('start'))
-@dp.message(Command('support'))
-@dp.message(Command('paysupport'))
-@dp.message(F.text == translation.get_message('support.button'))
-async def about(message: Message) -> None:
-    """About project."""
-    logger.info('About')
-    await message.answer(
-        text=translation.get_message('support'),
-        reply_markup=presenter.get_main_menu(message.chat.id),
-    )
-
-
-@dp.message(F.text == translation.get_message('estates.button'))
-async def show_estates(message: Message) -> None:  # noqa: WPS217
-    """Show estates by user filters."""
-    logger.info('Estates')
-
-    subscription = storage.get_subscription(message.chat.id)
-    if not subscription or not subscription.is_active:
-        await user_subscription(message)
-        return
-
-    filters_config = storage.get_user_filters(message.chat.id)
-    last_ads = await api.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
-
-    selected_ads: list[Estate] = []
-    for ads in last_ads:
-        if filters_config.is_compatible(ads):
-            selected_ads.append(ads)
-        if len(selected_ads) >= app_settings.SHOW_ADS_LIMIT:
-            break
-
-    if not selected_ads:
-        await message.answer(
-            text=translation.get_message('estates.not_found'),
-            reply_markup=presenter.get_main_menu(message.chat.id),
-        )
-        return
-
-    for ads_for_post in selected_ads[::-1]:
-        settings = presenter.get_estate_post_settings(ads_for_post)
-        await message.answer_photo(**settings)
-
-    if filters_config.enabled:
-        await message.answer(
-            text=translation.get_message('estates.wait_fot_new'),
+    sub = storage.get_subscription(message.chat.id)
+    if sub and sub.is_active:
+        await message.answer(  # type: ignore
+            text=translation.get_message('start.set_filters'),
             reply_markup=presenter.get_main_menu(message.chat.id),
         )
 
     else:
-        await message.answer(
-            text=translation.get_message('estates.enable_filters_request'),
+        await message.answer(  # type: ignore
+            text=translation.get_message('start.subscribe_first'),
+            reply_markup=presenter.get_main_menu(message.chat.id),
         )
-        await user_filters(message)
 
 
-@dp.message(F.text == translation.get_message('admin.button'))
+@dp.message(Command('support'))
+@dp.message(Command('paysupport'))
+@dp.message(F.text == translation.get_message('menu.about'))
+async def about(message: Message) -> None:
+    """About project."""
+    logger.info('About')
+    await message.answer(
+        text=translation.get_message('about'),
+        reply_markup=presenter.get_main_menu(message.chat.id),
+    )
+
+
+@dp.message(F.text == translation.get_message('menu.admin'))
 async def admin_info(message: Message) -> None:
     """Show info for admins."""
     logger.info('Admin info')
@@ -136,8 +102,8 @@ async def admin_info(message: Message) -> None:
 
 
 @dp.message(F.text.in_({
-    translation.get_message('subscription.button.active'),
-    translation.get_message('subscription.button.inactive'),
+    translation.get_message('menu.subscription.inactive'),
+    translation.get_message('menu.subscription.active'),
 }))
 async def user_subscription(message: Message) -> None:
     """Subscription info."""
@@ -155,7 +121,7 @@ async def user_subscription(message: Message) -> None:
     )
 
 
-@dp.message(F.text == translation.get_message('filters.button'))
+@dp.message(F.text == translation.get_message('menu.filters'))
 async def user_filters(message: Message) -> None:
     """User filters setup."""
     logger.info('User filters')
@@ -168,7 +134,7 @@ async def user_filters(message: Message) -> None:
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:back')
 async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) -> None:
-    """Show filters."""
+    """Go back to filters."""
     logger.info('filter_go_back')
 
     if state:
@@ -180,18 +146,62 @@ async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) 
     )
 
 
-@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:enabled:change')
-async def filter_change_enabled(query: CallbackQuery) -> None:
-    """Change enabled status."""
-    logger.info('filter_change_notifications')
-    filters_config = storage.get_user_filters(query.from_user.id)
-    if filters_config.enabled:
-        storage.update_user_filter(query.from_user.id, enabled=False)
-    else:
-        storage.update_user_filter(query.from_user.id, enabled=True)
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:close')
+async def filter_close(query: CallbackQuery, state: FSMContext | None = None) -> None:
+    """Close filters."""
+    logger.info('filter_close')
 
-    await query.message.edit_reply_markup(  # type: ignore
-        reply_markup=presenter.get_filters_menu(query.from_user.id),
+    if state:
+        await state.clear()
+
+    await query.message.delete()
+
+    filters_config = storage.get_user_filters(query.from_user.id)
+    if not filters_config.is_enabled:
+        await query.message.answer(
+            text=translation.get_message('filters.set.enable_notifications'),
+            reply_markup=presenter.get_main_menu(query.from_user.id),
+        )
+        return
+
+    sub = storage.get_subscription(query.from_user.id)
+    if sub and sub.is_active:
+        await _show_last_estate(filters_config, query.message)
+
+    await query.message.answer(  # type: ignore
+        text=translation.get_message('notify.enabled').format(
+            presenter.get_filters_representation(filters_config),
+        ),
+        reply_markup=presenter.get_main_menu(query.from_user.id),
+        parse_mode='Markdown',
+    )
+
+
+@dp.message(F.text.in_({
+    translation.get_message('menu.notify.inactive'),
+    translation.get_message('menu.notify.active'),
+}))
+async def filter_change_notify_state(message: Message) -> None:
+    """Change enabled status."""
+    logger.info('filter_change_notify_state')
+    filters_config = storage.get_user_filters(message.chat.id)
+    if filters_config.is_enabled:
+        storage.update_user_filter(message.chat.id, enabled=False)
+        text = translation.get_message('notify.disabled')
+    else:
+        storage.update_user_filter(message.chat.id, enabled=True)
+        text = translation.get_message('notify.enabled').format(
+            presenter.get_filters_representation(filters_config),
+        )
+
+        sub = storage.get_subscription(message.chat.id)
+        if sub and sub.is_active:
+            await _show_last_estate(filters_config, message)
+
+    await message.answer(  # type: ignore
+        text=text,
+        reply_markup=presenter.get_main_menu(message.chat.id),
+        parse_mode='Markdown',
     )
 
 
@@ -505,6 +515,19 @@ async def payment_success(message: Message, bot: Bot) -> None:
         text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
         reply_markup=presenter.get_main_menu(message.chat.id),
     )
+
+
+async def _show_last_estate(filters: UserFilters, message: Message) -> None:
+    last_ads = await api.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
+    for ads in last_ads:
+        if filters.is_compatible(ads):
+            settings = presenter.get_estate_post_settings(ads)
+            await message.answer_photo(**settings)
+            await message.answer(
+                text=translation.get_message('estates.example'),
+            )
+
+            return
 
 
 if __name__ == '__main__':

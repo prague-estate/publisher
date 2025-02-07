@@ -1,18 +1,28 @@
 """Bot texts."""
 
 _bot_messages: dict[str, str] = {
-    'support': '🏠 Set your filters and receive notifications about flats from all over Prague in one place.\n\nFor any questions and bugs write direct to @esemiko',
-    'support.button': 'About',
+    'start.set_filters': '🏠 Set your filters and receive notifications about flats from all over Prague in one place.',
+    'start.subscribe_first': 'TODO',
+
+    'notify.disabled': 'TODO Notification disabled',
+    'notify.enabled': 'TODO Мы пришлём вам новые нотификации как только так сразу по вашим фильтрам:\n\n{0}',
+
+    'menu.subscription.inactive': '🔴 Subscribe',
+    'menu.subscription.active': '🟢 Subscription',
+    'menu.about': 'About',
+    'menu.filters': 'Filters',
+    'menu.admin': 'staff only',
+    'menu.notify.inactive': '🔴 Notify',
+    'menu.notify.active': '🟢 Notify',
+
     'currency': 'Kč',
 
-    'admin.button': 'Info for admins',
-    'estates.button': '🔎 Show flats',
-    'estates.not_found': 'No apartments found by your filters.\nTry making them wider?',
-    'estates.enable_filters_request': 'Enable notifications to receive new properties by your filters',
-    'estates.wait_fot_new': 'New ads based on your criteria will appear in this channel as soon as they are found',
+    'about': 'TODO\nFor any questions and bugs write direct to @esemiko',
 
-    'subscription.button.active': 'Subscription',
-    'subscription.button.inactive': '🔴 Unsubscribe',
+    'estates.example': 'Its a last estate by your criteria.',
+
+    'filters.set.enable_notifications': 'TODO Filters set! Enable notify for getting new flats',
+
     'subscription.active': 'Your subscription active until {0}.\nChoose renew option below:',
     'subscription.inactive': 'You have no active subscription yet!\nChoose payment option below:',
     'subscription.expired': 'Your subscription will expire soon!\nYou can renew early below:',
@@ -21,7 +31,6 @@ _bot_messages: dict[str, str] = {
     'invoice.description': 'New estates notifications in your telegram. Fast as a shark 🦈',
     'invoice.expired': 'Invoice expired!',
     'invoice.invalid': 'Invoice invalid!',
-
     'payment.accepted': 'Your subscription has been extended until {0}!',
     'trial': 'Free trial access',
     'trial.already_used': 'Trial access was already used!',
@@ -34,11 +43,8 @@ _bot_messages: dict[str, str] = {
     'filters.description.layout': 'Select interesting layouts',
     'filters.description.district': 'Select interesting districts',
 
-    'filters.button': 'Filters',
     'filters.button.back': '⬅ Back',
-
-    'filters.button.notifications.enabled': 'Notifications: ✅',
-    'filters.button.notifications.disabled': 'Notifications: ⏸',
+    'filters.button.close': 'Close',
 
     'filters.button.category.enabled': 'Category ✅',
     'filters.button.category.disabled': 'Category ⚙',
