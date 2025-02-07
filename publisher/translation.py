@@ -17,8 +17,7 @@ _bot_messages: dict[str, str] = {
 
     'currency': 'Kč',
 
-    'about': '''
-Hello and welcome!
+    'about': """Hello and welcome!
 Here is a bot that can check for you if there are new ads to find a flat in Prague. To rent or to buy.
 
 It's gonna look in here:
@@ -30,7 +29,7 @@ reality.idnes.cz
 engelvoelkers.com
 remax-czech.cz
 
-For any questions and bugs write direct to @esemiko''',
+For any questions and bugs write direct to @esemiko""",
 
     'estates.example': "⬆️ Here's the latest advert for your criteria.",
 

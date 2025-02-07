@@ -429,7 +429,7 @@ async def got_trial(query: CallbackQuery) -> None:
         text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
         reply_markup=presenter.get_main_menu(query.from_user.id),
     )
-    await uery.message.answer(  # type: ignore
+    await query.message.answer(  # type: ignore
         text=translation.get_message('start.set_filters'),
     )
 
