@@ -99,9 +99,13 @@ async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Es
             chat_id=user_id,
             **presenter.get_estate_post_settings(ads_for_post),
         )
-    except exceptions.TelegramBadRequest as exc:
+    except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError) as exc:
         if 'chat not found' in exc.message:
             logger.warning('disable user notification - chat not found')
+            storage.update_user_filter(user_id, enabled=False)
+            return
+        if 'bot was blocked by the user' in exc.message:
+            logger.warning('disable user notification - bot was blocked')
             storage.update_user_filter(user_id, enabled=False)
             return
 
