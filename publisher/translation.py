@@ -18,7 +18,7 @@ _bot_messages: dict[str, str] = {
     'currency': 'Kč',
 
     'about': """Hello and welcome!
-Here is a bot that can check for you if there are new ads to find a flat in Prague. To rent or to buy.
+Here is a bot that can check for you if there are new ads to find a flat in Prague. According to your preferences. To rent or to buy.
 
 It's gonna look in here:
 sreality.cz
@@ -28,6 +28,10 @@ expats.cz
 reality.idnes.cz
 engelvoelkers.com
 remax-czech.cz
+
+To keep an eye on all the ads, join these channels:
+@prague_estate_rent
+@prague_estate_sale
 
 For any questions and bugs write direct to @esemiko""",
 
