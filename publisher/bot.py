@@ -94,6 +94,11 @@ async def admin_info(message: Message) -> None:
         for code, days in app_settings.PROMO_CODES.items()
     ]
 
+    response_messages += [
+        '',
+        'Active subs: {0}'.format(len(storage.get_active_subscriptions())),
+    ]
+
     await message.answer(
         text='\n'.join(response_messages),
         reply_markup=presenter.get_main_menu(message.chat.id),

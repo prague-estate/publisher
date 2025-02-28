@@ -79,7 +79,7 @@ async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]
         for ads_for_post in ads:
             for sub in subs:
                 user_filters = storage.get_user_filters(sub.user_id)
-                logger.info(f'send notification test {sub=} {ads_for_post=} {user_filters=}')
+                logger.info(f'send notification check {sub=} {ads_for_post=} {user_filters=}')
                 if not user_filters.is_enabled or not user_filters.is_compatible(ads_for_post):
                     continue
 
