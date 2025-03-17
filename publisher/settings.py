@@ -52,7 +52,7 @@ class AppSettings(BaseSettings, extra='ignore'):
         'others',
     ]
 
-    ENABLED_DISTRICTS: list[int] = list(range(1, 23))
+    ENABLED_DISTRICTS: list[int] = list(range(1, 11))
 
     def is_admin(self, user_id: int) -> bool:
         """Check the user is admin or not."""
