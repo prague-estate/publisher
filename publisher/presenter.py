@@ -389,6 +389,7 @@ def _get_source_name_link(source_name: str) -> str:
         'idnes': 'reality.idnes.cz',
         'engelvoelkers': 'engelvoelkers.com',
         'remax': 'remax-czech.cz',
+        'ulovdomov': 'ulovdomov.cz',
     }
     return mapa.get(source_name, 'secret source')
 
