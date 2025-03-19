@@ -11,6 +11,7 @@ from publisher.presenter import _get_source_name_link
     ('idnes', 'reality.idnes.cz'),
     ('engelvoelkers', 'engelvoelkers.com'),
     ('remax', 'remax-czech.cz'),
+    ('ulovdomov', 'ulovdomov.cz'),
 ])
 def test_get_source_name_link(payload, expected):
     response = _get_source_name_link(payload)
