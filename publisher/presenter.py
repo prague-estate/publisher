@@ -342,9 +342,10 @@ def _get_estate_description(ads: Estate) -> str:
         f'New flat for {ads.category}:',
         _get_link_without_quote(ads.address, ads.page_url),
         markdown.bold(get_price_human_value(ads.price)),
-        markdown.text('{0}  m²\n{1}'.format(
+        markdown.text('{0}  m²\n{1}\nenergy rating: {2}'.format(
             ads.usable_area,
             _get_layout_human_value(ads.layout),
+            ads.energy_rating.upper(),
         )),
         markdown.text('by {0}'.format(
             _get_link_without_quote(
