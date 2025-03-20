@@ -24,6 +24,7 @@ class Form(StatesGroup):
     """Change filters states."""
 
     max_price = State()
+    min_price = State()
 
 
 @dp.message(CommandStart(deep_link=True))
@@ -350,6 +351,71 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
         logger.info(f'filter_change_category_switch: enable {category_for_enable}')
         storage.update_user_filter(user_id=query.from_user.id, category=category_for_enable)
         return await filter_change_category(query)
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:min_price:show')
+async def filter_change_min_price(query: CallbackQuery) -> None:
+    """Show change min price."""
+    logger.info('filter_change_min_price')
+
+    filters_config = storage.get_user_filters(query.from_user.id)
+
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.min_price').format(
+            presenter.get_price_human_value(filters_config.min_price),
+        ),
+        reply_markup=presenter.get_filters_min_price_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:min_price:reset')
+async def filter_change_min_price_reset(query: CallbackQuery) -> None:
+    """Reset min price filter to default value."""
+    logger.info(f'filter_change_min_price_reset {query.data=}')
+    filters_config = storage.get_user_filters(query.from_user.id)
+    if filters_config.min_price is not None:
+        storage.update_user_filter(user_id=query.from_user.id, min_price=None)
+        return await filter_change_min_price(query)
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:min_price:change')
+async def filter_change_min_price_change(query: CallbackQuery, state: FSMContext) -> None:
+    """Change min price filter value input."""
+    # todo test
+    logger.info('filter_change_min_price_change')
+    await state.set_state(Form.min_price)
+
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.min_price.input'),
+        reply_markup=presenter.get_filters_min_price_internal_menu(),
+    )
+
+
+@dp.message(Form.min_price)
+async def filter_change_min_price_change_process(message: Message, state: FSMContext) -> None:
+    """Change min price filter value processing."""
+    logger.info('filter_change_min_price_change_process')
+
+    try:
+        threshold = int(message.text.strip().lower())  # type: ignore
+    except (ValueError, AttributeError):
+        threshold = 0
+
+    if threshold <= 0:
+        await message.reply(translation.get_message('filters.description.min_price.invalid'))
+        return
+
+    storage.update_user_filter(user_id=message.chat.id, min_price=threshold)
+    await state.clear()
+
+    filters_config = storage.get_user_filters(message.chat.id)
+
+    await message.answer(  # type: ignore
+        text=translation.get_message('filters.description.min_price').format(
+            presenter.get_price_human_value(filters_config.min_price),
+        ),
+        reply_markup=presenter.get_filters_min_price_menu(message.chat.id),
+    )
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:max_price:show')

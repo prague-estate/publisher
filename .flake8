@@ -34,12 +34,16 @@ ignore =
 per-file-ignores =
     # WPS115 Found upper-case constant in a class
     # WPS202 Found too many module members
+    # WPS204 Found overused expression
+    # WPS212 Found too many return statements
+    # WPS213 Found too many expressions
     # WPS347 Found vague import that may cause confusion: F
     # WPS432 Found magic number
     # WPS462 Wrong multiline string usage
 
-    publisher/bot.py: WPS202, WPS347,
-    publisher/presenter.py: WPS202,
+    publisher/bot.py: WPS202, WPS347, WPS204
+    publisher/presenter.py: WPS202, WPS213
     publisher/settings.py: WPS115, WPS432,
     publisher/storage.py: WPS202,
     publisher/translation.py: WPS462,
+    publisher/types.py: WPS212
