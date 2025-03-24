@@ -34,8 +34,8 @@ class AppSettings(BaseSettings, extra='ignore'):
 
     TRIAL_PERIOD_DAYS: int = 7
     PROMO_CODES: dict[str, int] = {
-        'vas3k': 31,
-        'semrush': 31,
+        'vas3k': 14,
+        'semrush': 14,
         'github': 7,
         'landing': 7,
     }

@@ -53,3 +53,6 @@ Ru post for friends
 
 En post for offtop
 ---
+Hey everyone :smiley:
+It's time to promote my bot for tracking new apartments in Prague. Rent+sale, filters by districts, 8+ data sources :cool-doge:
+Anyway, welcome! Will be glad to any feedback :ждун:
