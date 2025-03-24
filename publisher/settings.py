@@ -24,7 +24,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
     PUBLISH_ADS_LIMIT: int = Field(default=100)
     FETCH_ADS_LIMIT: int = Field(default=500)
-    SHOW_ADS_LIMIT: int = Field(default=1)
+    SHOW_ADS_LIMIT: int = Field(default=3)
 
     API_TOKEN: str = Field(default='dev-token')
     API_URL: str = Field(default='http://127.0.0.1:9001')

@@ -593,6 +593,8 @@ async def payment_success(message: Message, bot: Bot) -> None:
 
 async def _show_last_estate(filters: UserFilters, message: Message) -> None:
     last_ads = await api.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
+
+    counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
             settings = presenter.get_estate_post_settings(ads)
@@ -600,6 +602,9 @@ async def _show_last_estate(filters: UserFilters, message: Message) -> None:
             await message.answer(
                 text=translation.get_message('estates.example'),
             )
+            counter += 1
+
+        if counter < app_settings.SHOW_ADS_LIMIT:
             return
 
 
