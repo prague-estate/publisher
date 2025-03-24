@@ -88,6 +88,12 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
             callback_data='filters:category:show',
         ),
         InlineKeyboardButton(
+            text=get_message('filters.button.min_price.{0}'.format(
+                'enabled' if filters_config.min_price else 'disabled',
+            )),
+            callback_data='filters:min_price:show',
+        ),
+        InlineKeyboardButton(
             text=get_message('filters.button.max_price.{0}'.format(
                 'enabled' if filters_config.max_price else 'disabled',
             )),
@@ -229,6 +235,54 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def get_filters_min_price_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return change min price dialog."""
+    filters_config = storage.get_user_filters(user_id)
+
+    kb = [
+        InlineKeyboardButton(
+            text=get_message('filters.button.min_price.all.{0}'.format(
+                'enabled' if filters_config.min_price is None else 'disabled',
+            )),
+            callback_data='filters:min_price:reset',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.min_price.custom.{0}'.format(
+                'enabled' if filters_config.min_price is not None else 'disabled',
+            )),
+            callback_data='filters:min_price:change',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.back'),
+            callback_data='filters:back',
+        ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
+def get_filters_min_price_internal_menu() -> InlineKeyboardMarkup:
+    """Return change min price internal menu."""
+    kb = [
+        InlineKeyboardButton(
+            text=get_message('filters.button.back'),
+            callback_data='filters:back',
+        ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
 def get_filters_max_price_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change max price dialog."""
     filters_config = storage.get_user_filters(user_id)
@@ -286,12 +340,19 @@ def get_filters_representation(user_filters: UserFilters) -> str:
     else:
         messages.append('Category: `all`')
 
+    if user_filters.min_price:
+        messages.append('Min price: `{0}`'.format(
+            get_price_human_value(user_filters.min_price),
+        ))
+    else:
+        messages.append('Min price: `not set`')
+
     if user_filters.max_price:
-        messages.append('Price: `max {0}`'.format(
+        messages.append('Max price: `{0}`'.format(
             get_price_human_value(user_filters.max_price),
         ))
     else:
-        messages.append('Price: `not set`')
+        messages.append('Max price: `not set`')
 
     if user_filters.layouts:
         layouts = [

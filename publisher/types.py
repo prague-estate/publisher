@@ -63,6 +63,7 @@ class UserFilters:
 
     user_id: int
     category: str | None = None
+    min_price: int | None = None
     max_price: int | None = None
     layouts: set[str] | None = None
     districts: set[int] | None = None
@@ -76,6 +77,9 @@ class UserFilters:
     def is_compatible(self, estate: Estate) -> bool:
         """Is estate item passed by filters."""
         if self.category and estate.category != self.category:
+            return False
+
+        if self.min_price and estate.price < self.min_price:  # noqa: WPS531
             return False
 
         if self.max_price and estate.price > self.max_price:  # noqa: WPS531
