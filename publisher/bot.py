@@ -344,12 +344,22 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
     if category_for_enable == 'reset':
         logger.info('filter_change_category_switch: reset')
         if filters_config.category is not None:
-            storage.update_user_filter(user_id=query.from_user.id, category=None)
+            storage.update_user_filter(
+                user_id=query.from_user.id,
+                category=None,
+                min_price=None,
+                max_price=None,
+            )
             return await filter_change_category(query)
 
     elif filters_config.category != category_for_enable:
         logger.info(f'filter_change_category_switch: enable {category_for_enable}')
-        storage.update_user_filter(user_id=query.from_user.id, category=category_for_enable)
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            category=category_for_enable,
+            min_price=None,
+            max_price=None,
+        )
         return await filter_change_category(query)
 
 
