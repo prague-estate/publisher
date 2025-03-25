@@ -163,6 +163,7 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
     await query.message.delete()  # type: ignore
 
     filters_config = storage.get_user_filters(query.from_user.id)
+    logger.info(f'filter_close {filters_config=}')
     if not filters_config.is_enabled:
         await query.message.answer(  # type: ignore
             text=translation.get_message('filters.set.enable_notifications'),
@@ -171,6 +172,7 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
         return
 
     sub = storage.get_subscription(query.from_user.id)
+    logger.info(f'filter_close {sub=}')
     if sub and sub.is_active:
         await _show_last_estate(filters_config, query.message)  # type: ignore
 
@@ -603,6 +605,8 @@ async def payment_success(message: Message, bot: Bot) -> None:
 
 async def _show_last_estate(filters: UserFilters, message: Message) -> None:
     last_ads = await api.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
+    logger.info('_show_last_estate: got {0}'.format(len(last_ads)))
+    counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
             settings = presenter.get_estate_post_settings(ads)
@@ -610,6 +614,9 @@ async def _show_last_estate(filters: UserFilters, message: Message) -> None:
             await message.answer(
                 text=translation.get_message('estates.example'),
             )
+            counter += 1
+
+        if counter >= app_settings.SHOW_ADS_LIMIT:
             return
 
 
