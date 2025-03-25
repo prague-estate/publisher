@@ -346,12 +346,22 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
     if category_for_enable == 'reset':
         logger.info('filter_change_category_switch: reset')
         if filters_config.category is not None:
-            storage.update_user_filter(user_id=query.from_user.id, category=None)
+            storage.update_user_filter(
+                user_id=query.from_user.id,
+                category=None,
+                min_price=None,
+                max_price=None,
+            )
             return await filter_change_category(query)
 
     elif filters_config.category != category_for_enable:
         logger.info(f'filter_change_category_switch: enable {category_for_enable}')
-        storage.update_user_filter(user_id=query.from_user.id, category=category_for_enable)
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            category=category_for_enable,
+            min_price=None,
+            max_price=None,
+        )
         return await filter_change_category(query)
 
 
@@ -600,10 +610,14 @@ async def _show_last_estate(filters: UserFilters, message: Message) -> None:
     for ads in last_ads:
         if filters.is_compatible(ads):
             settings = presenter.get_estate_post_settings(ads)
-            await message.answer_photo(**settings)
-            await message.answer(
-                text=translation.get_message('estates.example'),
-            )
+            logger.info(f'publish {settings=}')
+            try:
+                await message.answer_photo(**settings)
+                await message.answer(
+                    text=translation.get_message('estates.example'),
+                )
+            except Exception as exc:
+                logger.error(f'Exception {exc=}')
             counter += 1
 
         if counter >= app_settings.SHOW_ADS_LIMIT:

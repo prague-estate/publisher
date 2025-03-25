@@ -27,3 +27,5 @@ async def test_filter_change_category_switch_happy_path(payload, current_state, 
     await bot.filter_change_category_switch(query_mock)
 
     assert get_user_filters(user_id=query_mock.from_user.id).category == expected_state
+    assert get_user_filters(user_id=query_mock.from_user.id).min_price is None
+    assert get_user_filters(user_id=query_mock.from_user.id).max_price is None
