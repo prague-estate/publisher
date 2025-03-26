@@ -30,24 +30,30 @@ async def run() -> Counter:
     async with Bot(app_settings.BOT_TOKEN) as bot_instance:
         for sub_expire_soon in expired_soon:
             counters['expired soon'] += 1
-            logger.info(f'expired soon {sub_expire_soon=}')
-            await _send_notify(
-                bot_instance=bot_instance,
-                chat_id=sub_expire_soon.user_id,
-                text=translation.get_message('subscription.expired'),
-                reply_markup=presenter.get_prices_menu(sub_expire_soon.user_id),
-            )
+
+            user_filters = storage.get_user_filters(sub_expire_soon.user_id)
+            if user_filters.is_enabled:
+                logger.info(f'expired soon {sub_expire_soon=}')
+                await _send_notify(
+                    bot_instance=bot_instance,
+                    chat_id=sub_expire_soon.user_id,
+                    text=translation.get_message('subscription.expired'),
+                    reply_markup=presenter.get_prices_menu(sub_expire_soon.user_id),
+                )
 
         for sub_for_stop in subs_for_downgrade:
             storage.stop_subscription(sub_for_stop.user_id)
             counters['downgraded'] += 1
-            logger.info(f'downgrade {sub_for_stop=}')
-            await _send_notify(
-                bot_instance=bot_instance,
-                chat_id=sub_for_stop.user_id,
-                text=translation.get_message('subscription.downgraded'),
-                reply_markup=presenter.get_main_menu(sub_for_stop.user_id),
-            )
+
+            user_filters = storage.get_user_filters(sub_for_stop.user_id)
+            if user_filters.is_enabled:
+                logger.info(f'downgrade {sub_for_stop=}')
+                await _send_notify(
+                    bot_instance=bot_instance,
+                    chat_id=sub_for_stop.user_id,
+                    text=translation.get_message('subscription.downgraded'),
+                    reply_markup=presenter.get_main_menu(sub_for_stop.user_id),
+                )
 
     logger.info(f'downgrade end {counters=}')
     return counters

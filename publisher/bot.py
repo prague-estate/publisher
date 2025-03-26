@@ -613,15 +613,17 @@ async def _show_last_estate(filters: UserFilters, message: Message) -> None:
             logger.info(f'publish {settings=}')
             try:
                 await message.answer_photo(**settings)
-                await message.answer(
-                    text=translation.get_message('estates.example'),
-                )
             except Exception as exc:
                 logger.error(f'Exception {exc=}')
             counter += 1
 
         if counter >= app_settings.SHOW_ADS_LIMIT:
             return
+
+    if counter > 0:
+        await message.answer(
+            text=translation.get_message('estates.example'),
+        )
 
 
 if __name__ == '__main__':
