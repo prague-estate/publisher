@@ -1,4 +1,4 @@
-# Prague Estate [publisher]
+# Prague Estate publisher
 
 [![tests](https://github.com/prague-estate/publisher/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/tests.yml)
 [![linters](https://github.com/prague-estate/publisher/actions/workflows/linters.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/linters.yml)
