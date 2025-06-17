@@ -30,6 +30,7 @@ engelvoelkers.com
 remax-czech.cz
 ulovdomov.cz
 idealninajemce.cz
+ceskereality.cz
 
 To keep an eye on all the ads, join these channels:
 @prague_estate_rent

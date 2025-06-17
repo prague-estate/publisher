@@ -454,6 +454,7 @@ def _get_source_name_link(source_name: str) -> str:
         'remax': 'remax-czech.cz',
         'ulovdomov': 'ulovdomov.cz',
         'idealninajemce': 'idealninajemce.cz',
+        'ceskereality': 'ceskereality.cz',
     }
     return mapa.get(source_name, 'secret source')
 
