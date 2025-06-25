@@ -13,6 +13,6 @@ from publisher.presenter import get_price_human_value
     (13450900, '13 450 900 Kč'),
 ])
 def test_get_price_human_value(payload, expected):
-    response = get_price_human_value(payload)
+    response = get_price_human_value(payload, 'Kč')
 
     assert response == expected

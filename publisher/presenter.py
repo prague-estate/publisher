@@ -404,6 +404,10 @@ def _get_estate_description(ads: Estate) -> str:
         f'New flat for {ads.category}:',
         _get_link_without_quote(ads.address, ads.page_url),
         markdown.bold(get_price_human_value(ads.price)),
+        markdown.text(get_price_human_value(
+            ads.price // ads.usable_area,
+            '{0}/m²'.format(get_message('currency')),
+        )),
         markdown.text('{0}  m²\n{1}\nenergy rating: {2}'.format(
             ads.usable_area,
             _get_layout_human_value(ads.layout),
@@ -420,11 +424,18 @@ def _get_estate_description(ads: Estate) -> str:
     return markdown.text(*messages, sep='\n')
 
 
-def get_price_human_value(price: int | None) -> str:
+def get_price_human_value(
+    price: int | None,
+    currency: str | None = None,
+) -> str:
     """Return human-friendly price string."""
     if not price or price < 0:
         return 'not set'
-    return '{0:,} {1}'.format(price, get_message('currency')).replace(',', ' ')  # noqa: C819
+
+    if currency is None:
+        return '{0:,} {1}'.format(price, get_message('currency')).replace(',', ' ')  # noqa: C819
+
+    return '{0:,} {1}'.format(price, currency).replace(',', ' ')  # noqa: C819
 
 
 def _get_layout_human_value(layout: str) -> str:
