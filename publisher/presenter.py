@@ -424,16 +424,12 @@ def _get_estate_description(ads: Estate) -> str:
     return markdown.text(*messages, sep='\n')
 
 
-def get_price_human_value(
-    price: int | None,
-    currency: str | None = None,
-) -> str:
+def get_price_human_value(price: int | None, currency: str | None = None) -> str:
     """Return human-friendly price string."""
     if not price or price < 0:
         return 'not set'
-
     if currency is None:
-        return '{0:,} {1}'.format(price, get_message('currency')).replace(',', ' ')  # noqa: C819
+        currency = get_message('currency')
 
     return '{0:,} {1}'.format(price, currency).replace(',', ' ')  # noqa: C819
 
