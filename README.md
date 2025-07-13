@@ -3,7 +3,6 @@
 [![tests](https://github.com/prague-estate/publisher/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/tests.yml)
 [![linters](https://github.com/prague-estate/publisher/actions/workflows/linters.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/linters.yml)
 
-
 ### Pre-requirements
 - [Python 3.12+](https://www.python.org/downloads/)
 - [Redis](https://redis.io/docs/getting-started/installation/)
