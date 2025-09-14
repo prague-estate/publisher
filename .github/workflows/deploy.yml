@@ -16,7 +16,7 @@ jobs:
           python-version: '3.12'
 
       - name: deploy
-        uses: cross-the-world/ssh-scp-ssh-pipelines@v1.1.4
+        uses: antonov1991/ssh-scp-ssh-pipelines@v1.1.4
         env:
           TARGET_DIR: /home/${{ secrets.USERNAME_PRODUCTION }}
           VENV_BIN: venv/bin
@@ -40,7 +40,7 @@ jobs:
 
           last_ssh: |-
             source $VENV_BIN/activate 
-            pip install --no-cache-dir poetry pip setuptools --upgrade
+            pip install --no-cache-dir poetry pip setuptools packaging --upgrade
             poetry install --only main --no-root
             pip cache purge 
             
