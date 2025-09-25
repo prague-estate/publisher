@@ -14,6 +14,7 @@ _bot_messages: dict[str, str] = {
     'menu.admin': 'staff only',
     'menu.notify.inactive': '🔴 Notify',
     'menu.notify.active': '🟢 Notify',
+    'menu.placeholder': 'Menu',
 
     'currency': 'Kč',
 
