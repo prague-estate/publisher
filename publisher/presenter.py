@@ -48,10 +48,8 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
 
     return ReplyKeyboardMarkup(
         keyboard=keyboard,
-        is_persistent=True,
+        is_persistent=False,
         resize_keyboard=True,
-        one_time_keyboard=True,
-        input_field_placeholder=get_message('menu.placeholder'),
     )
 
 
