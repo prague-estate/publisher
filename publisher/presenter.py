@@ -48,7 +48,7 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
 
     return ReplyKeyboardMarkup(
         keyboard=keyboard,
-        is_persistent=True,
+        is_persistent=False,
         resize_keyboard=True,
     )
 
