@@ -25,24 +25,24 @@ async def publisher(limit: int = 1) -> Counter:
     logger.info('got {0} active subs'.format(len(active_subs)))
 
     for category, dst_channel in dst_channels.items():
-        sale_ads = await api.fetch_estates(category=category, limit=limit)
-        logger.info('got {0} {1} ads'.format(len(sale_ads), category))
-        counters[f'{category} total'] = len(sale_ads)
+        ads_for_publish = await api.fetch_estates(category=category, limit=limit)
+        logger.info('got {0} {1} ads'.format(len(ads_for_publish), category))
+        counters[f'{category} total'] = len(ads_for_publish)
 
-        new_sale_ads = _apply_new_only_filter(sale_ads)[::-1]
-        logger.info('got {0} new {1} ads'.format(len(new_sale_ads), category))
+        new_ads = _apply_new_only_filter(ads_for_publish)[::-1]
+        logger.info('got {0} new {1} ads'.format(len(new_ads), category))
 
-        storage.mark_as_posted(ads_ids=[ads_for_post.id for ads_for_post in new_sale_ads])
+        storage.mark_as_posted(ads_ids=[ads_for_post.id for ads_for_post in new_ads])
 
-        if new_sale_ads and active_subs:
+        if new_ads and active_subs:
             counters[f'{category} subs notifications'] += await _post_ads_to_subscriptions(
-                ads=new_sale_ads,
+                ads=new_ads,
                 subs=active_subs,
             )
 
-        if new_sale_ads:
+        if new_ads:
             counters[f'{category} channel notifications'] += await _post_ads_to_channel(
-                ads=new_sale_ads,
+                ads=new_ads,
                 destination=dst_channel,
             )
 
