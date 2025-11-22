@@ -30,6 +30,26 @@ def fixture_estate_item():
         updated_at='Tue, 05 Nov 2024 07:57:50 GMT',
     )
 
+@pytest.fixture()
+def fixture_estate_item_house():
+    yield Estate(
+        id=1,
+        category='sale',
+        property_type='house',
+        source_name='expats',
+        source_uid='287289',
+        title='Apartment for rent, 1+1 - (Studio)_*[]`>#=|{}!\, 35m',
+        address='U průhonu, Praha 7 - Holešovice',
+        layout='others',
+        price=8999000,
+        usable_area=35,
+        district_number=5,
+        energy_rating='G',
+        image_url='https://www.expats.cz/go/image/re-small/3561064.webp?t=1738306047',
+        page_url='https://www.expats.cz/praguerealestate/for-rent/apartments/287289-1-plus-1-studio-in-prague',
+        updated_at='Tue, 05 Nov 2024 07:57:50 GMT',
+    )
+
 
 @pytest.fixture()
 def  fixture_one_more_estate_item():

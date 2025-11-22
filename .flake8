@@ -42,7 +42,7 @@ per-file-ignores =
     # WPS462 Wrong multiline string usage
 
     publisher/bot.py: WPS202, WPS347, WPS204
-    publisher/presenter.py: WPS202, WPS213
+    publisher/presenter.py: WPS202, WPS204, WPS213
     publisher/settings.py: WPS115, WPS432,
     publisher/storage.py: WPS202,
     publisher/translation.py: WPS462,

@@ -88,6 +88,12 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
             callback_data='filters:category:show',
         ),
         InlineKeyboardButton(
+            text=get_message('filters.button.property_type.{0}'.format(
+                'enabled' if filters_config.property_type else 'disabled',
+            )),
+            callback_data='filters:property_type:show',
+        ),
+        InlineKeyboardButton(
             text=get_message('filters.button.min_price.{0}'.format(
                 'enabled' if filters_config.min_price else 'disabled',
             )),
@@ -112,7 +118,6 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
             callback_data='filters:district:show',
         ),
         InlineKeyboardButton(
-            # todo handler for this
             text=get_message('filters.button.close'),
             callback_data='filters:close',
         ),
@@ -149,6 +154,43 @@ def get_filters_category_menu(user_id: int) -> InlineKeyboardMarkup:
                 'enabled' if filters_config.category == 'sale' else 'disabled',
             )),
             callback_data='filters:category:sale',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.back'),
+            callback_data='filters:back',
+        ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
+def get_filters_property_type_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return change property_type dialog."""
+    filters_config = storage.get_user_filters(user_id)
+
+    kb = [
+        InlineKeyboardButton(
+            text=get_message('filters.button.property_type.all.{0}'.format(
+                'enabled' if filters_config.property_type is None else 'disabled',
+            )),
+            callback_data='filters:property_type:reset',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.property_type.flat.{0}'.format(
+                'enabled' if filters_config.property_type == 'flat' else 'disabled',
+            )),
+            callback_data='filters:property_type:flat',
+        ),
+        InlineKeyboardButton(
+            text=get_message('filters.button.property_type.house.{0}'.format(
+                'enabled' if filters_config.property_type == 'house' else 'disabled',
+            )),
+            callback_data='filters:property_type:house',
         ),
         InlineKeyboardButton(
             text=get_message('filters.button.back'),
@@ -340,6 +382,11 @@ def get_filters_representation(user_filters: UserFilters) -> str:
     else:
         messages.append('Category: `all`')
 
+    if user_filters.property_type:
+        messages.append(f'Type: `{user_filters.property_type}`')
+    else:
+        messages.append('Type: `all`')
+
     if user_filters.min_price:
         messages.append('Min price: `{0}`'.format(
             get_price_human_value(user_filters.min_price),
@@ -401,7 +448,7 @@ def _get_estate_description(ads: Estate) -> str:
     """Create a post for the bot."""
     energy_rate = ads.energy_rating.upper() if len(ads.energy_rating) == 1 else 'unknown'
     messages = [
-        f'New flat for {ads.category}:',
+        f'New {ads.property_type} for {ads.category}:',
         _get_link_without_quote(ads.address, ads.page_url),
         markdown.bold(get_price_human_value(ads.price)),
         markdown.text(get_price_human_value(
@@ -463,7 +510,7 @@ def _get_source_name_link(source_name: str) -> str:
         'idealninajemce': 'idealninajemce.cz',
         'ceskereality': 'ceskereality.cz',
     }
-    return mapa.get(source_name, 'secret source')
+    return mapa.get(source_name, 'other')
 
 
 def _get_link_without_quote(title: str, url: str) -> str:

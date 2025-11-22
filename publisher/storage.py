@@ -65,6 +65,9 @@ def get_user_filters(user_id: int) -> UserFilters:
     if saved_data.get('category') is not None:
         default_data['category'] = saved_data.get('category')
 
+    if saved_data.get('property_type') is not None:
+        default_data['property_type'] = saved_data.get('property_type')
+
     if saved_data.get('enabled') is not None:
         default_data['enabled'] = bool(int(saved_data.get('enabled')))  # type: ignore
 

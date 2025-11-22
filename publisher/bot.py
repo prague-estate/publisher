@@ -365,6 +365,45 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
         return await filter_change_category(query)
 
 
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:show')
+async def filter_change_property_type(query: CallbackQuery) -> None:
+    """Show change property_type."""
+    logger.info('filter_change_property_type')
+    await query.message.edit_text(  # type: ignore
+        text=translation.get_message('filters.description.property_type'),
+        reply_markup=presenter.get_filters_property_type_menu(query.from_user.id),
+    )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:flat')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:house')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:reset')
+async def filter_change_property_type_switch(query: CallbackQuery) -> None:
+    """Process change property_type."""
+    logger.info(f'filter_change_property_type_switch {query.data=}')
+    value_for_enable: str = query.data.split(':')[-1]  # type: ignore
+    filters_config = storage.get_user_filters(query.from_user.id)
+
+    if value_for_enable == 'reset':
+        logger.info('filter_change_property_type_switch: reset')
+        if filters_config.property_type is not None:
+            storage.update_user_filter(
+                user_id=query.from_user.id,
+                property_type=None,
+                layouts=None,
+            )
+            return await filter_change_property_type(query)
+
+    elif filters_config.property_type != value_for_enable:
+        logger.info(f'filter_change_property_type_switch: enable {value_for_enable}')
+        storage.update_user_filter(
+            user_id=query.from_user.id,
+            property_type=value_for_enable,
+            layouts=None,
+        )
+        return await filter_change_property_type(query)
+
+
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:min_price:show')
 async def filter_change_min_price(query: CallbackQuery) -> None:
     """Show change min price."""
