@@ -33,3 +33,15 @@ async def test_post_ads_to_subscriptions_happy_path(fixture_estate_item):
     )
 
     assert res == 1
+
+
+async def test_post_ads_to_subscriptions_house(fixture_estate_item_house, fixture_estate_item):
+    sub = renew_subscription(user_id=1, days=1)
+    update_user_filter(user_id=1, property_type='house')
+
+    res = await _post_ads_to_subscriptions(
+        [fixture_estate_item_house, fixture_estate_item],
+        [sub],
+    )
+
+    assert res == 1

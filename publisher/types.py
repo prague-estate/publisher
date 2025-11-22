@@ -22,6 +22,7 @@ class Estate:
     image_url: str
     page_url: str
     updated_at: str
+    property_type: str = 'flat'
 
 
 @dataclass
@@ -63,6 +64,7 @@ class UserFilters:
 
     user_id: int
     category: str | None = None
+    property_type: str | None = None
     min_price: int | None = None
     max_price: int | None = None
     layouts: set[str] | None = None
@@ -77,6 +79,9 @@ class UserFilters:
     def is_compatible(self, estate: Estate) -> bool:
         """Is estate item passed by filters."""
         if self.category and estate.category != self.category:
+            return False
+
+        if self.property_type and estate.property_type != self.property_type:
             return False
 
         if self.min_price and estate.price < self.min_price:  # noqa: WPS531
