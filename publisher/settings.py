@@ -64,10 +64,14 @@ app_settings = AppSettings(
     _env_file=os.path.join(APP_PATH, '.env'),  # type:ignore
 )
 
+_raw_prices = [
+    Price(cost=99, days=7, title='Week access'),
+    Price(cost=299, days=31, title='Month access 🌟'),
+    Price(cost=1499, days=365, title='Year access'),
+]
 prices_settings = {
-    50: Price(cost=99, days=7, title='Week access'),
-    100: Price(cost=299, days=31, title='Month access 🌟'),
-    750: Price(cost=1499, days=365, title='Year access'),
+    price.cost: price
+    for price in _raw_prices
 }
 if app_settings.DEBUG:
     prices_settings[1] = Price(
