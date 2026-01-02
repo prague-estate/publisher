@@ -7,6 +7,8 @@ _bot_messages: dict[str, str] = {
     'notify.disabled': "We'll stop bothering you with notices.\nWe hope you've found your dream home! 🏠",
     'notify.enabled': "We'll send you new ads as soon as they're posted!\nBased on your filters:\n\n{0}",
 
+    'settings.updated': 'New settings applied',
+
     'menu.subscription.inactive': '🔴 Subscribe',
     'menu.subscription.active': '🟢 Subscription',
     'menu.about': 'ℹ️ About',
@@ -15,9 +17,8 @@ _bot_messages: dict[str, str] = {
     'menu.admin': 'staff only',
     'menu.notify.inactive': '🔴 Notifications',
     'menu.notify.active': '🟢 Notifications',
-    'menu.lang.en': '🇬🇧 English',
-    'menu.lang.ru': '🇷🇺 Русский',
-    'menu.lang.cz': '🇨🇿 Čeština',
+    'menu.lang.en': '🇬🇧 Language',
+    'menu.lang.ru': '🇷🇺 Язык',
 
     'currency': 'Kč',
 

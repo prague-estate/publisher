@@ -77,6 +77,7 @@ def get_settings_menu(user_id: int) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [InlineKeyboardButton(text=notify_button, callback_data='settings:toggle:enabled')],
             [InlineKeyboardButton(text=lang_button, callback_data='settings:toggle:lang')],
+            [InlineKeyboardButton(text=get_message('filters.button.close'), callback_data='settings:close')],
         ],
         resize_keyboard=True,
     )

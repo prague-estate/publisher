@@ -241,7 +241,21 @@ async def user_settings_toggle_lang(query: CallbackQuery) -> None:
     await query.message.edit_reply_markup(  # type: ignore
         reply_markup=presenter.get_settings_menu(query.from_user.id),
     )
-    # todo change main menu for lang await query.message.answer_()
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'settings:close')
+async def user_settings_close(query: CallbackQuery, state: FSMContext | None = None) -> None:
+    """Close settings."""
+    logger.info('settings_close')
+    if state:
+        await state.clear()
+
+    await query.message.delete()  # type: ignore
+    await query.message.answer(  # type: ignore
+        text=translation.get_message('settings.updated'),
+        reply_markup=presenter.get_main_menu(query.from_user.id),
+        parse_mode='Markdown',
+    )
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:district:show')
@@ -463,7 +477,6 @@ async def filter_change_min_price_reset(query: CallbackQuery) -> None:
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:min_price:change')
 async def filter_change_min_price_change(query: CallbackQuery, state: FSMContext) -> None:
     """Change min price filter value input."""
-    # todo test
     logger.info('filter_change_min_price_change')
     await state.set_state(Form.min_price)
 
