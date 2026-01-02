@@ -1,12 +1,13 @@
 from unittest.mock import AsyncMock
 
 from publisher import bot
+from publisher.settings import prices_settings
 
 
 async def test_buy_happy_path():
     query_mock = AsyncMock()
     query_mock.from_user.id = 1
-    query_mock.data = 'buy:50'
+    query_mock.data = 'buy:{0}'.format(list(prices_settings.keys())[0])
 
     await bot.buy(query_mock)
 

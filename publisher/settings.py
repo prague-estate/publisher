@@ -64,9 +64,9 @@ app_settings = AppSettings(
 )
 
 _raw_prices = [
-    Price(cost=99, days=7, title='Week access'),
-    Price(cost=299, days=31, title='Month access 🌟'),
-    Price(cost=1499, days=365, title='Year access'),
+    Price(cost=99, days=7, title='Week access'),  # 45CZK
+    Price(cost=299, days=31, title='Month access 🌟'),  # ~125CZK
+    Price(cost=1499, days=365, title='Year access'),  # 629CZK
 ]
 prices_settings = {
     price.cost: price
