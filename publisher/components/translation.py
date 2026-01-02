@@ -19,6 +19,7 @@ _bot_messages: dict[str, str] = {
     'menu.notify.active': '🟢 Notifications',
     'menu.lang.en': '🇬🇧 Language',
     'menu.lang.ru': '🇷🇺 Язык',
+    'menu.lang.cz': 'Unknown',
 
     'currency': 'Kč',
 
