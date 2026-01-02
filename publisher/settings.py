@@ -38,7 +38,6 @@ class AppSettings(BaseSettings, extra='ignore'):
         'semrush': 14,
         'github': 7,
         'landing': 7,
-        'special': 365,
     }
 
     ENABLED_LAYOUTS: list[str] = [
