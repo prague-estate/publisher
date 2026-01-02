@@ -53,6 +53,11 @@ class AppSettings(BaseSettings, extra='ignore'):
     ]
 
     ENABLED_DISTRICTS: list[int] = list(range(1, 11))
+    ENABLED_LANGUAGES: list[str] = [
+        'en',
+        'ru',
+        'cz',
+    ]
 
     def is_admin(self, user_id: int) -> bool:
         """Check the user is admin or not."""

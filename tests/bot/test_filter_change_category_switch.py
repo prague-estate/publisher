@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.components.storage import get_user_filters, update_user_filter
+from publisher.components.storage import get_user_settings, update_user_settings
 
 
 @pytest.mark.parametrize('payload, current_state, expected_state', [
@@ -22,10 +22,10 @@ async def test_filter_change_category_switch_happy_path(payload, current_state, 
     query_mock = AsyncMock()
     query_mock.from_user.id = 1
     query_mock.data = payload
-    update_user_filter(user_id=query_mock.from_user.id, category=current_state)
+    update_user_settings(user_id=query_mock.from_user.id, category=current_state)
 
     await bot.filter_change_category_switch(query_mock)
 
-    assert get_user_filters(user_id=query_mock.from_user.id).category == expected_state
-    assert get_user_filters(user_id=query_mock.from_user.id).min_price is None
-    assert get_user_filters(user_id=query_mock.from_user.id).max_price is None
+    assert get_user_settings(user_id=query_mock.from_user.id).category == expected_state
+    assert get_user_settings(user_id=query_mock.from_user.id).min_price is None
+    assert get_user_settings(user_id=query_mock.from_user.id).max_price is None

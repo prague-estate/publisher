@@ -78,9 +78,9 @@ async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]
     async with Bot(app_settings.BOT_TOKEN) as bot_instance:
         for ads_for_post in ads:
             for sub in subs:
-                user_filters = storage.get_user_filters(sub.user_id)
+                user_filters = storage.get_user_settings(sub.user_id)
                 logger.debug(f'send notification check {sub=} {ads_for_post=} {user_filters=}')
-                if not user_filters.is_enabled or not user_filters.is_compatible(ads_for_post):
+                if not user_filters.is_enabled_notifications or not user_filters.is_compatible(ads_for_post):
                     continue
 
                 logger.info(f'send notification by subscription {sub=} {ads_for_post=} {user_filters=}')
@@ -102,11 +102,11 @@ async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Es
     except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError) as exc:
         if 'chat not found' in exc.message:
             logger.warning('disable user notification - chat not found')
-            storage.update_user_filter(user_id, enabled=False)
+            storage.update_user_settings(user_id, enabled=False)
             return
         if 'bot was blocked by the user' in exc.message:
             logger.warning('disable user notification - bot was blocked')
-            storage.update_user_filter(user_id, enabled=False)
+            storage.update_user_settings(user_id, enabled=False)
             return
 
         raise exc

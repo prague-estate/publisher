@@ -3,13 +3,14 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.components.storage import renew_subscription, update_user_filter
+from publisher.components.storage import renew_subscription, update_user_settings
 
 
 @pytest.mark.parametrize('handler_name', [
     'about',
     'user_subscription',
     'user_filters',
+    'user_settings',
 ])
 @pytest.mark.parametrize('subscription_active', [True, False])
 @pytest.mark.parametrize('filters_enabled', [True, False])
@@ -23,7 +24,7 @@ async def test_handler_answer_smoke(
     if subscription_active:
         renew_subscription(user_id=1, days=1)
     if filters_enabled:
-        update_user_filter(user_id=1, enabled=True)
+        update_user_settings(user_id=1, enabled=True)
 
     await getattr(bot, handler_name)(message=message_mock)
 

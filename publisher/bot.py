@@ -1,6 +1,7 @@
 """Telegram bot handlers."""
 import asyncio
 import logging
+from itertools import cycle
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandObject, CommandStart
@@ -10,8 +11,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.utils.deep_linking import create_start_link
 
-from publisher.components import api_client, presenter, storage, translation
-from publisher.components.types import Subscription, UserFilters
+from publisher.components import api_client, presenter, storage, translation, types
 from publisher.settings import app_settings, prices_settings
 
 logger = logging.getLogger(__file__)
@@ -138,6 +138,16 @@ async def user_filters(message: Message) -> None:
     )
 
 
+@dp.message(F.text == translation.get_message('menu.settings'))
+async def user_settings(message: Message) -> None:
+    """User settings setup."""
+    logger.info('User settings')
+    await message.answer(
+        text=translation.get_message('settings.description'),
+        reply_markup=presenter.get_settings_menu(message.chat.id),
+    )
+
+
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:back')
 async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) -> None:
     """Go back to filters."""
@@ -162,9 +172,9 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
 
     await query.message.delete()  # type: ignore
 
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
     logger.info(f'filter_close {filters_config=}')
-    if not filters_config.is_enabled:
+    if not filters_config.is_enabled_notifications:
         await query.message.answer(  # type: ignore
             text=translation.get_message('filters.set.enable_notifications'),
             reply_markup=presenter.get_main_menu(query.from_user.id),
@@ -185,32 +195,43 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
     )
 
 
-@dp.message(F.text.in_({
-    translation.get_message('menu.notify.inactive'),
-    translation.get_message('menu.notify.active'),
-}))
-async def filter_change_notify_state(message: Message) -> None:
-    """Change enabled status."""
-    logger.info('filter_change_notify_state')
-    filters_config = storage.get_user_filters(message.chat.id)
-    if filters_config.is_enabled:
-        storage.update_user_filter(message.chat.id, enabled=False)
-        text = translation.get_message('notify.disabled')
+@dp.callback_query(lambda callback: callback.data and callback.data == 'settings:toggle:enabled')
+async def user_settings_toggle_notifications(query: CallbackQuery) -> None:
+    """Change notifications status."""
+    logger.info('notifications toggle')
+
+    settings = storage.get_user_settings(query.from_user.id)
+    if settings.is_enabled_notifications:
+        storage.update_user_settings(query.from_user.id, enabled=False)
     else:
-        storage.update_user_filter(message.chat.id, enabled=True)
-        text = translation.get_message('notify.enabled').format(
-            presenter.get_filters_representation(filters_config),
-        )
+        storage.update_user_settings(query.from_user.id, enabled=True)
 
-        sub = storage.get_subscription(message.chat.id)
-        if sub and sub.is_active:
-            await _show_last_estate(filters_config, message)
-
-    await message.answer(  # type: ignore
-        text=text,
-        reply_markup=presenter.get_main_menu(message.chat.id),
-        parse_mode='Markdown',
+    await query.message.edit_reply_markup(  # type: ignore
+        reply_markup=presenter.get_settings_menu(query.from_user.id),
     )
+
+
+@dp.callback_query(lambda callback: callback.data and callback.data == 'settings:toggle:lang')
+async def user_settings_toggle_lang(query: CallbackQuery) -> None:
+    """Change user language."""
+    logger.info('language toggle')
+
+    settings = storage.get_user_settings(query.from_user.id)
+
+    if settings.lang not in app_settings.ENABLED_LANGUAGES:
+        storage.update_user_settings(query.from_user.id, lang=app_settings.ENABLED_LANGUAGES[0])
+    else:
+        langs_cycle = cycle(app_settings.ENABLED_LANGUAGES)
+        while True:
+            lang = next(langs_cycle)
+            if lang == settings.lang:
+                storage.update_user_settings(query.from_user.id, lang=next(langs_cycle))
+                break
+
+    await query.message.edit_reply_markup(  # type: ignore
+        reply_markup=presenter.get_settings_menu(query.from_user.id),
+    )
+    # todo change main menu for lang await query.message.answer_()
 
 
 @dp.callback_query(lambda callback: callback.data and callback.data == 'filters:district:show')
@@ -227,14 +248,14 @@ async def filter_change_district(query: CallbackQuery) -> None:
 @dp.callback_query(lambda callback: callback.data and callback.data.startswith('filters:district:switch:'))
 async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: WPS213
     """Process change district."""
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
     logger.info(f'filter_change_district_switch {query.data=} {filters_config.districts=}')
     district_for_switch = query.data.split(':')[-1]  # type: ignore
 
     if district_for_switch == 'reset':
         logger.info('filter_change_district_switch: reset')
         if filters_config.districts is not None:
-            storage.update_user_filter(user_id=query.from_user.id, districts=None)
+            storage.update_user_settings(user_id=query.from_user.id, districts=None)
             await filter_change_district(query)
         return None
 
@@ -245,7 +266,7 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
     district_for_switch = int(district_for_switch)
     if filters_config.districts is None:
         logger.info('filter_change_district_switch: enable from not set')
-        storage.update_user_filter(
+        storage.update_user_settings(
             user_id=query.from_user.id,
             districts={district_for_switch},
         )
@@ -254,7 +275,7 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
     elif district_for_switch in filters_config.districts:
         new_value = (filters_config.districts - {district_for_switch}) or None
         logger.info(f'filter_change_district_switch: disable, {new_value=}')
-        storage.update_user_filter(
+        storage.update_user_settings(
             user_id=query.from_user.id,
             districts=new_value,
         )
@@ -262,7 +283,7 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
 
     new_value = filters_config.districts | {district_for_switch}
     logger.info(f'filter_change_district_switch: enable, {new_value=}')
-    storage.update_user_filter(
+    storage.update_user_settings(
         user_id=query.from_user.id,
         districts=new_value,
     )
@@ -283,14 +304,14 @@ async def filter_change_layout(query: CallbackQuery) -> None:
 @dp.callback_query(lambda callback: callback.data and callback.data.startswith('filters:layout:switch:'))
 async def filter_change_layout_switch(query: CallbackQuery) -> None:  # noqa: WPS213
     """Process change layout."""
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
     logger.info(f'filter_change_layout_switch {query.data=} {filters_config.layouts=}')
     layout_for_switch: str = query.data.split(':')[-1]  # type: ignore
 
     if layout_for_switch == 'reset':
         logger.info('filter_change_layout_switch: reset')
         if filters_config.layouts is not None:
-            storage.update_user_filter(user_id=query.from_user.id, layouts=None)
+            storage.update_user_settings(user_id=query.from_user.id, layouts=None)
             await filter_change_layout(query)
         return None
 
@@ -300,7 +321,7 @@ async def filter_change_layout_switch(query: CallbackQuery) -> None:  # noqa: WP
 
     if filters_config.layouts is None:
         logger.info('filter_change_layout_switch: enable from not set')
-        storage.update_user_filter(
+        storage.update_user_settings(
             user_id=query.from_user.id,
             layouts={layout_for_switch},
         )
@@ -309,7 +330,7 @@ async def filter_change_layout_switch(query: CallbackQuery) -> None:  # noqa: WP
     elif layout_for_switch in filters_config.layouts:
         new_value = (filters_config.layouts - {layout_for_switch}) or None
         logger.info(f'filter_change_layout_switch: disable, {new_value=}')
-        storage.update_user_filter(
+        storage.update_user_settings(
             user_id=query.from_user.id,
             layouts=new_value,
         )
@@ -317,7 +338,7 @@ async def filter_change_layout_switch(query: CallbackQuery) -> None:  # noqa: WP
 
     new_value = filters_config.layouts | {layout_for_switch}
     logger.info(f'filter_change_layout_switch: enable, {new_value=}')
-    storage.update_user_filter(
+    storage.update_user_settings(
         user_id=query.from_user.id,
         layouts=new_value,
     )
@@ -341,12 +362,12 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
     """Process change category."""
     logger.info(f'filter_change_category_switch {query.data=}')
     category_for_enable: str = query.data.split(':')[-1]  # type: ignore
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
 
     if category_for_enable == 'reset':
         logger.info('filter_change_category_switch: reset')
         if filters_config.category is not None:
-            storage.update_user_filter(
+            storage.update_user_settings(
                 user_id=query.from_user.id,
                 category=None,
                 min_price=None,
@@ -356,7 +377,7 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
 
     elif filters_config.category != category_for_enable:
         logger.info(f'filter_change_category_switch: enable {category_for_enable}')
-        storage.update_user_filter(
+        storage.update_user_settings(
             user_id=query.from_user.id,
             category=category_for_enable,
             min_price=None,
@@ -382,12 +403,12 @@ async def filter_change_property_type_switch(query: CallbackQuery) -> None:
     """Process change property_type."""
     logger.info(f'filter_change_property_type_switch {query.data=}')
     value_for_enable: str = query.data.split(':')[-1]  # type: ignore
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
 
     if value_for_enable == 'reset':
         logger.info('filter_change_property_type_switch: reset')
         if filters_config.property_type is not None:
-            storage.update_user_filter(
+            storage.update_user_settings(
                 user_id=query.from_user.id,
                 property_type=None,
                 layouts=None,
@@ -396,7 +417,7 @@ async def filter_change_property_type_switch(query: CallbackQuery) -> None:
 
     elif filters_config.property_type != value_for_enable:
         logger.info(f'filter_change_property_type_switch: enable {value_for_enable}')
-        storage.update_user_filter(
+        storage.update_user_settings(
             user_id=query.from_user.id,
             property_type=value_for_enable,
             layouts=None,
@@ -409,7 +430,7 @@ async def filter_change_min_price(query: CallbackQuery) -> None:
     """Show change min price."""
     logger.info('filter_change_min_price')
 
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
 
     await query.message.edit_text(  # type: ignore
         text=translation.get_message('filters.description.min_price').format(
@@ -423,9 +444,9 @@ async def filter_change_min_price(query: CallbackQuery) -> None:
 async def filter_change_min_price_reset(query: CallbackQuery) -> None:
     """Reset min price filter to default value."""
     logger.info(f'filter_change_min_price_reset {query.data=}')
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
     if filters_config.min_price is not None:
-        storage.update_user_filter(user_id=query.from_user.id, min_price=None)
+        storage.update_user_settings(user_id=query.from_user.id, min_price=None)
         return await filter_change_min_price(query)
 
 
@@ -456,10 +477,10 @@ async def filter_change_min_price_change_process(message: Message, state: FSMCon
         await message.reply(translation.get_message('filters.description.min_price.invalid'))
         return
 
-    storage.update_user_filter(user_id=message.chat.id, min_price=threshold)
+    storage.update_user_settings(user_id=message.chat.id, min_price=threshold)
     await state.clear()
 
-    filters_config = storage.get_user_filters(message.chat.id)
+    filters_config = storage.get_user_settings(message.chat.id)
 
     await message.answer(  # type: ignore
         text=translation.get_message('filters.description.min_price').format(
@@ -474,7 +495,7 @@ async def filter_change_max_price(query: CallbackQuery) -> None:
     """Show change max price."""
     logger.info('filter_change_max_price')
 
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
 
     await query.message.edit_text(  # type: ignore
         text=translation.get_message('filters.description.max_price').format(
@@ -488,9 +509,9 @@ async def filter_change_max_price(query: CallbackQuery) -> None:
 async def filter_change_max_price_reset(query: CallbackQuery) -> None:
     """Reset max price filter to default value."""
     logger.info(f'filter_change_max_price_reset {query.data=}')
-    filters_config = storage.get_user_filters(query.from_user.id)
+    filters_config = storage.get_user_settings(query.from_user.id)
     if filters_config.max_price is not None:
-        storage.update_user_filter(user_id=query.from_user.id, max_price=None)
+        storage.update_user_settings(user_id=query.from_user.id, max_price=None)
         return await filter_change_max_price(query)
 
 
@@ -520,10 +541,10 @@ async def filter_change_max_price_change_process(message: Message, state: FSMCon
         await message.reply(translation.get_message('filters.description.max_price.invalid'))
         return
 
-    storage.update_user_filter(user_id=message.chat.id, max_price=threshold)
+    storage.update_user_settings(user_id=message.chat.id, max_price=threshold)
     await state.clear()
 
-    filters_config = storage.get_user_filters(message.chat.id)
+    filters_config = storage.get_user_settings(message.chat.id)
 
     await message.answer(  # type: ignore
         text=translation.get_message('filters.description.max_price').format(
@@ -541,7 +562,7 @@ async def got_trial(query: CallbackQuery) -> None:
         await query.answer(text=translation.get_message('trial.already_used'))
         return
 
-    sub: Subscription = storage.renew_subscription(
+    sub: types.Subscription = storage.renew_subscription(
         user_id=query.from_user.id,
         days=app_settings.TRIAL_PERIOD_DAYS,
     )
@@ -631,7 +652,7 @@ async def payment_success(message: Message, bot: Bot) -> None:
         return
 
     storage.delete_invoice(success_payment.invoice_payload)
-    sub: Subscription = storage.renew_subscription(
+    sub: types.Subscription = storage.renew_subscription(
         user_id=message.chat.id,
         days=invoice.days,
     )
@@ -642,7 +663,7 @@ async def payment_success(message: Message, bot: Bot) -> None:
     )
 
 
-async def _show_last_estate(filters: UserFilters, message: Message) -> None:
+async def _show_last_estate(filters: types.UserFilters, message: Message) -> None:
     last_ads = await api_client.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
     logger.info('_show_last_estate: got {0}'.format(len(last_ads)))
     counter = 0

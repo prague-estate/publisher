@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.components.storage import get_user_filters
+from publisher.components.storage import get_user_settings
 
 
 @pytest.mark.parametrize('payload, success', [
@@ -24,7 +24,7 @@ async def test_filter_change_max_price_change_happy_path(payload: str, success: 
     if success:
         state_mock.clear.assert_called_once()
         message_mock.answer.assert_called_once()
-        assert get_user_filters(user_id=1).max_price == int(payload)
+        assert get_user_settings(user_id=1).max_price == int(payload)
 
     else:
         message_mock.reply.assert_called_once()

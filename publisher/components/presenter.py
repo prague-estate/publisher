@@ -19,15 +19,11 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     sub = storage.get_subscription(user_id)
     is_active = bool(sub and sub.is_active)
 
-    user_filters = storage.get_user_filters(user_id)
-
     if is_active:
         keyboard = [
             [
                 KeyboardButton(text=get_message('menu.filters')),
-                KeyboardButton(text=get_message('menu.notify.{0}'.format(
-                    'active' if user_filters.is_enabled else 'inactive',
-                ))),
+                KeyboardButton(text=get_message('menu.settings')),
             ],
             [
                 KeyboardButton(text=get_message('menu.subscription.active')),
@@ -76,9 +72,26 @@ def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def get_settings_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return user settings inline keyboard."""
+    user_settings = storage.get_user_settings(user_id)
+
+    notify_button = get_message('menu.notify.{0}'.format(
+        'active' if user_settings.is_enabled_notifications else 'inactive',
+    ))
+    lang_button = get_message('menu.lang.{0}'.format(user_settings.lang))
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=notify_button, callback_data='settings:toggle:enabled')],
+            [InlineKeyboardButton(text=lang_button, callback_data='settings:toggle:lang')],
+        ],
+        resize_keyboard=True,
+    )
+
+
 def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return user filters inline keyboard."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
 
     kb = [
         InlineKeyboardButton(
@@ -134,7 +147,7 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
 
 def get_filters_category_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change category dialog."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
 
     kb = [
         InlineKeyboardButton(
@@ -171,7 +184,7 @@ def get_filters_category_menu(user_id: int) -> InlineKeyboardMarkup:
 
 def get_filters_property_type_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change property_type dialog."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
 
     kb = [
         InlineKeyboardButton(
@@ -208,7 +221,7 @@ def get_filters_property_type_menu(user_id: int) -> InlineKeyboardMarkup:
 
 def get_filters_layout_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return layouts menu."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
     kb = [
         [InlineKeyboardButton(
             text=get_message('filters.button.layout.all.{0}'.format(
@@ -244,7 +257,7 @@ def get_filters_layout_menu(user_id: int) -> InlineKeyboardMarkup:
 
 def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return districts menu."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
     kb = [
         [InlineKeyboardButton(
             text=get_message('filters.button.district.all.{0}'.format(
@@ -279,7 +292,7 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
 
 def get_filters_min_price_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change min price dialog."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
 
     kb = [
         InlineKeyboardButton(
@@ -327,7 +340,7 @@ def get_filters_min_price_internal_menu() -> InlineKeyboardMarkup:
 
 def get_filters_max_price_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change max price dialog."""
-    filters_config = storage.get_user_filters(user_id)
+    filters_config = storage.get_user_settings(user_id)
 
     kb = [
         InlineKeyboardButton(

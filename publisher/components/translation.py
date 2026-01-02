@@ -1,4 +1,4 @@
-"""Bot texts."""
+"""Bot i8n."""
 
 _bot_messages: dict[str, str] = {
     'start.set_filters': '🏠 Set your filters and receive new rental or sale ads from all over Prague in one place.',
@@ -9,28 +9,20 @@ _bot_messages: dict[str, str] = {
 
     'menu.subscription.inactive': '🔴 Subscribe',
     'menu.subscription.active': '🟢 Subscription',
-    'menu.about': 'About',
-    'menu.filters': 'Filters',
+    'menu.about': 'ℹ️ About',
+    'menu.filters': '🔍 Filters',
+    'menu.settings': '⚙ Settings',
     'menu.admin': 'staff only',
-    'menu.notify.inactive': '🔴 Notify',
-    'menu.notify.active': '🟢 Notify',
+    'menu.notify.inactive': '🔴 Notifications',
+    'menu.notify.active': '🟢 Notifications',
+    'menu.lang.en': '🇬🇧 English',
+    'menu.lang.ru': '🇷🇺 Русский',
+    'menu.lang.cz': '🇨🇿 Čeština',
 
     'currency': 'Kč',
 
     'about': """Hello and welcome!
 Here is a bot that can check for you if there are new ads to find a flat in Prague. According to your preferences. To rent or to buy.
-
-It's gonna look in here:
-sreality.cz
-bezrealitky.cz
-svoboda-williams.com
-expats.cz
-reality.idnes.cz
-engelvoelkers.com
-remax-czech.cz
-ulovdomov.cz
-idealninajemce.cz
-ceskereality.cz
 
 To keep an eye on all the ads, join these channels:
 @prague_estate_rent
@@ -53,6 +45,8 @@ For any questions and bugs write direct to @esemiko""",
     'payment.accepted': 'Your subscription has been extended until {0}!',
     'trial': 'Free trial access (1 week)',
     'trial.already_used': 'Trial access was already used!',
+
+    'settings.description': '⬇️ Set up your bot settings.',
 
     'filters.description': '⬇️ Set up your filters for notifications.',
     'filters.description.category': 'Set the category:',

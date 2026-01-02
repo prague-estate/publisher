@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from publisher.components.storage import (
     get_active_subscriptions,
     get_subscription,
-    get_user_filters,
+    get_user_settings,
     renew_subscription,
     stop_subscription,
 )
@@ -45,7 +45,7 @@ def test_renew_subscription_create_new():
     assert response.is_active is True
     assert response.is_expired_soon is True
     assert response.expired_at == date.today() + timedelta(days=1)
-    assert get_user_filters(user_id=1).is_enabled is True
+    assert get_user_settings(user_id=1).is_enabled_notifications is True
 
 
 def test_renew_subscription_renew():
@@ -55,7 +55,7 @@ def test_renew_subscription_renew():
 
     assert response.is_active is True
     assert response.expired_at == date.today() + timedelta(days=9)
-    assert get_user_filters(user_id=1).is_enabled is True
+    assert get_user_settings(user_id=1).is_enabled_notifications is True
 
 
 def test_renew_subscription_restart():
@@ -66,4 +66,4 @@ def test_renew_subscription_restart():
 
     assert response.is_active is True
     assert response.expired_at == date.today() + timedelta(days=8)
-    assert get_user_filters(user_id=1).is_enabled is True
+    assert get_user_settings(user_id=1).is_enabled_notifications is True

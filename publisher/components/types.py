@@ -63,17 +63,18 @@ class UserFilters:
     """User filters for search new estates."""
 
     user_id: int
+    lang: str = 'en'
+    enabled: bool = False
     category: str | None = None
     property_type: str | None = None
     min_price: int | None = None
     max_price: int | None = None
     layouts: set[str] | None = None
     districts: set[int] | None = None
-    enabled: bool = False
 
     @property
-    def is_enabled(self) -> bool:
-        """Is enabled filters."""
+    def is_enabled_notifications(self) -> bool:
+        """Is enabled notifications."""
         return self.enabled
 
     def is_compatible(self, estate: Estate) -> bool:

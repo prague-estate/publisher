@@ -19,7 +19,7 @@ POSTED_ADS_KEY = 'prague-publisher:posted_ads:id'
 TTL_POSTED_ADS = 60 * 60 * 24 * 180  # 6 months  # noqa: WPS432
 INVOICE_KEY = 'prague-publisher:invoice:hash'
 TTL_INVOICE = 60 * 60  # 1 hour
-USER_FILTERS_KEY = 'prague-publisher:user_filters:id'
+USER_SETTINGS_KEY = 'prague-publisher:user_filters:id'
 USER_USED_TRIAL_KEY = 'prague-publisher:user:trial:used:id'
 SUBSCRIPTION_KEY = 'prague-publisher:subscription:id'
 SUBSCRIPTIONS_ACTIVE_KEY = 'prague-publisher:subscription:active'
@@ -52,10 +52,10 @@ def is_not_posted_yet(ads_id: int) -> bool:
     return not is_posted
 
 
-def get_user_filters(user_id: int) -> UserFilters:
-    """Return user estate filters or default."""
+def get_user_settings(user_id: int) -> UserFilters:
+    """Return user filters and settings or default."""
     default_data = asdict(UserFilters(user_id=user_id))
-    saved_data: dict | None = db_pool.hgetall(name=f'{USER_FILTERS_KEY}:{user_id}')  # type: ignore
+    saved_data: dict | None = db_pool.hgetall(name=f'{USER_SETTINGS_KEY}:{user_id}')  # type: ignore
 
     if not saved_data:
         return UserFilters(
@@ -67,6 +67,9 @@ def get_user_filters(user_id: int) -> UserFilters:
 
     if saved_data.get('property_type') is not None:
         default_data['property_type'] = saved_data.get('property_type')
+
+    if saved_data.get('lang') is not None:
+        default_data['lang'] = saved_data.get('lang')
 
     if saved_data.get('enabled') is not None:
         default_data['enabled'] = bool(int(saved_data.get('enabled')))  # type: ignore
@@ -91,9 +94,9 @@ def get_user_filters(user_id: int) -> UserFilters:
     )
 
 
-def update_user_filter(user_id: int, **kwargs: Any) -> None:
-    """Update user estate filters."""
-    filters_key = f'{USER_FILTERS_KEY}:{user_id}'
+def update_user_settings(user_id: int, **kwargs: Any) -> None:
+    """Update user filters and settings."""
+    filters_key = f'{USER_SETTINGS_KEY}:{user_id}'
     for filter_name, filter_value in kwargs.items():
         if filter_value is None:
             db_pool.hdel(filters_key, filter_name)
@@ -109,7 +112,7 @@ def update_user_filter(user_id: int, **kwargs: Any) -> None:
             ])
 
         db_pool.hset(
-            name=f'{USER_FILTERS_KEY}:{user_id}',
+            name=f'{USER_SETTINGS_KEY}:{user_id}',
             key=filter_name,
             value=str(filter_value),
         )
@@ -171,7 +174,7 @@ def renew_subscription(user_id: int, days: int) -> Subscription:
 
     db_pool.sadd(SUBSCRIPTIONS_ACTIVE_KEY, user_id)
 
-    update_user_filter(user_id, enabled=True)
+    update_user_settings(user_id, enabled=True)
 
     return get_subscription(user_id)  # type: ignore
 

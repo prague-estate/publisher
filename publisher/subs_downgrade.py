@@ -31,8 +31,8 @@ async def run() -> Counter:
         for sub_expire_soon in expired_soon:
             counters['expired soon'] += 1
 
-            user_filters = storage.get_user_filters(sub_expire_soon.user_id)
-            if user_filters.is_enabled:
+            user_filters = storage.get_user_settings(sub_expire_soon.user_id)
+            if user_filters.is_enabled_notifications:
                 logger.info(f'expired soon {sub_expire_soon=}')
                 await _send_notify(
                     bot_instance=bot_instance,
@@ -45,8 +45,8 @@ async def run() -> Counter:
             storage.stop_subscription(sub_for_stop.user_id)
             counters['downgraded'] += 1
 
-            user_filters = storage.get_user_filters(sub_for_stop.user_id)
-            if user_filters.is_enabled:
+            user_filters = storage.get_user_settings(sub_for_stop.user_id)
+            if user_filters.is_enabled_notifications:
                 logger.info(f'downgrade {sub_for_stop=}')
                 await _send_notify(
                     bot_instance=bot_instance,

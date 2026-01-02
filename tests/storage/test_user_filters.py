@@ -1,25 +1,25 @@
 import pytest
 
-from publisher.components.storage import get_user_filters, update_user_filter
+from publisher.components.storage import get_user_settings, update_user_settings
 
 
 def test_get_user_filters_not_found():
-    response = get_user_filters(1)
+    response = get_user_settings(1)
 
     assert response.user_id == 1
-    assert response.is_enabled is False
+    assert response.is_enabled_notifications is False
     assert response.enabled is False
     assert response.category is None
     assert response.max_price is None
 
 
 def test_get_user_filters_happy_path():
-    update_user_filter(1, category='sale')
+    update_user_settings(1, category='sale')
 
-    response = get_user_filters(1)
+    response = get_user_settings(1)
 
     assert response.user_id == 1
-    assert response.is_enabled is False
+    assert response.is_enabled_notifications is False
     assert response.enabled is False
     assert response.category == 'sale'
     assert response.max_price is None
@@ -30,9 +30,9 @@ def test_get_user_filters_happy_path():
     (None, None),
 ])
 def test_update_user_filter_category(payload, expected):
-    update_user_filter(1, category=payload)
+    update_user_settings(1, category=payload)
 
-    response = get_user_filters(1)
+    response = get_user_settings(1)
     assert getattr(response, 'category') == expected
 
 
@@ -42,9 +42,9 @@ def test_update_user_filter_category(payload, expected):
     (None, None),
 ])
 def test_update_user_filter_max_price(payload, expected):
-    update_user_filter(1, max_price=payload)
+    update_user_settings(1, max_price=payload)
 
-    response = get_user_filters(1)
+    response = get_user_settings(1)
     assert getattr(response, 'max_price') == expected
 
 
@@ -54,9 +54,9 @@ def test_update_user_filter_max_price(payload, expected):
     (None, False),
 ])
 def test_update_user_filter_enabled(payload, expected):
-    update_user_filter(1, enabled=payload)
+    update_user_settings(1, enabled=payload)
 
-    response = get_user_filters(1)
+    response = get_user_settings(1)
     assert getattr(response, 'enabled') == expected
 
 
@@ -66,9 +66,9 @@ def test_update_user_filter_enabled(payload, expected):
     ({1, 5, 21}, {1, 5, 21}),
 ])
 def test_update_user_filter_districts(payload, expected):
-    update_user_filter(1, districts=payload)
+    update_user_settings(1, districts=payload)
 
-    response = get_user_filters(1)
+    response = get_user_settings(1)
     assert getattr(response, 'districts') == expected
 
 
@@ -84,7 +84,7 @@ def test_update_user_filter_districts(payload, expected):
     ),
 ])
 def test_update_user_filter_layouts(payload, expected):
-    update_user_filter(1, layouts=payload)
+    update_user_settings(1, layouts=payload)
 
-    response = get_user_filters(1)
+    response = get_user_settings(1)
     assert getattr(response, 'layouts') == expected
