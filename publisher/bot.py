@@ -35,6 +35,16 @@ async def start(message: Message, command: CommandObject) -> None:
     logger.info(f'Start {promo=}')
     promo_days: int | None = app_settings.PROMO_CODES.get(promo)
 
+    if message.from_user and message.from_user.language_code in app_settings.ENABLED_LANGUAGES:
+        lang = message.from_user.language_code
+    else:
+        lang = app_settings.ENABLED_LANGUAGES[0]
+    logger.info('set user lang to {0} {1}'.format(
+        message.from_user,
+        lang,
+    ))
+    storage.update_user_settings(user_id=message.chat.id, lang=lang)
+
     if promo_days and not storage.has_used_trial(message.chat.id, promo):
         logger.info('apply promo code')
         sub = storage.renew_subscription(
