@@ -4,7 +4,7 @@ import os
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from publisher.types import Price
+from publisher.components.types import Price
 
 APP_PATH = os.path.abspath(
     os.path.join(

@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, Mock
 
 from publisher import bot
-from publisher.storage import create_invoice, get_invoice
+from publisher.components.storage import create_invoice, get_invoice
 
 
 async def test_payment_success_happy_path():

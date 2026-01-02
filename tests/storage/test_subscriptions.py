@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from publisher.storage import (
+from publisher.components.storage import (
     get_active_subscriptions,
     get_subscription,
     get_user_filters,

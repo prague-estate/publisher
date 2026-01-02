@@ -5,9 +5,9 @@ from collections import Counter
 
 from aiogram import Bot, exceptions
 
-from publisher import api, presenter, storage
+from publisher.components import api_client, presenter, storage
+from publisher.components.types import Estate, Subscription
 from publisher.settings import app_settings
-from publisher.types import Estate, Subscription
 
 logger = logging.getLogger(__file__)
 
@@ -25,7 +25,7 @@ async def publisher(limit: int = 1) -> Counter:
     logger.info('got {0} active subs'.format(len(active_subs)))
 
     for category, dst_channel in dst_channels.items():
-        ads_for_publish = await api.fetch_estates(category=category, limit=limit)
+        ads_for_publish = await api_client.fetch_estates(category=category, limit=limit)
         logger.info('got {0} {1} ads'.format(len(ads_for_publish), category))
         counters[f'{category} total'] = len(ads_for_publish)
 

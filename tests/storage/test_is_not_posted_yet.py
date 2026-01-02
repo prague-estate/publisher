@@ -1,4 +1,4 @@
-from publisher.storage import is_not_posted_yet
+from publisher.components.storage import is_not_posted_yet
 
 
 def test_is_not_posted_yet_happy_path(fixture_prefilled_posted_ads_id: list[int]):

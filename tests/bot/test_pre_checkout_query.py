@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock
 
 from publisher import bot
-from publisher.storage import create_invoice
+from publisher.components.storage import create_invoice
 
 
 async def test_pre_checkout_query_happy_path():

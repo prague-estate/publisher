@@ -1,6 +1,6 @@
 import pytest
 
-from publisher.presenter import _get_layout_human_value
+from publisher.components.presenter import _get_layout_human_value
 
 
 @pytest.mark.parametrize('payload, expected', [

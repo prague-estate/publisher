@@ -2,8 +2,8 @@ from unittest import mock
 
 import pytest
 
-from publisher.api import fetch_estates_all
-from publisher.types import Estate
+from publisher.components.api_client import fetch_estates_all
+from publisher.components.types import Estate
 
 
 async def test_fetch_estates_all_contract():
@@ -20,7 +20,7 @@ async def test_fetch_estates_all_limit(limit: int):
 
 
 async def test_fetch_estates_all_failed():
-    with mock.patch('publisher.api.aiohttp.ClientSession.get') as mock_get:
+    with mock.patch('publisher.components.api_client.aiohttp.ClientSession.get') as mock_get:
         mock_get.side_effect = KeyError()
         response = await fetch_estates_all(limit=1)
         assert response == []

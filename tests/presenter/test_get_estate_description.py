@@ -1,4 +1,4 @@
-from publisher.presenter import _get_estate_description
+from publisher.components.presenter import _get_estate_description
 
 
 def test_get_estate_description_smoke(fixture_estate_item):

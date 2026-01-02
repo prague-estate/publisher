@@ -1,6 +1,6 @@
 import pytest
 
-from publisher.presenter import get_price_human_value
+from publisher.components.presenter import get_price_human_value
 
 
 @pytest.mark.parametrize('payload_price, payload_currency, expected', [

@@ -6,7 +6,7 @@ from typing import Any
 
 from aiogram import Bot, exceptions
 
-from publisher import presenter, storage, translation
+from publisher.components import presenter, storage, translation
 from publisher.settings import app_settings
 
 logger = logging.getLogger(__file__)

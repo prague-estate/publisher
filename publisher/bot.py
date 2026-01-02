@@ -10,9 +10,9 @@ from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.utils.deep_linking import create_start_link
 
-from publisher import api, presenter, storage, translation
+from publisher.components import api_client, presenter, storage, translation
+from publisher.components.types import Subscription, UserFilters
 from publisher.settings import app_settings, prices_settings
-from publisher.types import Subscription, UserFilters
 
 logger = logging.getLogger(__file__)
 
@@ -643,7 +643,7 @@ async def payment_success(message: Message, bot: Bot) -> None:
 
 
 async def _show_last_estate(filters: UserFilters, message: Message) -> None:
-    last_ads = await api.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
+    last_ads = await api_client.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
     logger.info('_show_last_estate: got {0}'.format(len(last_ads)))
     counter = 0
     for ads in last_ads:

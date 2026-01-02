@@ -1,5 +1,5 @@
 from publisher.publisher import _post_ads_to_subscriptions
-from publisher.storage import renew_subscription, update_user_filter
+from publisher.components.storage import renew_subscription, update_user_filter
 
 
 async def test_post_ads_to_subscriptions_subs_not_exists(fixture_estate_item):

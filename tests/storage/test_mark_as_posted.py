@@ -1,4 +1,4 @@
-from publisher.storage import is_not_posted_yet, mark_as_posted
+from publisher.components.storage import is_not_posted_yet, mark_as_posted
 
 
 def test_mark_as_posted():

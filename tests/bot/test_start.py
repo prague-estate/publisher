@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.storage import get_subscription
+from publisher.components.storage import get_subscription
 
 
 @pytest.mark.parametrize('promo, expected', [

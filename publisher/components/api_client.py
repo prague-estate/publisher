@@ -3,8 +3,8 @@ import logging
 
 import aiohttp
 
+from publisher.components.types import Estate
 from publisher.settings import app_settings
-from publisher.types import Estate
 
 BASIC_URL = f'{app_settings.API_URL}/estates'
 

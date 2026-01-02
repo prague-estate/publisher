@@ -1,6 +1,6 @@
 from collections import Counter
 
-from publisher import storage
+from publisher.components import storage
 from publisher.subs_downgrade import run
 
 

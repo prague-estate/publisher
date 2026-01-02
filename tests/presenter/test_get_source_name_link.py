@@ -1,6 +1,6 @@
 import pytest
 
-from publisher.presenter import _get_source_name_link
+from publisher.components.presenter import _get_source_name_link
 
 
 @pytest.mark.parametrize('payload, expected', [

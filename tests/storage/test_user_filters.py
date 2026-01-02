@@ -1,6 +1,6 @@
 import pytest
 
-from publisher.storage import get_user_filters, update_user_filter
+from publisher.components.storage import get_user_filters, update_user_filter
 
 
 def test_get_user_filters_not_found():

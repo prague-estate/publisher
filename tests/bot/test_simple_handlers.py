@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.storage import renew_subscription, update_user_filter
+from publisher.components.storage import renew_subscription, update_user_filter
 
 
 @pytest.mark.parametrize('handler_name', [

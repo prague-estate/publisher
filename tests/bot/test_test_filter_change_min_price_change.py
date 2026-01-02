@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from publisher import bot
-from publisher.storage import get_user_filters
+from publisher.components.storage import get_user_filters
 
 
 @pytest.mark.parametrize('payload, success', [

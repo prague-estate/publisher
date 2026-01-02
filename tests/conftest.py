@@ -2,8 +2,8 @@ import asyncio
 
 import pytest
 
-from publisher.storage import db_pool, mark_as_posted
-from publisher.types import Estate
+from publisher.components.storage import db_pool, mark_as_posted
+from publisher.components.types import Estate
 
 
 @pytest.fixture(scope='function')

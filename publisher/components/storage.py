@@ -6,8 +6,8 @@ from typing import Any
 
 from redis import Redis  # type: ignore
 
+from publisher.components.types import Invoice, Subscription, UserFilters
 from publisher.settings import app_settings
-from publisher.types import Invoice, Subscription, UserFilters
 
 db_pool: Redis = Redis.from_url(
     app_settings.REDIS_DSN,

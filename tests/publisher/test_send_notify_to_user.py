@@ -1,6 +1,6 @@
 from aiogram import Bot
 
-from publisher import storage
+from publisher.components import storage
 from publisher.publisher import _send_notify_to_user
 from publisher.settings import app_settings
 

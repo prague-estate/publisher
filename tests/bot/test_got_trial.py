@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock
 
 from publisher import bot
-from publisher.storage import get_subscription, mark_used_trial
+from publisher.components.storage import get_subscription, mark_used_trial
 
 
 async def test_got_trial_happy_path():

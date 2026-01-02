@@ -1,4 +1,4 @@
-from publisher.storage import create_invoice, delete_invoice, get_invoice
+from publisher.components.storage import create_invoice, delete_invoice, get_invoice
 
 
 def test_create_invoice():
