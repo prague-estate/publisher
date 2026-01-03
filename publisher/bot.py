@@ -54,19 +54,19 @@ async def start(message: Message, command: CommandObject) -> None:
         storage.mark_used_trial(message.chat.id, promo)
 
         await message.answer(  # type: ignore
-            text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
+            text=translation.get_i8n_text('payment.accepted', lang).format(sub.expired_at.isoformat()),
         )
 
     actual_sub = storage.get_subscription(message.chat.id)
     if actual_sub and actual_sub.is_active:
         await message.answer(  # type: ignore
-            text=translation.get_message('start.set_filters'),
+            text=translation.get_i8n_text('start.set_filters', lang),
             reply_markup=presenter.get_main_menu(message.chat.id),
         )
 
     else:
         await message.answer(  # type: ignore
-            text=translation.get_message('start.subscribe_first'),
+            text=translation.get_i8n_text('start.subscribe_first', lang),
             reply_markup=presenter.get_main_menu(message.chat.id),
         )
 
