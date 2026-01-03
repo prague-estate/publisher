@@ -73,7 +73,7 @@ async def start(message: Message, command: CommandObject) -> None:
 
 @dp.message(Command('support'))
 @dp.message(Command('paysupport'))
-@dp.message(F.text == translation.get_message('menu.about'))
+@dp.message(F.text.in_(translation.get_by('menu.about')))
 async def about(message: Message) -> None:
     """About project."""
     logger.info('About')
@@ -83,7 +83,7 @@ async def about(message: Message) -> None:
     )
 
 
-@dp.message(F.text == translation.get_message('menu.admin'))
+@dp.message(F.text.in_(translation.get_by('menu.admin')))
 async def admin_info(message: Message) -> None:
     """Show info for admins."""
     logger.info('Admin info')
@@ -117,10 +117,9 @@ async def admin_info(message: Message) -> None:
     )
 
 
-@dp.message(F.text.in_({
-    translation.get_message('menu.subscription.inactive'),
-    translation.get_message('menu.subscription.active'),
-}))
+@dp.message(F.text.in_(
+    translation.get_by('menu.subscription.inactive') | translation.get_by('menu.subscription.active'),
+))
 async def user_subscription(message: Message) -> None:
     """Subscription info."""
     logger.info('Subscription')
@@ -137,7 +136,7 @@ async def user_subscription(message: Message) -> None:
     )
 
 
-@dp.message(F.text == translation.get_message('menu.filters'))
+@dp.message(F.text.in_(translation.get_by('menu.filters')))
 async def user_filters(message: Message) -> None:
     """User filters setup."""
     logger.info('User filters')
@@ -148,7 +147,7 @@ async def user_filters(message: Message) -> None:
     )
 
 
-@dp.message(F.text == translation.get_message('menu.settings'))
+@dp.message(F.text.in_(translation.get_by('menu.settings')))
 async def user_settings(message: Message) -> None:
     """User settings setup."""
     logger.info('User settings')

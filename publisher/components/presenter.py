@@ -7,7 +7,7 @@ from aiogram.utils import markdown
 from aiogram.utils.text_decorations import markdown_decoration
 
 from publisher.components import storage
-from publisher.components.translation import get_message
+from publisher.components.translation import get_i8n_text, get_message
 from publisher.components.types import Estate, UserFilters
 from publisher.settings import app_settings, prices_settings
 
@@ -17,22 +17,26 @@ MARKDOWN_RISK_CHARS = re.compile(r'[_*\[\]()`>#=|{}!\\]')  # noqa: P103
 def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
     """Return main bot keyboard."""
     sub = storage.get_subscription(user_id)
+    settings = storage.get_user_settings(user_id)
     is_active = bool(sub and sub.is_active)
 
     keyboard = [
         [
-            KeyboardButton(text=get_message('menu.filters')),
-            KeyboardButton(text=get_message('menu.settings')),
+            KeyboardButton(text=get_i8n_text('menu.filters', settings.lang)),
+            KeyboardButton(text=get_i8n_text('menu.settings', settings.lang)),
         ],
         [
-            KeyboardButton(text=get_message('menu.subscription.{0}'.format('active' if is_active else 'inactive'))),
-            KeyboardButton(text=get_message('menu.about')),
+            KeyboardButton(text=get_i8n_text(
+                'menu.subscription.{0}'.format('active' if is_active else 'inactive'),
+                settings.lang,
+            )),
+            KeyboardButton(text=get_i8n_text('menu.about', settings.lang)),
         ],
     ]
 
     if app_settings.is_admin(user_id):
         keyboard.append(
-            [KeyboardButton(text=get_message('menu.admin'))],
+            [KeyboardButton(text=get_i8n_text('menu.admin', settings.lang))],
         )
 
     return ReplyKeyboardMarkup(
