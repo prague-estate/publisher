@@ -106,4 +106,4 @@ class Price:
 
     cost: int  # XTR currency
     days: int
-    title: str
+    slug: str

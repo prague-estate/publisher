@@ -68,9 +68,9 @@ app_settings = AppSettings(
 )
 
 _raw_prices = [
-    Price(cost=99, days=7, title='Week access'),  # 45CZK
-    Price(cost=299, days=31, title='Month access 🌟'),  # ~125CZK
-    Price(cost=1499, days=365, title='Year access'),  # 629CZK
+    Price(cost=99, days=7, slug='price.week'),  # 45CZK
+    Price(cost=299, days=31, slug='price.month'),  # ~125CZK
+    Price(cost=1499, days=365, slug='price.year'),  # 629CZK
 ]
 prices_settings = {
     price.cost: price
@@ -80,5 +80,5 @@ if app_settings.DEBUG:
     prices_settings[1] = Price(
         cost=1,
         days=7,
-        title='Test 7-day access',
+        slug='price.test',
     )

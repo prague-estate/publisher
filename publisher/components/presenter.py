@@ -48,11 +48,12 @@ def get_main_menu(user_id: int) -> ReplyKeyboardMarkup:
 
 def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return bot prices inline keyboard."""
+    settings = storage.get_user_settings(user_id)
     kb = []
     if not storage.has_used_trial(user_id, 'trial'):
         kb.append([
             InlineKeyboardButton(
-                text=get_message('trial'),
+                text=get_i8n_text('trial', settings.lang),
                 callback_data='trial:activate',
             ),
         ])
@@ -60,7 +61,7 @@ def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=kb + [
             [InlineKeyboardButton(
-                text=price.title,
+                text=get_i8n_text(price.slug, settings.lang),
                 callback_data=f'buy:{price.cost}',
             )]
             for price in prices_settings.values()
@@ -73,15 +74,19 @@ def get_settings_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return user settings inline keyboard."""
     user_settings = storage.get_user_settings(user_id)
 
-    notify_button = get_message('menu.notify.{0}'.format(
-        'active' if user_settings.is_enabled_notifications else 'inactive',
-    ))
-    lang_button = get_message('menu.lang.{0}'.format(user_settings.lang))
+    notify_button = get_i8n_text(
+        'menu.notify.{0}'.format('active' if user_settings.is_enabled_notifications else 'inactive'),
+        user_settings.lang,
+    )
+    lang_button = get_i8n_text('menu.lang.{0}'.format(user_settings.lang), user_settings.lang)
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=notify_button, callback_data='settings:toggle:enabled')],
             [InlineKeyboardButton(text=lang_button, callback_data='settings:toggle:lang')],
-            [InlineKeyboardButton(text=get_message('filters.button.close'), callback_data='settings:close')],
+            [InlineKeyboardButton(
+                text=get_i8n_text('filters.button.close', user_settings.lang),
+                callback_data='settings:close',
+            )],
         ],
         resize_keyboard=True,
     )
@@ -93,43 +98,49 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.category.{0}'.format(
-                'enabled' if filters_config.category else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.category.{0}'.format('enabled' if filters_config.category else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:category:show',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.property_type.{0}'.format(
-                'enabled' if filters_config.property_type else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.property_type.{0}'.format('enabled' if filters_config.property_type else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:property_type:show',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.min_price.{0}'.format(
-                'enabled' if filters_config.min_price else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.min_price.{0}'.format('enabled' if filters_config.min_price else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:min_price:show',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.max_price.{0}'.format(
-                'enabled' if filters_config.max_price else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.max_price.{0}'.format('enabled' if filters_config.max_price else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:max_price:show',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.layout.{0}'.format(
-                'enabled' if filters_config.layouts else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.layout.{0}'.format('enabled' if filters_config.layouts else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:layout:show',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.district.{0}'.format(
-                'enabled' if filters_config.districts else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.district.{0}'.format('enabled' if filters_config.districts else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:district:show',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.close'),
+            text=get_i8n_text('filters.button.close', filters_config.lang),
             callback_data='filters:close',
         ),
     ]
@@ -149,25 +160,28 @@ def get_filters_category_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.category.all.{0}'.format(
-                'enabled' if filters_config.category is None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.category.all.{0}'.format('enabled' if filters_config.category is None else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:category:reset',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.category.lease.{0}'.format(
-                'enabled' if filters_config.category == 'lease' else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.category.lease.{0}'.format('enabled' if filters_config.category == 'lease' else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:category:lease',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.category.sale.{0}'.format(
-                'enabled' if filters_config.category == 'sale' else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.category.sale.{0}'.format('enabled' if filters_config.category == 'sale' else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:category:sale',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),
     ]
@@ -186,25 +200,28 @@ def get_filters_property_type_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.property_type.all.{0}'.format(
-                'enabled' if filters_config.property_type is None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.property_type.all.{0}'.format('enabled' if filters_config.property_type is None else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:property_type:reset',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.property_type.flat.{0}'.format(
-                'enabled' if filters_config.property_type == 'flat' else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.property_type.flat.{0}'.format('enabled' if filters_config.property_type == 'flat' else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:property_type:flat',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.property_type.house.{0}'.format(
-                'enabled' if filters_config.property_type == 'house' else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.property_type.house.{0}'.format('enabled' if filters_config.property_type == 'house' else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:property_type:house',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),
     ]
@@ -222,9 +239,10 @@ def get_filters_layout_menu(user_id: int) -> InlineKeyboardMarkup:
     filters_config = storage.get_user_settings(user_id)
     kb = [
         [InlineKeyboardButton(
-            text=get_message('filters.button.layout.all.{0}'.format(
-                'enabled' if filters_config.layouts is None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.layout.all.{0}'.format('enabled' if filters_config.layouts is None else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:layout:reset',
         )],
     ]
@@ -232,10 +250,13 @@ def get_filters_layout_menu(user_id: int) -> InlineKeyboardMarkup:
     for layout_names in _get_batches(app_settings.ENABLED_LAYOUTS, size=2):
         kb.append([
             InlineKeyboardButton(
-                text=get_message('filters.button.layout.{0}.{1}'.format(
-                    layout_name,
-                    'enabled' if filters_config.layouts and layout_name in filters_config.layouts else 'disabled',
-                )),
+                text=get_i8n_text(
+                    'filters.button.layout.{0}.{1}'.format(
+                        layout_name,
+                        'enabled' if filters_config.layouts and layout_name in filters_config.layouts else 'disabled',
+                    ),
+                    filters_config.lang,
+                ),
                 callback_data=f'filters:layout:switch:{layout_name}',
             )
             for layout_name in layout_names
@@ -243,7 +264,7 @@ def get_filters_layout_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb.append(
         [InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         )],
     )
@@ -258,9 +279,10 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
     filters_config = storage.get_user_settings(user_id)
     kb = [
         [InlineKeyboardButton(
-            text=get_message('filters.button.district.all.{0}'.format(
-                'enabled' if filters_config.districts is None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.district.all.{0}'.format('enabled' if filters_config.districts is None else 'disabled'),
+                filters_config.lang,
+            ),
             callback_data='filters:district:reset',
         )],
     ]
@@ -268,9 +290,12 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
     for district_names in _get_batches(app_settings.ENABLED_DISTRICTS, size=2):
         kb.append([
             InlineKeyboardButton(
-                text=get_message('filters.button.district.number.{0}'.format(
-                    'enabled' if filters_config.districts and district_name in filters_config.districts else 'disabled',
-                )).format(district_name),
+                text=get_i8n_text(
+                    'filters.button.district.number.{0}'.format(
+                        'enabled' if filters_config.districts and district_name in filters_config.districts else 'disabled',
+                    ),
+                    filters_config.lang,
+                ).format(district_name),
                 callback_data=f'filters:district:switch:{district_name}',
             )
             for district_name in district_names
@@ -278,7 +303,7 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb.append(
         [InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         )],
     )
@@ -294,19 +319,25 @@ def get_filters_min_price_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.min_price.all.{0}'.format(
-                'enabled' if filters_config.min_price is None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.min_price.all.{0}'.format(
+                    'enabled' if filters_config.min_price is None else 'disabled',
+                ),
+                filters_config.lang,
+            ),
             callback_data='filters:min_price:reset',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.min_price.custom.{0}'.format(
-                'enabled' if filters_config.min_price is not None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.min_price.custom.{0}'.format(
+                    'enabled' if filters_config.min_price is not None else 'disabled',
+                ),
+                filters_config.lang,
+            ),
             callback_data='filters:min_price:change',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),
     ]
@@ -319,11 +350,12 @@ def get_filters_min_price_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
-def get_filters_min_price_internal_menu() -> InlineKeyboardMarkup:
+def get_filters_min_price_internal_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change min price internal menu."""
+    filters_config = storage.get_user_settings(user_id)
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),
     ]
@@ -342,19 +374,25 @@ def get_filters_max_price_menu(user_id: int) -> InlineKeyboardMarkup:
 
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.max_price.all.{0}'.format(
-                'enabled' if filters_config.max_price is None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.max_price.all.{0}'.format(
+                    'enabled' if filters_config.max_price is None else 'disabled',
+                ),
+                filters_config.lang,
+            ),
             callback_data='filters:max_price:reset',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.max_price.custom.{0}'.format(
-                'enabled' if filters_config.max_price is not None else 'disabled',
-            )),
+            text=get_i8n_text(
+                'filters.button.max_price.custom.{0}'.format(
+                    'enabled' if filters_config.max_price is not None else 'disabled',
+                ),
+                filters_config.lang,
+            ),
             callback_data='filters:max_price:change',
         ),
         InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),
     ]
@@ -367,11 +405,12 @@ def get_filters_max_price_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
-def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
+def get_filters_max_price_internal_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change max price internal menu."""
+    filters_config = storage.get_user_settings(user_id)
     kb = [
         InlineKeyboardButton(
-            text=get_message('filters.button.back'),
+            text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),
     ]
@@ -386,6 +425,7 @@ def get_filters_max_price_internal_menu() -> InlineKeyboardMarkup:
 
 def get_filters_representation(user_filters: UserFilters) -> str:
     """Return user filters representation."""
+    # todo translations
     messages = []
 
     if user_filters.category:
@@ -464,7 +504,7 @@ def _get_estate_description(ads: Estate) -> str:
         markdown.bold(get_price_human_value(ads.price)),
         markdown.text(get_price_human_value(
             ads.price // ads.usable_area,
-            '{0}/m²'.format(get_message('currency')),
+            '{0}/m²'.format(get_i8n_text('currency', 'en')),
         )),
         markdown.text('{0}  m²\n{1}\nenergy rating: {2}'.format(
             ads.usable_area,
@@ -487,7 +527,7 @@ def get_price_human_value(price: int | None, currency: str | None = None) -> str
     if not price or price < 0:
         return 'not set'
     if currency is None:
-        currency = get_message('currency')
+        currency = get_i8n_text('currency', 'en')
 
     return '{0:,} {1}'.format(price, currency).replace(',', ' ')  # noqa: C819
 

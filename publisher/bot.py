@@ -479,9 +479,10 @@ async def filter_change_min_price_change(query: CallbackQuery, state: FSMContext
     logger.info('filter_change_min_price_change')
     await state.set_state(Form.min_price)
 
+    filters_config = storage.get_user_settings(query.from_user.id)
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.min_price.input'),
-        reply_markup=presenter.get_filters_min_price_internal_menu(),
+        text=translation.get_i8n_text('filters.description.min_price.input', filters_config.lang),
+        reply_markup=presenter.get_filters_min_price_internal_menu(query.from_user.id),
     )
 
 
@@ -543,9 +544,10 @@ async def filter_change_max_price_change(query: CallbackQuery, state: FSMContext
     logger.info('filter_change_max_price_change')
     await state.set_state(Form.max_price)
 
+    filters_config = storage.get_user_settings(query.from_user.id)
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.max_price.input'),
-        reply_markup=presenter.get_filters_max_price_internal_menu(),
+        text=translation.get_i8n_text('filters.description.max_price.input', filters_config.lang),
+        reply_markup=presenter.get_filters_max_price_internal_menu(query.from_user.id),
     )
 
 
@@ -603,6 +605,8 @@ async def got_trial(query: CallbackQuery) -> None:
 async def buy(query: CallbackQuery) -> None:
     """Send invoice."""
     logger.info('buy')
+    settings = storage.get_user_settings(query.from_user.id)
+
     try:
         price_amount = int(query.data.split(':')[-1])  # type: ignore
         price = prices_settings[price_amount]
@@ -621,13 +625,13 @@ async def buy(query: CallbackQuery) -> None:
         query.from_user.id,
     ))
     await query.message.answer_invoice(  # type: ignore
-        title=price.title,
-        description=translation.get_message('invoice.description'),
+        title=translation.get_i8n_text(price.slug, settings.lang),
+        description=translation.get_i8n_text('invoice.description', settings.lang),
         payload=invoice_hash,
         currency='XTR',
         prices=[
             LabeledPrice(
-                label=price.title,
+                label=translation.get_i8n_text(price.slug, settings.lang),
                 amount=price.cost,
             ),
         ],

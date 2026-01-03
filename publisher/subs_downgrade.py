@@ -37,7 +37,7 @@ async def run() -> Counter:
                 await _send_notify(
                     bot_instance=bot_instance,
                     chat_id=sub_expire_soon.user_id,
-                    text=translation.get_message('subscription.expired'),
+                    text=translation.get_i8n_text('subscription.expired', user_filters.lang),
                     reply_markup=presenter.get_prices_menu(sub_expire_soon.user_id),
                 )
 
@@ -51,7 +51,7 @@ async def run() -> Counter:
                 await _send_notify(
                     bot_instance=bot_instance,
                     chat_id=sub_for_stop.user_id,
-                    text=translation.get_message('subscription.downgraded'),
+                    text=translation.get_i8n_text('subscription.downgraded', user_filters.lang),
                     reply_markup=presenter.get_main_menu(sub_for_stop.user_id),
                 )
 
