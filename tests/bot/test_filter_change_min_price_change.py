@@ -23,7 +23,7 @@ async def test_filter_change_min_price_change_happy_path():
     ('sss', False),
     (' 1234   ', True),
 ])
-async def test_filter_change_min_price_change_happy_path(payload: str, success: bool):
+async def test_filter_change_min_price_change_process_happy_path(payload: str, success: bool):
     message_mock = AsyncMock()
     message_mock.chat.id = 1
     message_mock.text = payload

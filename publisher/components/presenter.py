@@ -330,7 +330,7 @@ def get_filters_min_price_menu(user_id: int) -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text=get_i8n_text(
                 'filters.button.min_price.custom.{0}'.format(
-                    'enabled' if filters_config.min_price is not None else 'disabled',
+                    'disabled' if filters_config.min_price is None else 'enabled',
                 ),
                 filters_config.lang,
             ),
@@ -385,7 +385,7 @@ def get_filters_max_price_menu(user_id: int) -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text=get_i8n_text(
                 'filters.button.max_price.custom.{0}'.format(
-                    'enabled' if filters_config.max_price is not None else 'disabled',
+                    'disabled' if filters_config.max_price is None else 'enabled',
                 ),
                 filters_config.lang,
             ),

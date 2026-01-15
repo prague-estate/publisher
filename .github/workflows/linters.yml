@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.12']
+        python-version: ['3.12', '3.13']
     steps:
     - uses: actions/checkout@v2
 
@@ -22,10 +22,14 @@ jobs:
         poetry --version
         poetry install
 
-    - name: Run MyPy
+    - name: MyPy
       run: |
         poetry run mypy publisher/
 
-    - name: Run flake8
+    - name: Ruff
+      run: |
+        poetry run ruff check
+
+    - name: flake8
       run: |
         poetry run flake8 publisher/

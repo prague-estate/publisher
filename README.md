@@ -26,6 +26,7 @@ pytest --cov=publisher
 
 ### Local run linters
 ```shell
+ruff check
 flake8 publisher/
 mypy publisher/
 ```
