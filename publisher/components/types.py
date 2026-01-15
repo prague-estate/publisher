@@ -70,6 +70,7 @@ class UserFilters:
     min_price: int | None = None
     max_price: int | None = None
     layouts: set[str] | None = None
+    min_usable_area: int | None = None
     districts: set[int] | None = None
 
     @property
@@ -77,7 +78,7 @@ class UserFilters:
         """Is enabled notifications."""
         return self.enabled
 
-    def is_compatible(self, estate: Estate) -> bool:
+    def is_compatible(self, estate: Estate) -> bool:  # noqa: WPS231
         """Is estate item passed by filters."""
         if self.category and estate.category != self.category:
             return False
@@ -89,6 +90,9 @@ class UserFilters:
             return False
 
         if self.max_price and estate.price > self.max_price:  # noqa: WPS531
+            return False
+
+        if self.min_usable_area and estate.usable_area < self.min_usable_area:  # noqa: WPS531
             return False
 
         if self.districts and estate.district_number not in self.districts:  # noqa: WPS531

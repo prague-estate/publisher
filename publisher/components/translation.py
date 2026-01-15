@@ -88,6 +88,18 @@ _i8n = {
     },
     'filters.description.category': {'en': 'Set the category:', 'ru': 'Выберите категорию объявления:'},
     'filters.description.property_type': {'en': 'Set the property type:', 'ru': 'Выберите тип объекта:'},
+    'filters.description.min_usable_area': {
+        'en': 'Set the minimum usable area.\n\nCurrent threshold: {0} m²',
+        'ru': 'Установите минимальную площадь.\n\nТекущий порог: {0} м2',
+    },
+    'filters.description.min_usable_area.input': {
+        'en': 'Input the minimum usable area in m²:',
+        'ru': 'Введите минимальную площадь объекта в квадратных метрах:',
+    },
+    'filters.description.min_usable_area.invalid': {
+        'en': 'Input a value greater than zero or cancel by click "Back" button above.',
+        'ru': 'Введите значение больше или равное нулю или отмените изменения кнопкой "Назад"',
+    },
     'filters.description.min_price': {
         'en': 'Set the minimum price.\n\nCurrent threshold: {0}',
         'ru': 'Установите минимальную цену.\n\nТекущий порог: {0}',
@@ -132,6 +144,12 @@ _i8n = {
     'filters.button.property_type.house.disabled': {'en': 'House', 'ru': 'Дом'},
     'filters.button.property_type.flat.enabled': {'en': '✅ Flat', 'ru': '✅ Квартира'},
     'filters.button.property_type.flat.disabled': {'en': 'Flat', 'ru': 'Квартира'},
+    'filters.button.min_usable_area.enabled': {'en': 'Min area ✅', 'ru': 'Мин площадь ✅'},
+    'filters.button.min_usable_area.disabled': {'en': 'Min area ⚙', 'ru': 'Мин площадь ⚙'},
+    'filters.button.min_usable_area.all.enabled': {'en': '✅ All', 'ru': '✅ Любая'},
+    'filters.button.min_usable_area.all.disabled': {'en': 'All', 'ru': 'Любая'},
+    'filters.button.min_usable_area.custom.enabled': {'en': '✅ Custom', 'ru': '✅ Пользовательская'},
+    'filters.button.min_usable_area.custom.disabled': {'en': 'Custom', 'ru': 'Пользовательская'},
     'filters.button.min_price.enabled': {'en': 'Min price ✅', 'ru': 'Мин цена ✅'},
     'filters.button.min_price.disabled': {'en': 'Min price ⚙', 'ru': 'Мин цена ⚙'},
     'filters.button.min_price.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
