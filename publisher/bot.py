@@ -77,8 +77,10 @@ async def start(message: Message, command: CommandObject) -> None:
 async def about(message: Message) -> None:
     """About project."""
     logger.info('About')
+    settings = storage.get_user_settings(message.chat.id)
+
     await message.answer(
-        text=translation.get_message('about'),
+        text=translation.get_i8n_text('about', settings.lang),
         reply_markup=presenter.get_main_menu(message.chat.id),
     )
 
@@ -123,12 +125,13 @@ async def admin_info(message: Message) -> None:
 async def user_subscription(message: Message) -> None:
     """Subscription info."""
     logger.info('Subscription')
+    settings = storage.get_user_settings(message.chat.id)
 
     sub = storage.get_subscription(message.chat.id)
     if sub and sub.is_active:
-        text = translation.get_message('subscription.active').format(sub.expired_at.isoformat())
+        text = translation.get_i8n_text('subscription.active', settings.lang).format(sub.expired_at.isoformat())
     else:
-        text = translation.get_message('subscription.inactive')
+        text = translation.get_i8n_text('subscription.inactive', settings.lang)
 
     await message.answer(
         text=text,
@@ -140,9 +143,10 @@ async def user_subscription(message: Message) -> None:
 async def user_filters(message: Message) -> None:
     """User filters setup."""
     logger.info('User filters')
+    settings = storage.get_user_settings(message.chat.id)
 
     await message.answer(
-        text=translation.get_message('filters.description'),
+        text=translation.get_i8n_text('filters.description', settings.lang),
         reply_markup=presenter.get_filters_menu(message.chat.id),
     )
 
@@ -151,8 +155,10 @@ async def user_filters(message: Message) -> None:
 async def user_settings(message: Message) -> None:
     """User settings setup."""
     logger.info('User settings')
+    settings = storage.get_user_settings(message.chat.id)
+
     await message.answer(
-        text=translation.get_message('settings.description'),
+        text=translation.get_i8n_text('settings.description', settings.lang),
         reply_markup=presenter.get_settings_menu(message.chat.id),
     )
 
@@ -161,12 +167,13 @@ async def user_settings(message: Message) -> None:
 async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) -> None:
     """Go back to filters."""
     logger.info('filter_go_back')
+    settings = storage.get_user_settings(query.from_user.id)
 
     if state:
         await state.clear()
 
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description'),
+        text=translation.get_i8n_text('filters.description', settings.lang),
         reply_markup=presenter.get_filters_menu(query.from_user.id),
     )
 
@@ -175,17 +182,17 @@ async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) 
 async def filter_close(query: CallbackQuery, state: FSMContext | None = None) -> None:
     """Close filters."""
     logger.info('filter_close')
+    settings = storage.get_user_settings(query.from_user.id)
 
     if state:
         await state.clear()
 
     await query.message.delete()  # type: ignore
 
-    filters_config = storage.get_user_settings(query.from_user.id)
-    logger.info(f'filter_close {filters_config=}')
-    if not filters_config.is_enabled_notifications:
+    logger.info(f'filter_close {settings=}')
+    if not settings.is_enabled_notifications:
         await query.message.answer(  # type: ignore
-            text=translation.get_message('filters.set.enable_notifications'),
+            text=translation.get_i8n_text('filters.set.enable_notifications', settings.lang),
             reply_markup=presenter.get_main_menu(query.from_user.id),
         )
         return
@@ -193,11 +200,11 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
     sub = storage.get_subscription(query.from_user.id)
     logger.info(f'filter_close {sub=}')
     if sub and sub.is_active:
-        await _show_last_estate(filters_config, query.message)  # type: ignore
+        await _show_last_estate(settings, query.message)  # type: ignore
 
     await query.message.answer(  # type: ignore
-        text=translation.get_message('notify.enabled').format(
-            presenter.get_filters_representation(filters_config),
+        text=translation.get_i8n_text('notify.enabled', settings.lang).format(
+            presenter.get_filters_representation(settings),
         ),
         reply_markup=presenter.get_main_menu(query.from_user.id),
         parse_mode='Markdown',
@@ -208,8 +215,8 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
 async def user_settings_toggle_notifications(query: CallbackQuery) -> None:
     """Change notifications status."""
     logger.info('notifications toggle')
-
     settings = storage.get_user_settings(query.from_user.id)
+
     if settings.is_enabled_notifications:
         storage.update_user_settings(query.from_user.id, enabled=False)
     else:
@@ -224,7 +231,6 @@ async def user_settings_toggle_notifications(query: CallbackQuery) -> None:
 async def user_settings_toggle_lang(query: CallbackQuery) -> None:
     """Change user language."""
     logger.info('language toggle')
-
     settings = storage.get_user_settings(query.from_user.id)
 
     if settings.lang not in app_settings.ENABLED_LANGUAGES:
@@ -246,12 +252,14 @@ async def user_settings_toggle_lang(query: CallbackQuery) -> None:
 async def user_settings_close(query: CallbackQuery, state: FSMContext | None = None) -> None:
     """Close settings."""
     logger.info('settings_close')
+    settings = storage.get_user_settings(query.from_user.id)
+
     if state:
         await state.clear()
 
     await query.message.delete()  # type: ignore
     await query.message.answer(  # type: ignore
-        text=translation.get_message('settings.updated'),
+        text=translation.get_i8n_text('settings.updated', settings.lang),
         reply_markup=presenter.get_main_menu(query.from_user.id),
         parse_mode='Markdown',
     )
@@ -261,8 +269,10 @@ async def user_settings_close(query: CallbackQuery, state: FSMContext | None = N
 async def filter_change_district(query: CallbackQuery) -> None:
     """Show change district."""
     logger.info('filter_change_district')
+    settings = storage.get_user_settings(query.from_user.id)
+
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.district'),
+        text=translation.get_i8n_text('filters.description.district', settings.lang),
         reply_markup=presenter.get_filters_district_menu(query.from_user.id),
     )
 
@@ -317,8 +327,10 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
 async def filter_change_layout(query: CallbackQuery) -> None:
     """Show change layout."""
     logger.info('filter_change_layout')
+    settings = storage.get_user_settings(query.from_user.id)
+
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.layout'),
+        text=translation.get_i8n_text('filters.description.layout', settings.lang),
         reply_markup=presenter.get_filters_layout_menu(query.from_user.id),
     )
 
@@ -372,8 +384,10 @@ async def filter_change_layout_switch(query: CallbackQuery) -> None:  # noqa: WP
 async def filter_change_category(query: CallbackQuery) -> None:
     """Show change category."""
     logger.info('filter_change_category')
+    settings = storage.get_user_settings(query.from_user.id)
+
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.category'),
+        text=translation.get_i8n_text('filters.description.category', settings.lang),
         reply_markup=presenter.get_filters_category_menu(query.from_user.id),
     )
 
@@ -413,8 +427,10 @@ async def filter_change_category_switch(query: CallbackQuery) -> None:
 async def filter_change_property_type(query: CallbackQuery) -> None:
     """Show change property_type."""
     logger.info('filter_change_property_type')
+    settings = storage.get_user_settings(query.from_user.id)
+
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.property_type'),
+        text=translation.get_i8n_text('filters.description.property_type', settings.lang),
         reply_markup=presenter.get_filters_property_type_menu(query.from_user.id),
     )
 
@@ -452,12 +468,11 @@ async def filter_change_property_type_switch(query: CallbackQuery) -> None:
 async def filter_change_min_price(query: CallbackQuery) -> None:
     """Show change min price."""
     logger.info('filter_change_min_price')
-
-    filters_config = storage.get_user_settings(query.from_user.id)
+    settings = storage.get_user_settings(query.from_user.id)
 
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.min_price').format(
-            presenter.get_price_human_value(filters_config.min_price),
+        text=translation.get_i8n_text('filters.description.min_price', settings.lang).format(
+            presenter.get_price_human_value(settings.min_price),
         ),
         reply_markup=presenter.get_filters_min_price_menu(query.from_user.id),
     )
@@ -479,9 +494,9 @@ async def filter_change_min_price_change(query: CallbackQuery, state: FSMContext
     logger.info('filter_change_min_price_change')
     await state.set_state(Form.min_price)
 
-    filters_config = storage.get_user_settings(query.from_user.id)
+    settings = storage.get_user_settings(query.from_user.id)
     await query.message.edit_text(  # type: ignore
-        text=translation.get_i8n_text('filters.description.min_price.input', filters_config.lang),
+        text=translation.get_i8n_text('filters.description.min_price.input', settings.lang),
         reply_markup=presenter.get_filters_min_price_internal_menu(query.from_user.id),
     )
 
@@ -493,21 +508,22 @@ async def filter_change_min_price_change_process(message: Message, state: FSMCon
 
     try:
         threshold = int(message.text.strip().lower())  # type: ignore
+
     except (ValueError, AttributeError):
         threshold = 0
 
+    settings = storage.get_user_settings(message.chat.id)
+
     if threshold <= 0:
-        await message.reply(translation.get_message('filters.description.min_price.invalid'))
+        await message.reply(translation.get_i8n_text('filters.description.min_price.invalid', settings.lang))
         return
 
     storage.update_user_settings(user_id=message.chat.id, min_price=threshold)
     await state.clear()
 
-    filters_config = storage.get_user_settings(message.chat.id)
-
     await message.answer(  # type: ignore
-        text=translation.get_message('filters.description.min_price').format(
-            presenter.get_price_human_value(filters_config.min_price),
+        text=translation.get_i8n_text('filters.description.min_price', settings.lang).format(
+            presenter.get_price_human_value(settings.min_price),
         ),
         reply_markup=presenter.get_filters_min_price_menu(message.chat.id),
     )
@@ -517,12 +533,11 @@ async def filter_change_min_price_change_process(message: Message, state: FSMCon
 async def filter_change_max_price(query: CallbackQuery) -> None:
     """Show change max price."""
     logger.info('filter_change_max_price')
-
-    filters_config = storage.get_user_settings(query.from_user.id)
+    settings = storage.get_user_settings(query.from_user.id)
 
     await query.message.edit_text(  # type: ignore
-        text=translation.get_message('filters.description.max_price').format(
-            presenter.get_price_human_value(filters_config.max_price),
+        text=translation.get_i8n_text('filters.description.max_price', settings.lang).format(
+            presenter.get_price_human_value(settings.max_price),
         ),
         reply_markup=presenter.get_filters_max_price_menu(query.from_user.id),
     )
@@ -555,6 +570,7 @@ async def filter_change_max_price_change(query: CallbackQuery, state: FSMContext
 async def filter_change_max_price_change_process(message: Message, state: FSMContext) -> None:
     """Change max price filter value processing."""
     logger.info('filter_change_max_price_change_process')
+    settings = storage.get_user_settings(message.chat.id)
 
     try:
         threshold = int(message.text.strip().lower())  # type: ignore
@@ -562,7 +578,7 @@ async def filter_change_max_price_change_process(message: Message, state: FSMCon
         threshold = 0
 
     if threshold <= 0:
-        await message.reply(translation.get_message('filters.description.max_price.invalid'))
+        await message.reply(translation.get_i8n_text('filters.description.max_price.invalid', settings.lang))
         return
 
     storage.update_user_settings(user_id=message.chat.id, max_price=threshold)
@@ -571,7 +587,7 @@ async def filter_change_max_price_change_process(message: Message, state: FSMCon
     filters_config = storage.get_user_settings(message.chat.id)
 
     await message.answer(  # type: ignore
-        text=translation.get_message('filters.description.max_price').format(
+        text=translation.get_i8n_text('filters.description.max_price', settings.lang).format(
             presenter.get_price_human_value(filters_config.max_price),
         ),
         reply_markup=presenter.get_filters_max_price_menu(message.chat.id),
@@ -581,9 +597,11 @@ async def filter_change_max_price_change_process(message: Message, state: FSMCon
 @dp.callback_query(lambda callback: callback.data and callback.data == 'trial:activate')
 async def got_trial(query: CallbackQuery) -> None:
     """Process free trial."""
+    settings = storage.get_user_settings(query.from_user.id)
+
     if storage.has_used_trial(query.from_user.id, 'trial'):
         logger.error('Trial already used')
-        await query.answer(text=translation.get_message('trial.already_used'))
+        await query.answer(text=translation.get_i8n_text('trial.already_used', settings.lang))
         return
 
     sub: types.Subscription = storage.renew_subscription(
@@ -593,11 +611,11 @@ async def got_trial(query: CallbackQuery) -> None:
     storage.mark_used_trial(query.from_user.id, 'trial')
 
     await query.message.answer(  # type: ignore
-        text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
+        text=translation.get_i8n_text('payment.accepted', settings.lang).format(sub.expired_at.isoformat()),
         reply_markup=presenter.get_main_menu(query.from_user.id),
     )
     await query.message.answer(  # type: ignore
-        text=translation.get_message('start.set_filters'),
+        text=translation.get_i8n_text('start.set_filters', settings.lang),
     )
 
 
@@ -642,17 +660,18 @@ async def buy(query: CallbackQuery) -> None:
 async def pre_checkout_query(query: PreCheckoutQuery) -> None:
     """Pre checkout check."""
     logger.info(f'Pre checkout request {query=}')
+    settings = storage.get_user_settings(query.from_user.id)
 
     invoice = storage.get_invoice(query.invoice_payload)
     logger.info(f'{invoice=}')
     if not invoice:
         logger.error('Invoice not found')
-        await query.answer(ok=False, error_message=translation.get_message('invoice.expired'))
+        await query.answer(ok=False, error_message=translation.get_i8n_text('invoice.expired', settings.lang))
         return
 
     if invoice.user_id != query.from_user.id or invoice.price != query.total_amount:
         logger.error('Invoice invalid')
-        await query.answer(ok=False, error_message=translation.get_message('invoice.invalid'))
+        await query.answer(ok=False, error_message=translation.get_i8n_text('invoice.invalid', settings.lang))
         return
 
     await query.answer(ok=True)
@@ -662,6 +681,7 @@ async def pre_checkout_query(query: PreCheckoutQuery) -> None:
 async def payment_success(message: Message, bot: Bot) -> None:
     """Success purchase."""
     logger.info(f'Payment success {message=}')
+    settings = storage.get_user_settings(message.chat.id)
 
     success_payment = message.successful_payment
     if not success_payment:
@@ -684,7 +704,7 @@ async def payment_success(message: Message, bot: Bot) -> None:
     )
 
     await message.answer(
-        text=translation.get_message('payment.accepted').format(sub.expired_at.isoformat()),
+        text=translation.get_i8n_text('payment.accepted', settings.lang).format(sub.expired_at.isoformat()),
         reply_markup=presenter.get_main_menu(message.chat.id),
     )
 
@@ -692,6 +712,8 @@ async def payment_success(message: Message, bot: Bot) -> None:
 async def _show_last_estate(filters: types.UserFilters, message: Message) -> None:
     last_ads = await api_client.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
     logger.info('_show_last_estate: got {0}'.format(len(last_ads)))
+    settings = storage.get_user_settings(message.chat.id)
+
     counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
@@ -708,7 +730,7 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
 
     if counter > 0:
         await message.answer(
-            text=translation.get_message('estates.example'),
+            text=translation.get_i8n_text('estates.example', settings.lang),
         )
 
 
