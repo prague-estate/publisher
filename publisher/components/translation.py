@@ -11,11 +11,11 @@ _i8n = {
     },
     'notify.disabled': {
         'en': "We'll stop bothering you with notices.\nWe hope you've found your dream home! 🏠",
-        'ru': "Мы больше не будем вас беспокоить уведомлениями.\nНадеемся, Вы нашли жилье своей мечты! 🏠",
+        'ru': 'Мы больше не будем вас беспокоить уведомлениями.\nНадеемся, Вы нашли жилье своей мечты! 🏠',
     },
     'notify.enabled': {
         'en': "We'll send you new ads as soon as they're posted!\nBased on your filters:\n\n{0}",
-        'ru': "Мы пришлем вам новые объявления, как только они будут опубликованы!\nС учётем ваших предпочтений:\n\n{0}",
+        'ru': 'Мы пришлем вам новые объявления, как только они будут опубликованы!\nС учётем ваших предпочтений:\n\n{0}',
     },
     'settings.updated': {
         'en': 'New settings applied',
@@ -47,7 +47,7 @@ _i8n = {
     },
     'estates.example': {
         'en': "⬆️ Here's the latest advert for your criteria.",
-        'ru': "⬆️ Вот последние объявления по вашим предпочтениям.",
+        'ru': '⬆️ Вот последние объявления по вашим предпочтениям.',
     },
     'filters.set.enable_notifications': {
         'en': 'Filters are set!\nEnable notifications to receive new ads.',
@@ -178,12 +178,6 @@ _i8n = {
     'price.year': {'en': 'Year access', 'ru': 'Год доступа'},
     'price.test': {'en': 'Test access', 'ru': 'Тестовый доступ'},
 }
-
-
-# fixme remove usage
-def get_message(slug: str) -> str:
-    """Return en message by slug."""
-    return get_i8n_text(slug, 'en')
 
 
 def get_i8n_text(slug: str, lang: str) -> str:

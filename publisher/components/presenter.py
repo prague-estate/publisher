@@ -7,7 +7,7 @@ from aiogram.utils import markdown
 from aiogram.utils.text_decorations import markdown_decoration
 
 from publisher.components import storage
-from publisher.components.translation import get_i8n_text, get_message
+from publisher.components.translation import get_i8n_text
 from publisher.components.types import Estate, UserFilters
 from publisher.settings import app_settings, prices_settings
 
@@ -455,7 +455,7 @@ def get_filters_representation(user_filters: UserFilters) -> str:
     if user_filters.layouts:
         layouts = [
             '`{0}`'.format(
-                get_message('filters.button.layout.{0}.disabled'.format(layout_name)),
+                get_i8n_text('filters.button.layout.{0}.disabled', user_filters.lang).format(layout_name),
             )
             for layout_name in user_filters.layouts
             if layout_name in app_settings.ENABLED_LAYOUTS
@@ -467,7 +467,7 @@ def get_filters_representation(user_filters: UserFilters) -> str:
     if user_filters.districts:
         districts = [
             '`{0}`'.format(
-                get_message('filters.button.district.number.disabled').format(district_number),
+                get_i8n_text('filters.button.district.number.disabled', user_filters.lang).format(district_number),
             )
             for district_number in user_filters.districts
             if district_number in app_settings.ENABLED_DISTRICTS

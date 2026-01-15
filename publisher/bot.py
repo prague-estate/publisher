@@ -717,10 +717,10 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
     counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
-            settings = presenter.get_estate_post_settings(ads)
-            logger.info(f'publish {settings=}')
+            estate_settings = presenter.get_estate_post_settings(ads)
+            logger.info(f'publish {estate_settings=}')
             try:
-                await message.answer_photo(**settings)
+                await message.answer_photo(**estate_settings)
             except Exception as exc:
                 logger.error(f'Exception {exc=}')
             counter += 1
