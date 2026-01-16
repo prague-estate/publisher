@@ -74,6 +74,9 @@ def get_user_settings(user_id: int) -> UserFilters:
     if saved_data.get('enabled') is not None:
         default_data['enabled'] = bool(int(saved_data.get('enabled')))  # type: ignore
 
+    if saved_data.get('min_usable_area', None):
+        default_data['min_usable_area'] = int(saved_data.get('min_usable_area'))  # type: ignore
+
     if saved_data.get('min_price', None):
         default_data['min_price'] = int(saved_data.get('min_price'))  # type: ignore
 

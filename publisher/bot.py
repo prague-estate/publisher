@@ -6,12 +6,11 @@ from itertools import cycle
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.utils.deep_linking import create_start_link
 
-from publisher.components import api_client, presenter, storage, translation, types
+from publisher.components import api_client, callback_handlers, forms, presenter, storage, translation, types
 from publisher.settings import app_settings, prices_settings
 
 logger = logging.getLogger(__file__)
@@ -19,12 +18,7 @@ logger = logging.getLogger(__file__)
 bot_instance = Bot(app_settings.BOT_TOKEN)
 dp = Dispatcher(storage=RedisStorage.from_url(app_settings.REDIS_DSN))
 
-
-class Form(StatesGroup):
-    """Change filters states."""
-
-    max_price = State()
-    min_price = State()
+callback_handlers.init(dp)
 
 
 @dp.message(CommandStart(deep_link=True))
@@ -492,7 +486,7 @@ async def filter_change_min_price_reset(query: CallbackQuery) -> None:
 async def filter_change_min_price_change(query: CallbackQuery, state: FSMContext) -> None:
     """Change min price filter value input."""
     logger.info('filter_change_min_price_change')
-    await state.set_state(Form.min_price)
+    await state.set_state(forms.Form.min_price)
 
     settings = storage.get_user_settings(query.from_user.id)
     await query.message.edit_text(  # type: ignore
@@ -501,7 +495,7 @@ async def filter_change_min_price_change(query: CallbackQuery, state: FSMContext
     )
 
 
-@dp.message(Form.min_price)
+@dp.message(forms.Form.min_price)
 async def filter_change_min_price_change_process(message: Message, state: FSMContext) -> None:
     """Change min price filter value processing."""
     logger.info('filter_change_min_price_change_process')
@@ -557,7 +551,7 @@ async def filter_change_max_price_reset(query: CallbackQuery) -> None:
 async def filter_change_max_price_change(query: CallbackQuery, state: FSMContext) -> None:
     """Change max price filter value input."""
     logger.info('filter_change_max_price_change')
-    await state.set_state(Form.max_price)
+    await state.set_state(forms.Form.max_price)
 
     filters_config = storage.get_user_settings(query.from_user.id)
     await query.message.edit_text(  # type: ignore
@@ -566,7 +560,7 @@ async def filter_change_max_price_change(query: CallbackQuery, state: FSMContext
     )
 
 
-@dp.message(Form.max_price)
+@dp.message(forms.Form.max_price)
 async def filter_change_max_price_change_process(message: Message, state: FSMContext) -> None:
     """Change max price filter value processing."""
     logger.info('filter_change_max_price_change_process')

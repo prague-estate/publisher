@@ -127,6 +127,14 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
         ),
         InlineKeyboardButton(
             text=get_i8n_text(
+                'filters.button.min_usable_area.{0}'.format(
+                    'enabled' if filters_config.min_usable_area else 'disabled'),
+                filters_config.lang,
+            ),
+            callback_data='filters:min_usable_area:show',
+        ),
+        InlineKeyboardButton(
+            text=get_i8n_text(
                 'filters.button.layout.{0}'.format('enabled' if filters_config.layouts else 'disabled'),
                 filters_config.lang,
             ),
@@ -313,6 +321,61 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def get_filters_min_usable_area_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return change min usable area dialog."""
+    filters_config = storage.get_user_settings(user_id)
+
+    kb = [
+        InlineKeyboardButton(
+            text=get_i8n_text(
+                'filters.button.min_usable_area.all.{0}'.format(
+                    'enabled' if filters_config.min_usable_area is None else 'disabled',
+                ),
+                filters_config.lang,
+            ),
+            callback_data='filters:min_usable_area:reset',
+        ),
+        InlineKeyboardButton(
+            text=get_i8n_text(
+                'filters.button.min_usable_area.custom.{0}'.format(
+                    'disabled' if filters_config.min_usable_area is None else 'enabled',
+                ),
+                filters_config.lang,
+            ),
+            callback_data='filters:min_usable_area:change',
+        ),
+        InlineKeyboardButton(
+            text=get_i8n_text('filters.button.back', filters_config.lang),
+            callback_data='filters:back',
+        ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
+def get_filters_min_usable_area_internal_menu(user_id: int) -> InlineKeyboardMarkup:
+    """Return change min usable area internal menu."""
+    filters_config = storage.get_user_settings(user_id)
+    kb = [
+        InlineKeyboardButton(
+            text=get_i8n_text('filters.button.back', filters_config.lang),
+            callback_data='filters:back',
+        ),
+    ]
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [button]
+            for button in kb
+        ],
+        resize_keyboard=True,
+    )
+
+
 def get_filters_min_price_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change min price dialog."""
     filters_config = storage.get_user_settings(user_id)
@@ -442,15 +505,16 @@ def get_filters_representation(user_filters: UserFilters) -> str:
         messages.append('Min price: `{0}`'.format(
             get_price_human_value(user_filters.min_price),
         ))
-    else:
-        messages.append('Min price: `not set`')
 
     if user_filters.max_price:
         messages.append('Max price: `{0}`'.format(
             get_price_human_value(user_filters.max_price),
         ))
-    else:
-        messages.append('Max price: `not set`')
+
+    if user_filters.min_usable_area:
+        messages.append('Min usable area: `{0}` m²'.format(
+            user_filters.min_usable_area,
+        ))
 
     if user_filters.layouts:
         layouts = [
