@@ -523,7 +523,7 @@ async def filter_change_min_price_change_process(message: Message, state: FSMCon
 
     await message.answer(  # type: ignore
         text=translation.get_i8n_text('filters.description.min_price', settings.lang).format(
-            presenter.get_price_human_value(settings.min_price),
+            presenter.get_price_human_value(threshold),
         ),
         reply_markup=presenter.get_filters_min_price_menu(message.chat.id),
     )
@@ -584,11 +584,9 @@ async def filter_change_max_price_change_process(message: Message, state: FSMCon
     storage.update_user_settings(user_id=message.chat.id, max_price=threshold)
     await state.clear()
 
-    filters_config = storage.get_user_settings(message.chat.id)
-
     await message.answer(  # type: ignore
         text=translation.get_i8n_text('filters.description.max_price', settings.lang).format(
-            presenter.get_price_human_value(filters_config.max_price),
+            presenter.get_price_human_value(threshold),
         ),
         reply_markup=presenter.get_filters_max_price_menu(message.chat.id),
     )

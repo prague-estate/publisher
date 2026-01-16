@@ -455,7 +455,7 @@ def get_filters_representation(user_filters: UserFilters) -> str:
     if user_filters.layouts:
         layouts = [
             '`{0}`'.format(
-                get_i8n_text('filters.button.layout.{0}.disabled', user_filters.lang).format(layout_name),
+                get_i8n_text('filters.button.layout.{0}.disabled'.format(layout_name), user_filters.lang),
             )
             for layout_name in user_filters.layouts
             if layout_name in app_settings.ENABLED_LAYOUTS
