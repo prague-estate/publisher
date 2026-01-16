@@ -24,11 +24,17 @@ ignore =
     #  Found too long ``try`` body length
     WPS229,
 
+    # Found too many exceptions in `except` case
+    WPS239,
+
     # F-strings is OK
     WPS305,
 
     # Found class without a base class - dataclass used
     WPS306,
+
+    # Found `await` in `for` loop
+    WPS476,
 
 
 per-file-ignores =
