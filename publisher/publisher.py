@@ -29,7 +29,8 @@ async def publisher(limit: int = 1) -> Counter:
         logger.info('got {0} {1} ads'.format(len(ads_for_publish), category))
         counters[f'{category} total'] = len(ads_for_publish)
 
-        new_ads = _apply_new_only_filter(ads_for_publish)[::-1]
+        new_ads = _apply_new_only_filter(ads_for_publish)
+        new_ads.reverse()
         logger.info('got {0} new {1} ads'.format(len(new_ads), category))
 
         storage.mark_as_posted(ads_ids=[ads_for_post.id for ads_for_post in new_ads])

@@ -233,15 +233,15 @@ async def user_settings_toggle_lang(query: CallbackQuery) -> None:
     logger.info('language toggle')
     settings = storage.get_user_settings(query.from_user.id)
 
-    if settings.lang not in app_settings.ENABLED_LANGUAGES:
-        storage.update_user_settings(query.from_user.id, lang=app_settings.ENABLED_LANGUAGES[0])
-    else:
+    if settings.lang in app_settings.ENABLED_LANGUAGES:
         langs_cycle = cycle(app_settings.ENABLED_LANGUAGES)
         while True:
             lang = next(langs_cycle)
             if lang == settings.lang:
                 storage.update_user_settings(query.from_user.id, lang=next(langs_cycle))
                 break
+    else:
+        storage.update_user_settings(query.from_user.id, lang=app_settings.ENABLED_LANGUAGES[0])
 
     await query.message.edit_reply_markup(  # type: ignore
         reply_markup=presenter.get_settings_menu(query.from_user.id),
