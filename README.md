@@ -4,7 +4,7 @@
 [![linters](https://github.com/prague-estate/publisher/actions/workflows/linters.yml/badge.svg?branch=main)](https://github.com/prague-estate/publisher/actions/workflows/linters.yml)
 
 ### Pre-requirements
-- [Python 3.12+](https://www.python.org/downloads/)
+- [Python 3.14+](https://www.python.org/downloads/)
 - [Redis](https://redis.io/docs/getting-started/installation/)
 
 
@@ -12,7 +12,7 @@
 ```shell
 git clone git@github.com:prague-estate/publisher.git prague-publisher
 cd prague-publisher
-python3.12 -m venv venv
+python3.14 -m venv venv
 source venv/bin/activate
 pip install -U poetry pip setuptools
 poetry config virtualenvs.create false --local
@@ -51,7 +51,7 @@ python -m publisher.bot
 ```shell
 add-apt-repository ppa:deadsnakes/ppa
 apt-get update
-apt install -y software-properties-common python3.12 python3.12-dev python3.12-venv 
+apt install -y software-properties-common python3.14 python3.14-dev python3.14-venv 
 apt install -y libpq-dev gcc python3-pip redis supervisor
 apt-get upgrade
 adduser publisher
