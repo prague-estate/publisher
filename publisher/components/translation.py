@@ -88,6 +88,8 @@ _i8n = {
     },
     'filters.description.category': {'en': 'Set the category:', 'ru': 'Выберите категорию объявления:'},
     'filters.description.property_type': {'en': 'Set the property type:', 'ru': 'Выберите тип объекта:'},
+    'filters.description.price_not_set': {'en': 'not set', 'ru': 'не установлено'},
+    'filters.description.area_currency': {'en': 'm²', 'ru': 'м2'},
     'filters.description.min_usable_area': {
         'en': 'Set the minimum usable area.\n\nCurrent threshold: {0} m²',
         'ru': 'Установите минимальную площадь.\n\nТекущий порог: {0} м2',
@@ -101,8 +103,8 @@ _i8n = {
         'ru': 'Введите значение больше или равное нулю или отмените изменения кнопкой "Назад"',
     },
     'filters.description.min_price': {
-        'en': 'Set the minimum price.\n\nCurrent threshold: {0}',
-        'ru': 'Установите минимальную цену.\n\nТекущий порог: {0}',
+        'en': 'Set the minimum price.\n\nCurrent threshold: {0} Kč',
+        'ru': 'Установите минимальную цену.\n\nТекущий порог: {0} Kč',
     },
     'filters.description.min_price.input': {
         'en': 'Input the minimum price in Kč:',
@@ -113,8 +115,8 @@ _i8n = {
         'ru': 'Введите значение больше О или отмените ввод нажав "Назад".',
     },
     'filters.description.max_price': {
-        'en': 'Set the highest price.\n\nCurrent threshold: {0}',
-        'ru': 'Установите максимальную цену.\n\nТекущий порог: {0}',
+        'en': 'Set the highest price.\n\nCurrent threshold: {0} Kč',
+        'ru': 'Установите максимальную цену.\n\nТекущий порог: {0} Kč',
     },
     'filters.description.max_price.input': {
         'en': 'Input the highest price in Kč:',
@@ -128,6 +130,7 @@ _i8n = {
     'filters.description.district': {'en': 'Select required districts:', 'ru': 'Выберите желаемый район:'},
     'filters.button.back': {'en': '⬅️ Back', 'ru': '⬅️ Назад'},
     'filters.button.close': {'en': 'Close', 'ru': 'Закрыть'},
+    'filters.name.category': {'en': 'Category', 'ru': 'Категория'},
     'filters.button.category.enabled': {'en': 'Category ✅', 'ru': 'Категория ✅'},
     'filters.button.category.disabled': {'en': 'Category ⚙', 'ru': 'Категория ⚙'},
     'filters.button.category.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
@@ -136,6 +139,7 @@ _i8n = {
     'filters.button.category.sale.disabled': {'en': 'Sale', 'ru': 'Покупка'},
     'filters.button.category.lease.enabled': {'en': '✅ Rent', 'ru': '✅ Аренда'},
     'filters.button.category.lease.disabled': {'en': 'Rent', 'ru': 'Аренда'},
+    'filters.name.property_type': {'en': 'Property type', 'ru': 'Тип объекта'},
     'filters.button.property_type.enabled': {'en': 'Property type ✅', 'ru': 'Тип объекта ✅'},
     'filters.button.property_type.disabled': {'en': 'Property type ⚙', 'ru': 'Тип объекта ⚙'},
     'filters.button.property_type.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
@@ -144,24 +148,28 @@ _i8n = {
     'filters.button.property_type.house.disabled': {'en': 'House', 'ru': 'Дом'},
     'filters.button.property_type.flat.enabled': {'en': '✅ Flat', 'ru': '✅ Квартира'},
     'filters.button.property_type.flat.disabled': {'en': 'Flat', 'ru': 'Квартира'},
+    'filters.name.min_usable_area': {'en': 'Min area', 'ru': 'Мин площадь'},
     'filters.button.min_usable_area.enabled': {'en': 'Min area ✅', 'ru': 'Мин площадь ✅'},
     'filters.button.min_usable_area.disabled': {'en': 'Min area ⚙', 'ru': 'Мин площадь ⚙'},
     'filters.button.min_usable_area.all.enabled': {'en': '✅ All', 'ru': '✅ Любая'},
     'filters.button.min_usable_area.all.disabled': {'en': 'All', 'ru': 'Любая'},
     'filters.button.min_usable_area.custom.enabled': {'en': '✅ Custom', 'ru': '✅ Пользовательская'},
     'filters.button.min_usable_area.custom.disabled': {'en': 'Custom', 'ru': 'Пользовательская'},
+    'filters.name.min_price': {'en': 'Min price', 'ru': 'Мин цена'},
     'filters.button.min_price.enabled': {'en': 'Min price ✅', 'ru': 'Мин цена ✅'},
     'filters.button.min_price.disabled': {'en': 'Min price ⚙', 'ru': 'Мин цена ⚙'},
     'filters.button.min_price.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
     'filters.button.min_price.all.disabled': {'en': 'All', 'ru': 'Все'},
     'filters.button.min_price.custom.enabled': {'en': '✅ Custom', 'ru': '✅ Пользовательская'},
     'filters.button.min_price.custom.disabled': {'en': 'Custom', 'ru': 'Пользовательская'},
+    'filters.name.max_price': {'en': 'Max price', 'ru': 'Макс цена'},
     'filters.button.max_price.enabled': {'en': 'Max price ✅', 'ru': 'Макс цена ✅'},
     'filters.button.max_price.disabled': {'en': 'Max price ⚙', 'ru': 'Макс цена ⚙'},
     'filters.button.max_price.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
     'filters.button.max_price.all.disabled': {'en': 'All', 'ru': 'Все'},
     'filters.button.max_price.custom.enabled': {'en': '✅ Custom', 'ru': '✅ Пользовательская'},
     'filters.button.max_price.custom.disabled': {'en': 'Custom', 'ru': 'Пользовательская'},
+    'filters.name.layout': {'en': 'Layout', 'ru': 'Планировка'},
     'filters.button.layout.enabled': {'en': 'Layout ✅', 'ru': 'Планировка ✅'},
     'filters.button.layout.disabled': {'en': 'Layout ⚙', 'ru': 'Планировка ⚙'},
     'filters.button.layout.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
@@ -184,6 +192,7 @@ _i8n = {
     'filters.button.layout.four_more.disabled': {'en': '5 and more', 'ru': '5 и больше'},
     'filters.button.layout.others.enabled': {'en': '✅ others', 'ru': '✅ другие'},
     'filters.button.layout.others.disabled': {'en': 'others', 'ru': 'другие'},
+    'filters.name.district': {'en': 'District', 'ru': 'Район'},
     'filters.button.district.enabled': {'en': 'District ✅', 'ru': 'Район ✅'},
     'filters.button.district.disabled': {'en': 'District ⚙', 'ru': 'Район ⚙'},
     'filters.button.district.all.enabled': {'en': '✅ All', 'ru': '✅ Все'},
@@ -195,6 +204,31 @@ _i8n = {
     'price.month': {'en': 'Month access 🌟', 'ru': 'Месяц доступа 🌟'},
     'price.year': {'en': 'Year access', 'ru': 'Год доступа'},
     'price.test': {'en': 'Test access', 'ru': 'Тестовый доступ'},
+
+    'ads.title.flat.sale': {
+        'en': 'New flat for sale:',
+        'ru': 'Новая квартира в продаже:',
+    },
+    'ads.title.house.sale': {
+        'en': 'New house for sale:',
+        'ru': 'Новый дом на продажу:',
+    },
+    'ads.title.flat.lease': {
+        'en': 'New flat for rent:',
+        'ru': 'Новая квартира в аренду:',
+    },
+    'ads.title.house.lease': {
+        'en': 'New house for rent:',
+        'ru': 'Новый дом в аренду:',
+    },
+    'ads.energy_rate': {
+        'en': 'energy rating: {0}',
+        'ru': 'энергоэффективность: {0}',
+    },
+    'ads.source': {
+        'en': 'from {0}',
+        'ru': 'источник {0}',
+    },
 }
 
 

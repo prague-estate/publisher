@@ -11,7 +11,7 @@ class Estate:
     id: int
     category: str
     source_name: str
-    source_uid: str
+    source_uid: str  # noqa: F841
     title: str
     layout: str
     address: str
@@ -21,7 +21,7 @@ class Estate:
     energy_rating: str
     image_url: str
     page_url: str
-    updated_at: str
+    updated_at: str  # noqa: F841
     property_type: str = 'flat'
 
 

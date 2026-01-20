@@ -26,6 +26,10 @@ jobs:
       run: |
         poetry run mypy publisher/
 
+    - name: Vulture
+      run: |
+        poetry run vulture publisher/
+
     - name: Ruff
       run: |
         poetry run ruff check

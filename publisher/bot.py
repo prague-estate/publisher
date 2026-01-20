@@ -466,7 +466,7 @@ async def filter_change_min_price(query: CallbackQuery) -> None:
 
     await query.message.edit_text(  # type: ignore
         text=translation.get_i8n_text('filters.description.min_price', settings.lang).format(
-            presenter.get_price_human_value(settings.min_price),
+            presenter.get_price_human_value(settings.min_price, settings.lang),
         ),
         reply_markup=presenter.get_filters_min_price_menu(query.from_user.id),
     )
@@ -517,7 +517,7 @@ async def filter_change_min_price_change_process(message: Message, state: FSMCon
 
     await message.answer(  # type: ignore
         text=translation.get_i8n_text('filters.description.min_price', settings.lang).format(
-            presenter.get_price_human_value(threshold),
+            presenter.get_price_human_value(threshold, settings.lang),
         ),
         reply_markup=presenter.get_filters_min_price_menu(message.chat.id),
     )
@@ -531,7 +531,7 @@ async def filter_change_max_price(query: CallbackQuery) -> None:
 
     await query.message.edit_text(  # type: ignore
         text=translation.get_i8n_text('filters.description.max_price', settings.lang).format(
-            presenter.get_price_human_value(settings.max_price),
+            presenter.get_price_human_value(settings.max_price, settings.lang),
         ),
         reply_markup=presenter.get_filters_max_price_menu(query.from_user.id),
     )
@@ -580,7 +580,7 @@ async def filter_change_max_price_change_process(message: Message, state: FSMCon
 
     await message.answer(  # type: ignore
         text=translation.get_i8n_text('filters.description.max_price', settings.lang).format(
-            presenter.get_price_human_value(threshold),
+            presenter.get_price_human_value(threshold, settings.lang),
         ),
         reply_markup=presenter.get_filters_max_price_menu(message.chat.id),
     )
@@ -704,12 +704,11 @@ async def payment_success(message: Message, bot: Bot) -> None:
 async def _show_last_estate(filters: types.UserFilters, message: Message) -> None:
     last_ads = await api_client.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
     logger.info('_show_last_estate: got {0}'.format(len(last_ads)))
-    settings = storage.get_user_settings(message.chat.id)
 
     counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
-            estate_settings = presenter.get_estate_post_settings(ads)
+            estate_settings = presenter.get_estate_post_settings(ads, filters.lang)
             logger.info(f'publish {estate_settings=}')
             try:
                 await message.answer_photo(**estate_settings)
@@ -722,7 +721,7 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
 
     if counter > 0:
         await message.answer(
-            text=translation.get_i8n_text('estates.example', settings.lang),
+            text=translation.get_i8n_text('estates.example', filters.lang),
         )
 
 
