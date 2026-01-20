@@ -488,32 +488,37 @@ def get_filters_max_price_internal_menu(user_id: int) -> InlineKeyboardMarkup:
 
 def get_filters_representation(user_filters: UserFilters) -> str:
     """Return user filters representation."""
-    # todo translations
     messages = []
 
-    if user_filters.category:
-        messages.append(f'Category: `{user_filters.category}`')
-    else:
-        messages.append('Category: `all`')
+    messages.append('{0}: `{1}`'.format(
+        get_i8n_text('filters.name.category', user_filters.lang),
+        get_i8n_text('filters.button.category.{0}.disabled'.format(user_filters.category or 'all'), user_filters.lang),
+    ))
 
-    if user_filters.property_type:
-        messages.append(f'Type: `{user_filters.property_type}`')
-    else:
-        messages.append('Type: `all`')
+    messages.append('{0}: `{1}`'.format(
+        get_i8n_text('filters.name.property_type', user_filters.lang),
+        get_i8n_text('filters.button.property_type.{0}.disabled'.format(user_filters.property_type or 'all'), user_filters.lang),
+    ))
 
     if user_filters.min_price:
-        messages.append('Min price: `{0}`'.format(
-            get_price_human_value(user_filters.min_price),
+        messages.append('{0}: `{1} {2}`'.format(
+            get_i8n_text('filters.name.min_price', user_filters.lang),
+            get_price_human_value(user_filters.min_price, user_filters.lang),
+            get_i8n_text('currency', user_filters.lang),
         ))
 
     if user_filters.max_price:
-        messages.append('Max price: `{0}`'.format(
-            get_price_human_value(user_filters.max_price),
+        messages.append('{0}: `{1} {2}`'.format(
+            get_i8n_text('filters.name.max_price', user_filters.lang),
+            get_price_human_value(user_filters.max_price, user_filters.lang),
+            get_i8n_text('currency', user_filters.lang),
         ))
 
     if user_filters.min_usable_area:
-        messages.append('Min usable area: `{0}` m²'.format(
+        messages.append('{0}: `{1} {2}`'.format(
+            get_i8n_text('filters.name.min_usable_area', user_filters.lang),
             user_filters.min_usable_area,
+            get_i8n_text('filters.description.area_currency', user_filters.lang),
         ))
 
     if user_filters.layouts:
@@ -524,9 +529,15 @@ def get_filters_representation(user_filters: UserFilters) -> str:
             for layout_name in user_filters.layouts
             if layout_name in app_settings.ENABLED_LAYOUTS
         ]
-        messages.append('Layouts: {0}'.format(', '.join(layouts)))
+        messages.append('{0}: {1}'.format(
+            get_i8n_text('filters.name.layout', user_filters.lang),
+            ', '.join(layouts),
+        ))
     else:
-        messages.append('Layouts: `all`')
+        messages.append('{0}: `{1}`'.format(
+            get_i8n_text('filters.name.layout', user_filters.lang),
+            get_i8n_text('filters.button.layout.all.disabled', user_filters.lang),
+        ))
 
     if user_filters.districts:
         districts = [
@@ -536,14 +547,20 @@ def get_filters_representation(user_filters: UserFilters) -> str:
             for district_number in user_filters.districts
             if district_number in app_settings.ENABLED_DISTRICTS
         ]
-        messages.append('Districts: {0}'.format(', '.join(districts)))
+        messages.append('{0}: {1}'.format(
+            get_i8n_text('filters.name.district', user_filters.lang),
+            ', '.join(districts),
+        ))
     else:
-        messages.append('Districts: `all`')
+        messages.append('{0}: `{1}`'.format(
+            get_i8n_text('filters.name.district', user_filters.lang),
+            get_i8n_text('filters.button.district.all.disabled', user_filters.lang),
+        ))
 
     return '\n'.join(messages)
 
 
-def get_estate_post_settings(ads_for_post: Estate) -> dict[str, Any]:
+def get_estate_post_settings(ads_for_post: Estate, lang: str) -> dict[str, Any]:
     """Set up estate message settings."""
     ads_link_btn = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -552,63 +569,73 @@ def get_estate_post_settings(ads_for_post: Estate) -> dict[str, Any]:
         resize_keyboard=True,
     )
     return {
-        'caption': _get_estate_description(ads_for_post),
+        'caption': _get_estate_description(ads_for_post, lang),
         'photo': ads_for_post.image_url,
         'parse_mode': 'Markdown',
         'reply_markup': ads_link_btn,
     }
 
 
-def _get_estate_description(ads: Estate) -> str:
+def _get_estate_description(ads: Estate, lang: str) -> str:
     """Create a post for the bot."""
-    energy_rate = ads.energy_rating.upper() if len(ads.energy_rating) == 1 else 'unknown'
-    messages = [
-        f'New {ads.property_type} for {ads.category}:',
+    output_messages = [
+        get_i8n_text('ads.title.{0}.{1}'.format(
+            ads.property_type,
+            ads.category,
+        ), lang),
+
         _get_link_without_quote(ads.address, ads.page_url),
-        markdown.bold(get_price_human_value(ads.price)),
-        markdown.text(get_price_human_value(
-            ads.price // ads.usable_area,
-            '{0}/m²'.format(get_i8n_text('currency', 'en')),
-        )),
-        markdown.text('{0}  m²\n{1}\nenergy rating: {2}'.format(
+
+        markdown.bold(
+            '{0} {1}'.format(
+                get_price_human_value(ads.price, lang),
+                get_i8n_text('currency', lang),
+            ),
+        ),
+    ]
+
+    if ads.category == 'sale':
+        output_messages.append(
+            markdown.text(
+                '{0} {1}/{2}'.format(
+                    get_price_human_value(ads.price // ads.usable_area, lang),
+                    get_i8n_text('currency', lang),
+                    get_i8n_text('filters.description.area_currency', lang),
+                ),
+            ),
+        )
+
+    output_messages.append(
+        markdown.text('{0} {1}, {2}'.format(
             ads.usable_area,
-            _get_layout_human_value(ads.layout),
-            energy_rate,
+            get_i8n_text('filters.description.area_currency', lang),
+            get_i8n_text('filters.button.layout.{0}.disabled'.format(ads.layout), lang),
         )),
-        markdown.text('by {0}'.format(
+    )
+
+    if len(ads.energy_rating) == 1:
+        output_messages.append(
+            markdown.text(get_i8n_text('ads.energy_rate', lang).format(
+                ads.energy_rating.upper(),
+            )),
+        )
+
+    output_messages.append(
+        markdown.text(get_i8n_text('ads.source', lang).format(
             _get_link_without_quote(
                 _get_source_name_link(ads.source_name),
                 ads.page_url,
             ),
         )),
-    ]
+    )
+    return markdown.text(*output_messages, sep='\n')
 
-    return markdown.text(*messages, sep='\n')
 
-
-def get_price_human_value(price: int | None, currency: str | None = None) -> str:
+def get_price_human_value(price: int | None, lang: str) -> str:
     """Return human-friendly price string."""
     if not price or price < 0:
-        return 'not set'
-    if currency is None:
-        currency = get_i8n_text('currency', 'en')
-
-    return '{0:,} {1}'.format(price, currency).replace(',', ' ')  # noqa: C819
-
-
-def _get_layout_human_value(layout: str) -> str:
-    """Return human-friendly layout string."""
-    mapa = {
-        'one_kk': '1+kk',
-        'one_one': '1+1',
-        'two_kk': '2+kk',
-        'two_one': '2+1',
-        'three_kk': '3+kk',
-        'three_one': '3+1',
-        'four_kk': '4+kk',
-        'four_more': '4 & more',
-    }
-    return mapa.get(layout, 'unique layout')
+        return get_i8n_text('filters.description.price_not_set', lang)
+    return '{0:,}'.format(price).replace(',', ' ')  # noqa: C819
 
 
 def _get_source_name_link(source_name: str) -> str:
