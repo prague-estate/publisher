@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher.components import callback_handlers
+from publisher.handlers import filter_usable_area
 from publisher.components.storage import get_user_settings
 
 
@@ -11,7 +11,7 @@ async def test_filter_change_min_usable_area_change_happy_path():
     query_mock.from_user.id = 1
     state_mock = AsyncMock()
 
-    await callback_handlers.filter_change_min_usable_area_change(query_mock, state_mock)
+    await filter_usable_area.filter_change_min_usable_area_change(query_mock, state_mock)
 
     state_mock.set_state.assert_called_once()
     query_mock.message.edit_text.assert_called_once()
@@ -29,7 +29,7 @@ async def test_filter_change_min_usable_area_change_process_happy_path(payload: 
     message_mock.text = payload
     state_mock = AsyncMock()
 
-    await callback_handlers.filter_change_min_usable_area_change_process(message_mock, state_mock)
+    await filter_usable_area.filter_change_min_usable_area_change_process(message_mock, state_mock)
 
     if success:
         state_mock.clear.assert_called_once()

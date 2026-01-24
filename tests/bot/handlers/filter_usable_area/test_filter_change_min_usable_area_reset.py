@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher.components import callback_handlers
+from publisher.handlers import filter_usable_area
 from publisher.components.storage import get_user_settings, update_user_settings
 
 
@@ -16,6 +16,6 @@ async def test_filter_change_min_usable_area_reset_happy_path(payload, expected_
     query_mock.from_user.id = 1
     update_user_settings(query_mock.from_user.id, min_usable_area=payload)
 
-    await callback_handlers.filter_change_min_usable_area_reset(query_mock)
+    await filter_usable_area.filter_change_min_usable_area_reset(query_mock)
 
     assert get_user_settings(query_mock.from_user.id).min_usable_area is expected_state

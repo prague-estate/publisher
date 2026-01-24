@@ -108,6 +108,7 @@ class UserFilters:
 class Price:
     """Price type."""
 
-    cost: int  # XTR currency
+    cost: int  # in telegram stars
     days: int
     slug: str
+    cost_usdt: int = None  # in USDT
