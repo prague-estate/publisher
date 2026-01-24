@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal
 
 
 @dataclass
@@ -108,7 +109,7 @@ class UserFilters:
 class Price:
     """Price type."""
 
-    cost: int  # in telegram stars
-    days: int
     slug: str
-    cost_usdt: int = None  # in USDT
+    days: int
+    cost: int  # in telegram stars
+    cost_usdt: Decimal  # in USDT

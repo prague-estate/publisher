@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 
 from publisher.components import presenter, storage, translation, types
+from publisher.components.notifications import send_logs_notification
 from publisher.settings import app_settings, prices_settings
 
 logger = logging.getLogger(__file__)
@@ -44,8 +45,8 @@ async def buy(query: CallbackQuery) -> None:
     settings = storage.get_user_settings(query.from_user.id)
 
     try:
-        price_amount = int(query.data.split(':')[-1])  # type: ignore
-        price = prices_settings[price_amount]
+        price_slug = query.data.split(':')[-1]  # type: ignore
+        price = prices_settings[price_slug]
     except (AttributeError, IndexError, ValueError, KeyError):
         logger.error(f'Invalid buy request {query}')
         return
@@ -72,11 +73,16 @@ async def buy(query: CallbackQuery) -> None:
             ),
         ],
     )
+    await send_logs_notification('stars payment request {0} {1} {2}'.format(
+        price.slug,
+        query.from_user.id,
+        query.from_user.username,
+    ))
 
 
 @router.pre_checkout_query()
 async def pre_checkout_query(query: PreCheckoutQuery) -> None:
-    """Pre checkout check."""
+    """Pre checkout check for payments in STAR`s."""
     logger.info(f'Pre checkout request {query=}')
     settings = storage.get_user_settings(query.from_user.id)
 
@@ -97,7 +103,7 @@ async def pre_checkout_query(query: PreCheckoutQuery) -> None:
 
 @router.message(F.successful_payment)
 async def payment_success(message: Message, bot: Bot) -> None:
-    """Success purchase."""
+    """Success purchase for payments in STAR`s."""
     logger.info(f'Payment success {message=}')
     settings = storage.get_user_settings(message.chat.id)
 
@@ -125,7 +131,7 @@ async def payment_success(message: Message, bot: Bot) -> None:
         text=translation.get_i8n_text('payment.accepted', settings.lang).format(sub.expired_at.isoformat()),
         reply_markup=presenter.get_main_menu(message.chat.id),
     )
-
+    await send_logs_notification('stars payment accepted {0}'.format(invoice))
 
 
 def init(dp: Dispatcher) -> None:

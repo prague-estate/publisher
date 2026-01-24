@@ -1,5 +1,6 @@
 """Application settings."""
 import os
+from decimal import Decimal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -22,6 +23,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     TIMEOUT: int = 35
     PUBLISH_CHANNEL_SALE_ID: int = Field(default=-1002190184244)
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
+    LOGS_CHANNEL_ID: int = Field(default=-1002376200898)
     PUBLISH_ADS_LIMIT: int = Field(default=100)
     FETCH_ADS_LIMIT: int = Field(default=500)
     SHOW_ADS_LIMIT: int = Field(default=3)
@@ -58,6 +60,7 @@ class AppSettings(BaseSettings, extra='ignore'):
         'en',  # default
         'ru',
     ]
+    CRYPTO_PAYMENTS_ENABLED: bool = Field(default=False)
 
     def is_admin(self, user_id: int) -> bool:
         """Check the user is admin or not."""
@@ -69,17 +72,16 @@ app_settings = AppSettings(
 )
 
 _raw_prices = [
-    Price(cost=99, days=7, slug='price.week'),  # 45CZK
-    Price(cost=299, days=31, slug='price.month'),  # ~125CZK
-    Price(cost=1499, days=365, slug='price.year'),  # 629CZK
+    Price(cost=99, cost_usdt=Decimal('2.49'), days=7, slug='price.week'),  # 45CZK
+    Price(cost=299, cost_usdt=Decimal('6.49'), days=31, slug='price.month'),  # ~125CZK
+    Price(cost=1499, cost_usdt=Decimal('18.49'), days=365, slug='price.year'),  # 629CZK
 ]
+if app_settings.DEBUG:
+    _raw_prices.append(
+        Price(cost=1, cost_usdt=Decimal('1'), days=7, slug='price.test'),
+    )
+
 prices_settings = {
-    price.cost: price
+    price.slug: price
     for price in _raw_prices
 }
-if app_settings.DEBUG:
-    prices_settings[1] = Price(
-        cost=1,
-        days=7,
-        slug='price.test',
-    )

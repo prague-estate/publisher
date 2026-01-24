@@ -48,6 +48,7 @@ jobs:
             echo 'BOT_TOKEN=${{ secrets.BOT_TOKEN_PRODUCTION }}' >> .env
             echo 'PUBLISH_CHANNEL_SALE_ID=${{ secrets.CHANNEL_SALE_ID_PRODUCTION }}' >> .env
             echo 'PUBLISH_CHANNEL_LEASE_ID=${{ secrets.CHANNEL_LEASE_ID_PRODUCTION }}' >> .env
+            echo 'LOGS_CHANNEL_ID=-1002379187635' >> .env
             echo 'ADMINS="${{ secrets.ADMINS }}"' >> .env
 
             echo '' >> crontab.txt
