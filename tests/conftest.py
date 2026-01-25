@@ -4,11 +4,26 @@ import pytest
 
 from publisher.components.storage import db_pool, mark_as_posted
 from publisher.components.types import Estate
+from publisher.webapp import app
 
 
 @pytest.fixture(scope='function')
 def event_loop():
-    yield asyncio.get_event_loop()
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope='session')
+def test_client():
+    testing_client = app.test_client()
+    ctx = app.app_context()
+    ctx.push()
+    yield testing_client
+    ctx.pop()
 
 
 @pytest.fixture()

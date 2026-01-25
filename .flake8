@@ -33,6 +33,9 @@ ignore =
     # Found class without a base class - dataclass used
     WPS306,
 
+    #Found `__init__.py` module with logic
+    WPS412,
+
     # Found `await` in `for` loop
     WPS476,
 
@@ -47,9 +50,10 @@ per-file-ignores =
     # WPS432 Found magic number
     # WPS462 Wrong multiline string usage
 
-    publisher/bot.py: WPS202, WPS347, WPS204
+    publisher/bot.py: WPS202, WPS204, WPS347,
+    publisher/handlers/payments.py: WPS347,
     publisher/settings.py: WPS115, WPS432,
-    publisher/components/presenter.py: WPS202, WPS204, WPS213
+    publisher/components/presenter.py: WPS202, WPS204, WPS213,
     publisher/components/translation.py: WPS462,
-    publisher/components/types.py: WPS212
+    publisher/components/types.py: WPS212,
     publisher/components/storage.py: WPS202,

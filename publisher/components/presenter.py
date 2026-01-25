@@ -62,7 +62,7 @@ def get_prices_menu(user_id: int) -> InlineKeyboardMarkup:
         inline_keyboard=kb + [
             [InlineKeyboardButton(
                 text=get_i8n_text(price.slug, settings.lang),
-                callback_data=f'buy:{price.cost}',
+                callback_data=f'buy:{price.slug}',
             )]
             for price in prices_settings.values()
         ],

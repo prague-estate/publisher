@@ -79,6 +79,14 @@ _i8n = {
         'en': 'Your subscription has been extended until {0}!',
         'ru': 'Ваша подписка была успешно продлена до {0}!',
     },
+    'payment.button.xtr': {
+        'en': 'Pay ⭐',
+        'ru': 'Оплатить ⭐',
+    },
+    'payment.button.crypto': {
+        'en': 'Pay crypto',
+        'ru': 'Оплатить криптой',
+    },
     'trial': {'en': 'Free trial access (1 week)', 'ru': 'Пробный доступ на неделю'},
     'trial.already_used': {'en': 'Trial access was already used!', 'ru': 'Пробный доступ уже был использован!'},
     'settings.description': {'en': '⬇️Set up your bot settings.', 'ru': '⬇️Настройки поведения бота.'},

@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal
 
 
 @dataclass
@@ -30,7 +31,6 @@ class Invoice:
     """Payment invoice."""
 
     user_id: int
-    price: int
     days: int
 
 
@@ -108,6 +108,7 @@ class UserFilters:
 class Price:
     """Price type."""
 
-    cost: int  # XTR currency
-    days: int
     slug: str
+    days: int
+    cost: int  # in telegram stars
+    cost_usdt: Decimal  # in USDT

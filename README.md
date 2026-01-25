@@ -47,6 +47,13 @@ python -m publisher.bot
 ```
 
 
+### Run webhook API
+```shell
+gunicorn publisher.webapp:app -b 127.0.0.1:9002 -w 2
+curl -X POST "127.0.0.1:9002/webhook"
+
+```
+
 ### Host setup
 ```shell
 add-apt-repository ppa:deadsnakes/ppa

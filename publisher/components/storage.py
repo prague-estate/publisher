@@ -195,7 +195,6 @@ def stop_subscription(user_id: int) -> None:
 
 def create_invoice(
     user_id: int,
-    price: int,
     days: int,
 ) -> str:
     """Create new payment invoice."""
@@ -204,7 +203,6 @@ def create_invoice(
         name=f'{INVOICE_KEY}:{hash_}',
         mapping={
             'user_id': user_id,
-            'price': price,
             'days': days,
         },
     )
@@ -222,7 +220,6 @@ def get_invoice(
 
     return Invoice(
         user_id=int(invoice_data['user_id']),
-        price=int(invoice_data['price']),
         days=int(invoice_data['days']),
     )
 
