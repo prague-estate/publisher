@@ -114,8 +114,6 @@ async def admin_info(message: Message) -> None:
     )
 
 
-
-
 @dp.message(F.text.in_(translation.get_by('menu.filters')))
 async def user_filters(message: Message) -> None:
     """User filters setup."""

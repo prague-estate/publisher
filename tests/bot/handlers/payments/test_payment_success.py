@@ -6,7 +6,7 @@ from publisher.handlers import payments
 
 async def test_payment_success_happy_path():
     payment = Mock()
-    payment.invoice_payload = create_invoice(user_id=1, price=2, days=3)
+    payment.invoice_payload = create_invoice(user_id=1, days=3)
     payment.telegram_payment_charge_id = '111'
     message_mock = AsyncMock()
     message_mock.successful_payment = payment

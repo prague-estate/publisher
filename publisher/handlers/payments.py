@@ -3,9 +3,9 @@
 import logging
 
 from aiogram import Bot, Dispatcher, F, Router
-from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice, Message, PreCheckoutQuery
 
-from publisher.components import presenter, storage, translation, types
+from publisher.components import heleket_provider, presenter, storage, translation, types
 from publisher.components.notifications import send_logs_notification
 from publisher.settings import app_settings, prices_settings
 
@@ -40,7 +40,7 @@ async def got_trial(query: CallbackQuery) -> None:
 
 @router.callback_query(lambda callback: callback.data and callback.data.startswith('buy:'))
 async def buy(query: CallbackQuery) -> None:
-    """Send invoice."""
+    """Send invoice or selector for payment method."""
     logger.info('buy')
     settings = storage.get_user_settings(query.from_user.id)
 
@@ -53,9 +53,26 @@ async def buy(query: CallbackQuery) -> None:
 
     invoice_hash = storage.create_invoice(
         user_id=query.from_user.id,
-        price=price.cost,
         days=price.days,
     )
+    kb = [
+        [InlineKeyboardButton(text=translation.get_i8n_text('payment.button.xtr', settings.lang), pay=True)],
+    ]
+
+    if app_settings.CRYPTO_PAYMENTS_ENABLED:
+        crypto_pay_link = heleket_provider.create_invoice(
+            order_id=invoice_hash,
+            amount_usdt=price.cost_usdt,
+        )
+        if crypto_pay_link and app_settings.is_admin(query.from_user.id):
+            kb.append([
+                InlineKeyboardButton(
+                    text=translation.get_i8n_text('payment.button.crypto', settings.lang),
+                    url=crypto_pay_link,
+                ),
+            ])
+            logger.info('crypto pay link {0}'.format(crypto_pay_link))
+
     logger.info('sent invoice {0}, {1}, {2}'.format(
         invoice_hash,
         price,
@@ -72,8 +89,12 @@ async def buy(query: CallbackQuery) -> None:
                 amount=price.cost,
             ),
         ],
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=kb,
+            resize_keyboard=True,
+        )
     )
-    await send_logs_notification('stars payment request {0} {1} {2}'.format(
+    await send_logs_notification('payment try {0} {1} {2}'.format(
         price.slug,
         query.from_user.id,
         query.from_user.username,
@@ -93,7 +114,7 @@ async def pre_checkout_query(query: PreCheckoutQuery) -> None:
         await query.answer(ok=False, error_message=translation.get_i8n_text('invoice.expired', settings.lang))
         return
 
-    if invoice.user_id != query.from_user.id or invoice.price != query.total_amount:
+    if invoice.user_id != query.from_user.id:
         logger.error('Invoice invalid')
         await query.answer(ok=False, error_message=translation.get_i8n_text('invoice.invalid', settings.lang))
         return

@@ -31,7 +31,6 @@ class Invoice:
     """Payment invoice."""
 
     user_id: int
-    price: int
     days: int
 
 

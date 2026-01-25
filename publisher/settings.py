@@ -32,6 +32,12 @@ class AppSettings(BaseSettings, extra='ignore'):
     API_URL: str = Field(default='http://127.0.0.1:9001')
     REDIS_DSN: str = Field('redis://localhost:6379/1')
 
+    # Heleket merchant
+    HELEKET_WEBHOOK_CALLBACK_HOST: str = Field(default='http://127.0.0.1:9002')
+    HELEKET_MERCHANT_ID: str = '65ba9bc4-40b6-4a6b-8a39-34e0cf6b041d'
+    HELEKET_API_KEY: str = Field()
+    HELEKET_WEBHOOK_IP: str = '31.133.220.8'
+
     ADMINS: str = ''
 
     TRIAL_PERIOD_DAYS: int = 7
@@ -60,7 +66,7 @@ class AppSettings(BaseSettings, extra='ignore'):
         'en',  # default
         'ru',
     ]
-    CRYPTO_PAYMENTS_ENABLED: bool = Field(default=False)
+    CRYPTO_PAYMENTS_ENABLED: bool = Field(default=True)
 
     def is_admin(self, user_id: int) -> bool:
         """Check the user is admin or not."""

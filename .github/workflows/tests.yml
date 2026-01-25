@@ -33,5 +33,7 @@ jobs:
         API_URL: ${{ secrets.API_URL_PUBLIC }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_STAGING }}
+        HELEKET_API_KEY: ${{ secrets.HELEKET_API_KEY }}
+        HELEKET_WEBHOOK_IP: 127.0.0.1
       run: |
         poetry run pytest --cov=publisher --cov-fail-under=85 --cov-report term-missing
