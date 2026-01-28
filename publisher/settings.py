@@ -48,6 +48,8 @@ class AppSettings(BaseSettings, extra='ignore'):
         'github': 7,
         'landing': 7,
         'tgads': 7,
+        'selfchannel': 7,
+        'muma': 14,
     }
 
     ENABLED_LAYOUTS: list[str] = [
