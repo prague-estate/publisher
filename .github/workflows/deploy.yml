@@ -58,3 +58,4 @@ jobs:
             
             supervisorctl restart estate-bot
             supervisorctl restart estate-webapp
+            supervisorctl restart estate-publisher

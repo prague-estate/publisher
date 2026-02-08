@@ -1,21 +1,36 @@
 """Get estates and publish them to specified telegram channels."""
 import asyncio
 import logging
+import signal
 from collections import Counter
 
 from aiogram import Bot, exceptions
 
-from publisher.components import api_client, presenter, storage
+from publisher.components import api_client, presenter, storage, reload
 from publisher.components.types import Estate, Subscription
 from publisher.settings import app_settings
 
 logger = logging.getLogger(__file__)
 
 
-async def publisher(limit: int = 1) -> Counter:
+async def publisher(limit: int = 1, max_iteration: int | None = 1) -> Counter:
     """Fetch ads by API and post them to channels."""
-    logger.info('publisher start')
+    current_iter: int = 1
     counters: Counter = Counter()
+    while max_iteration is None or current_iter < max_iteration:
+        current_iter += 1
+        logger.info(f'publisher start {current_iter=}')
+        counters: Counter = await _publisher(limit)
+        logger.info(f'publisher end {current_iter=} {counters=}')
+        if reload.has_exit_request():
+            break
+        await asyncio.sleep(5)
+
+    return counters
+
+
+async def _publisher(limit: int) -> Counter:
+    counter: Counter = Counter()
 
     dst_channels = {
         'sale': app_settings.PUBLISH_CHANNEL_SALE_ID,
@@ -27,7 +42,7 @@ async def publisher(limit: int = 1) -> Counter:
     for category, dst_channel in dst_channels.items():
         ads_for_publish = await api_client.fetch_estates(category=category, limit=limit)
         logger.info('got {0} {1} ads'.format(len(ads_for_publish), category))
-        counters[f'{category} total'] = len(ads_for_publish)
+        counter[f'{category} total'] = len(ads_for_publish)
 
         new_ads = _apply_new_only_filter(ads_for_publish)
         new_ads.reverse()
@@ -36,20 +51,17 @@ async def publisher(limit: int = 1) -> Counter:
         storage.mark_as_posted(ads_ids=[ads_for_post.id for ads_for_post in new_ads])
 
         if new_ads and active_subs:
-            counters[f'{category} subs notifications'] += await _post_ads_to_subscriptions(
+            counter[f'{category} subs notifications'] += await _post_ads_to_subscriptions(
                 ads=new_ads,
                 subs=active_subs,
             )
 
         if new_ads:
-            counters[f'{category} channel notifications'] += await _post_ads_to_channel(
+            counter[f'{category} channel notifications'] += await _post_ads_to_channel(
                 ads=new_ads,
                 destination=dst_channel,
             )
-
-    logger.info(f'publisher end {counters=}')
-
-    return counters
+    return counter
 
 
 def _apply_new_only_filter(ads: list[Estate]) -> list[Estate]:
@@ -119,4 +131,5 @@ if __name__ == '__main__':
         level=logging.DEBUG if app_settings.DEBUG else logging.INFO,
         format='%(asctime)s %(levelname)-8s %(message)s',  # noqa: WPS323
     )
-    asyncio.run(publisher(limit=app_settings.PUBLISH_ADS_LIMIT))
+    signal.signal(signal.SIGINT, reload.exit_request)
+    asyncio.run(publisher(limit=app_settings.PUBLISH_ADS_LIMIT, max_iteration=None))

@@ -31,7 +31,7 @@ flake8 publisher/
 mypy publisher/
 ```
 
-### Run publisher session
+### Run publisher
 ```shell
 python -m publisher.publisher
 ```
