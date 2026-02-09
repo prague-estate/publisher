@@ -20,7 +20,7 @@ async def publisher(limit: int = 1, max_iteration: int | None = 1) -> Counter:
     while max_iteration is None or current_iter < max_iteration:
         current_iter += 1
         logger.info(f'publisher start {current_iter=}')
-        counters: Counter = await _publisher(limit)
+        counters = await _publisher(limit)
         logger.info(f'publisher end {current_iter=} {counters=}')
         if reload.has_exit_request():
             break

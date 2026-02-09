@@ -15,7 +15,7 @@ _i8n = {
     },
     'notify.enabled': {
         'en': "We'll send you new ads as soon as they're posted!\nBased on your filters:\n\n{0}",
-        'ru': 'Мы пришлем вам новые объявления, как только они будут опубликованы!\nС учётом ваших предпочтений:\n\n{0}',
+        'ru': 'Мы пришлем вам новые объявления, как только они будут опубликованы!\nТекущие фильтры:\n\n{0}',
     },
     'settings.updated': {
         'en': 'New settings applied',
@@ -43,7 +43,7 @@ _i8n = {
     'currency': {'en': 'Kč', 'ru': 'Kč'},
     'about': {
         'en': 'Hello and welcome!\nHere is a bot that can check for you if there are new ads to find a flat in Prague. According to your preferences. To rent or to buy.\n\nTo keep an eye on all the ads, join these channels:\n@prague_estate_rent\n@prague_estate_sale\n\nFor any questions and bugs write direct to @esemiko',
-        'ru': 'Привет и добро пожаловать!\nЭтот бот проверяет за вас, нет ли новых объявлений о недвижимости в Праге. Соответственно вашим предпочтениям.\nДля аренды или покупки.\n\nЧтобы следить за всеми объявлениями, присоединяйтесь к каналам:\n@prague_estate_rent\n@prague_estate_sale\n\nПо всем вопросам и багам пишите @esemiko',
+        'ru': 'Привет и добро пожаловать!\nЭтот бот проверяет за вас, нет ли новых объявлений о недвижимости в Праге. Соответственно вашим предпочтениям.Для аренды или покупки.\n\nЧтобы следить за всеми объявлениями, присоединяйтесь к каналам:\n@prague_estate_rent\n@prague_estate_sale\n\nПо всем вопросам и багам пишите @esemiko',
     },
     'estates.example': {
         'en': "⬆️ Here's the latest advert for your criteria.",
