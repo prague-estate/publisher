@@ -233,7 +233,11 @@ _i8n = {
         'en': 'energy rating: {0}',
         'ru': 'энергоэффективность: {0}',
     },
-    'ads.source': {
+    'ads.source.duplicate': {
+        'en': 'from {0} (duplicate)',
+        'ru': 'источник {0} (повтор)',
+    },
+    'ads.source.new': {
         'en': 'from {0}',
         'ru': 'источник {0}',
     },

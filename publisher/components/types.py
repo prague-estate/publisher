@@ -24,6 +24,7 @@ class Estate:
     page_url: str
     updated_at: str  # noqa: F841
     property_type: str = 'flat'
+    is_duplicate: bool = False
 
 
 @dataclass

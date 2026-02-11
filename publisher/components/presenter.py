@@ -620,8 +620,9 @@ def _get_estate_description(ads: Estate, lang: str) -> str:
             )),
         )
 
+    source_slug = 'ads.source.duplicate' if ads.is_duplicate else 'ads.source.new'
     output_messages.append(
-        markdown.text(get_i8n_text('ads.source', lang).format(
+        markdown.text(get_i8n_text(source_slug, lang).format(
             _get_link_without_quote(
                 _get_source_name_link(ads.source_name),
                 ads.page_url,
