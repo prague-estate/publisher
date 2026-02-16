@@ -21,6 +21,7 @@ def test_get_user_filters_happy_path():
     assert response.user_id == 1
     assert response.is_enabled_notifications is False
     assert response.enabled is False
+    assert response.skip_duplicates is False
     assert response.category == 'sale'
     assert response.max_price is None
 
@@ -58,6 +59,18 @@ def test_update_user_filter_enabled(payload, expected):
 
     response = get_user_settings(1)
     assert getattr(response, 'enabled') == expected
+
+
+@pytest.mark.parametrize('payload, expected', [
+    (True, True),
+    (False, False),
+    (None, False),
+])
+def test_update_user_filter_skip_duplicates(payload, expected):
+    update_user_settings(1, skip_duplicates=payload)
+
+    response = get_user_settings(1)
+    assert getattr(response, 'skip_duplicates') == expected
 
 
 @pytest.mark.parametrize('payload, expected', [

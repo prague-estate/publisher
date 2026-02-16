@@ -202,6 +202,22 @@ async def user_settings_toggle_notifications(query: CallbackQuery) -> None:
     )
 
 
+@dp.callback_query(lambda callback: callback.data and callback.data == 'settings:toggle:skip_duplicates')
+async def user_settings_toggle_skip_duplicates(query: CallbackQuery) -> None:
+    """Change skip duplicates status."""
+    logger.info('skip_duplicates toggle')
+    settings = storage.get_user_settings(query.from_user.id)
+
+    if settings.skip_duplicates:
+        storage.update_user_settings(query.from_user.id, skip_duplicates=False)
+    else:
+        storage.update_user_settings(query.from_user.id, skip_duplicates=True)
+
+    await query.message.edit_reply_markup(  # type: ignore
+        reply_markup=presenter.get_settings_menu(query.from_user.id),
+    )
+
+
 @dp.callback_query(lambda callback: callback.data and callback.data == 'settings:toggle:lang')
 async def user_settings_toggle_lang(query: CallbackQuery) -> None:
     """Change user language."""

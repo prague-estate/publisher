@@ -66,6 +66,7 @@ class UserFilters:
     user_id: int
     lang: str = 'en'
     enabled: bool = False
+    skip_duplicates: bool = False
     category: str | None = None
     property_type: str | None = None
     min_price: int | None = None
@@ -81,6 +82,9 @@ class UserFilters:
 
     def is_compatible(self, estate: Estate) -> bool:  # noqa: WPS231
         """Is estate item passed by filters."""
+        if self.skip_duplicates and estate.is_duplicate:
+            return False
+
         if self.category and estate.category != self.category:
             return False
 

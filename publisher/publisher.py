@@ -33,8 +33,8 @@ async def _publisher(limit: int) -> Counter:
     counter: Counter = Counter()
 
     dst_channels = {
-        'sale': app_settings.PUBLISH_CHANNEL_SALE_ID,
         'lease': app_settings.PUBLISH_CHANNEL_LEASE_ID,
+        'sale': app_settings.PUBLISH_CHANNEL_SALE_ID,
     }
     active_subs = storage.get_active_subscriptions()
     logger.info('got {0} active subs'.format(len(active_subs)))

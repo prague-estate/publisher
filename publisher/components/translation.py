@@ -37,6 +37,8 @@ _i8n = {
     'menu.admin': {'en': 'staff only', 'ru': 'служебное меню'},
     'menu.notify.inactive': {'en': '🔴 Notifications', 'ru': '🔴 Уведомления'},
     'menu.notify.active': {'en': '🟢 Notifications', 'ru': '🟢 Уведомления'},
+    'menu.skip_duplicates.inactive': {'en': '🔴 Skip duplicates', 'ru': '🔴 Скрыть дубли'},
+    'menu.skip_duplicates.active': {'en': '🟢 Skip duplicates', 'ru': '🟢 Скрыть дубли'},
     'menu.lang.en': {'en': '🇬🇧 Language', 'ru': '🇬🇧 Language'},
     'menu.lang.ru': {'en': '🇷🇺 Язык', 'ru': '🇷🇺 Язык'},
     'menu.lang.cz': {'en': 'Jazyk', 'ru': '🇨🇿 Jazyk'},
