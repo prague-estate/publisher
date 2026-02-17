@@ -78,10 +78,15 @@ def get_settings_menu(user_id: int) -> InlineKeyboardMarkup:
         'menu.notify.{0}'.format('active' if user_settings.is_enabled_notifications else 'inactive'),
         user_settings.lang,
     )
+    skip_duplicates_button = get_i8n_text(
+        'menu.skip_duplicates.{0}'.format('active' if user_settings.skip_duplicates else 'inactive'),
+        user_settings.lang,
+    )
     lang_button = get_i8n_text('menu.lang.{0}'.format(user_settings.lang), user_settings.lang)
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=notify_button, callback_data='settings:toggle:enabled')],
+            [InlineKeyboardButton(text=skip_duplicates_button, callback_data='settings:toggle:skip_duplicates')],
             [InlineKeyboardButton(text=lang_button, callback_data='settings:toggle:lang')],
             [InlineKeyboardButton(
                 text=get_i8n_text('filters.button.close', user_settings.lang),
