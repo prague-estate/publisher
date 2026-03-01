@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher import bot
+import publisher.handlers.filter_district
 from publisher.components.storage import get_user_settings, update_user_settings
 
 
@@ -24,6 +24,6 @@ async def test_filter_change_district_switch_happy_path(payload, current_state, 
     query_mock.data = payload
     update_user_settings(user_id=query_mock.from_user.id, districts=current_state)
 
-    await bot.filter_change_district_switch(query_mock)
+    await publisher.handlers.filter_district.filter_change_district_switch(query_mock)
 
     assert get_user_settings(user_id=query_mock.from_user.id).districts == expected_state

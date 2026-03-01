@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher import bot
+import publisher.handlers.filter_price
 from publisher.components.storage import get_user_settings
 
 
@@ -19,7 +19,7 @@ async def test_filter_change_max_price_change_happy_path(payload: str, success: 
     message_mock.text = payload
     state_mock = AsyncMock()
 
-    await bot.filter_change_max_price_change_process(message_mock, state_mock)
+    await publisher.handlers.filter_price.filter_change_max_price_change_process(message_mock, state_mock)
 
     if success:
         state_mock.clear.assert_called_once()

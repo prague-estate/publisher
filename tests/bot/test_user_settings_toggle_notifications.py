@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher import bot
+import publisher.handlers.user_settings
 from publisher.components.storage import get_user_settings, update_user_settings
 
 
@@ -15,6 +15,6 @@ async def test_user_settings_toggle_notifications(filters_enabled: bool, expecte
     query_mock.from_user.id = 1
     update_user_settings(query_mock.from_user.id, enabled=filters_enabled)
 
-    await bot.user_settings_toggle_notifications(query_mock)
+    await publisher.handlers.user_settings.user_settings_toggle_notifications(query_mock)
 
     assert get_user_settings(query_mock.from_user.id).enabled is expected_state

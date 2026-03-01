@@ -2,8 +2,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher.handlers import filter_usable_area
 from publisher.components.storage import get_user_settings, update_user_settings
+from publisher.handlers import filter_usable_area
 
 
 @pytest.mark.parametrize('payload, expected_state', [
