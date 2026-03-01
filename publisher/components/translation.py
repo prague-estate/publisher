@@ -243,6 +243,10 @@ _i8n = {
         'en': 'from {0}',
         'ru': 'источник {0}',
     },
+    'error.unknown_button': {
+        'en': 'unknown command',
+        'ru': 'неизвестная команда',
+    },
 }
 
 

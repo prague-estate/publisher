@@ -19,8 +19,8 @@ dp = Dispatcher(storage=RedisStorage.from_url(app_settings.REDIS_DSN))
 handlers.init(dp)
 
 
-@dp.message(CommandStart(deep_link=True))
-@dp.message(Command('start'))
+@dp.message(CommandStart(deep_link=True, ignore_case=True))
+@dp.message(Command('start', ignore_case=True))
 async def start(message: Message, command: CommandObject) -> None:
     """Apply promo trial if exists."""
     promo = str(command.args).strip().lower()
@@ -152,6 +152,18 @@ async def user_subscription(message: Message) -> None:
     await message.answer(
         text=text,
         reply_markup=presenter.get_prices_menu(message.chat.id),
+    )
+
+
+@dp.message()
+async def error_handler(message: Message) -> None:
+    """Handle stale  and unknown buttons."""
+    logger.info('Error handler')
+    settings = storage.get_user_settings(message.chat.id)
+
+    await message.answer(
+        text=translation.get_i8n_text('error.unknown_button', settings.lang),
+        reply_markup=presenter.get_main_menu(message.chat.id),
     )
 
 
