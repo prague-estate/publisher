@@ -2,8 +2,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher.handlers import filter_usable_area
 from publisher.components.storage import get_user_settings
+from publisher.handlers import filter_usable_area
 
 
 async def test_filter_change_min_usable_area_change_happy_path():

@@ -46,11 +46,14 @@ per-file-ignores =
     # WPS204 Found overused expression
     # WPS212 Found too many return statements
     # WPS213 Found too many expressions
+    # WPS235 Found too many imported names from a module
     # WPS347 Found vague import that may cause confusion: F
     # WPS432 Found magic number
     # WPS462 Wrong multiline string usage
 
-    publisher/bot.py: WPS202, WPS204, WPS347,
+    publisher/bot.py: WPS204, WPS347,
+    publisher/handlers/__init__.py: WPS213, WPS235,
+    publisher/handlers/filter_price.py: WPS202,
     publisher/handlers/payments.py: WPS347,
     publisher/settings.py: WPS115, WPS432,
     publisher/components/presenter.py: WPS202, WPS204, WPS213,

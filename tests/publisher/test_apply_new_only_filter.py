@@ -1,5 +1,5 @@
-from publisher.publisher import _apply_new_only_filter
 from publisher.components.storage import mark_as_posted
+from publisher.publisher import _apply_new_only_filter
 
 
 def test_apply_new_only_filter_happy_path(fixture_estates_list):

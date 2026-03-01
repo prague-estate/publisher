@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from publisher import bot
+import publisher.handlers.filter_category
 from publisher.components.storage import get_user_settings, update_user_settings
 
 
@@ -24,7 +24,7 @@ async def test_filter_change_category_switch_happy_path(payload, current_state, 
     query_mock.data = payload
     update_user_settings(user_id=query_mock.from_user.id, category=current_state)
 
-    await bot.filter_change_category_switch(query_mock)
+    await publisher.handlers.filter_category.filter_change_category_switch(query_mock)
 
     assert get_user_settings(user_id=query_mock.from_user.id).category == expected_state
     assert get_user_settings(user_id=query_mock.from_user.id).min_price is None
