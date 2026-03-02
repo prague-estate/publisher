@@ -1,12 +1,13 @@
 """Get estates and publish them to specified telegram channels."""
 import asyncio
 import logging
-from collections import Counter
+from itertools import batched
 
 from aiogram import Bot, exceptions
+from aiogram.utils import markdown
 
-from publisher.components import api_client, presenter, storage
-from publisher.components.types import Estate, Subscription
+from publisher.components import api_client, presenter
+from publisher.components.types import Estate
 from publisher.settings import app_settings
 
 logger = logging.getLogger(__file__)
@@ -15,107 +16,51 @@ logger = logging.getLogger(__file__)
 async def publish() -> None:
     """Fetch ads by API and post them to channels."""
     logger.info('publisher start')
-    counters = await _publish()
+    counters: int = await _publish()
     logger.info(f'publisher end {counters=}')
 
 
-async def _publish() -> Counter:
-    # todo impl
-    # todo test
-    counter: Counter = Counter()
+async def _publish() -> int:
+    ads_for_publish = await api_client.fetch_estates(
+        limit=app_settings.CHANNEL_ADS_LIMIT,
+        without_duplicates=False,
+        sliding_window_hours=app_settings.CHANNEL_ADS_SLIDING_WINDOW_HOURS,
+    )
+    logger.info('got {0} ads'.format(len(ads_for_publish)))
+    if not ads_for_publish:
+        return 0
 
-    dst_channels = {
-        'lease': app_settings.PUBLISH_CHANNEL_LEASE_ID,
-        'sale': app_settings.PUBLISH_CHANNEL_SALE_ID,
-    }
-    active_subs = storage.get_active_subscriptions()
-    logger.info('got {0} active subs'.format(len(active_subs)))
-
-    for category, dst_channel in dst_channels.items():
-        ads_for_publish = await api_client.fetch_estates(category=category, limit=limit)
-        logger.info('got {0} {1} ads'.format(len(ads_for_publish), category))
-        counter[f'{category} total'] = len(ads_for_publish)
-
-        new_ads = _apply_new_only_filter(ads_for_publish)
-        new_ads.reverse()
-        logger.info('got {0} new {1} ads'.format(len(new_ads), category))
-
-        storage.mark_as_posted(ads_ids=[ads_for_post.id for ads_for_post in new_ads])
-
-        if new_ads and active_subs:
-            counter[f'{category} subs notifications'] += await _post_ads_to_subscriptions(
-                ads=new_ads,
-                subs=active_subs,
-            )
-
-        if new_ads:
-            counter[f'{category} channel notifications'] += await _post_ads_to_channel(
-                ads=new_ads,
-                destination=dst_channel,
-            )
-    return counter
+    precompiled_ads: list[str] = _prepare_ads_for_post(ads_for_publish)
+    await _post_ads_to_channel(
+        ads=precompiled_ads,
+        destination=app_settings.PUBLISH_CHANNEL_LEASE_ID,
+    )
+    return len(ads_for_publish)
 
 
-def _apply_new_only_filter(ads: list[Estate]) -> list[Estate]:
+def _prepare_ads_for_post(ads: list[Estate]) -> list[str]:
+    sorted_ads = sorted(ads, key=lambda item: (-item.price, item.is_duplicate))
     return [
-        new_ads
-        for new_ads in ads
-        if storage.is_not_posted_yet(new_ads.id)
+        presenter.get_estate_description_short(ads_item, lang='en')
+        for ads_item in sorted_ads
     ]
 
 
-async def _post_ads_to_channel(ads: list[Estate], destination: int) -> int:
-    cnt = 0
+async def _post_ads_to_channel(ads: list[str], destination: int) -> int:
+    count = 0
     async with Bot(app_settings.BOT_TOKEN) as bot_instance:
-        for ads_for_post in ads:
-            post_settings = presenter.get_estate_post_settings(ads_for_post, lang='en')
+        for batch in batched(ads, n=50):
             try:
-                await bot_instance.send_photo(chat_id=destination, **post_settings)
+                await bot_instance.send_message(
+                    chat_id=destination,
+                    text=markdown.text(*batch, sep='\n'),
+                    parse_mode='Markdown',
+                    disable_web_page_preview=True,
+                )
+                count += 1
             except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError) as exc:
                 logger.warning('sent to channel error: {0}'.format(exc))
-            cnt += 1
-            await asyncio.sleep(3)
-    return cnt
-
-
-async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]) -> int:
-    cnt = 0
-    async with Bot(app_settings.BOT_TOKEN) as bot_instance:
-        for ads_for_post in ads:
-            for sub in subs:
-                user_filters = storage.get_user_settings(sub.user_id)
-                logger.debug(f'send notification check {sub=} {ads_for_post=} {user_filters=}')
-                if not user_filters.is_enabled_notifications or not user_filters.is_compatible(ads_for_post):
-                    continue
-
-                logger.info(f'send notification by subscription {sub=} {ads_for_post=} {user_filters=}')
-                await _send_notify_to_user(
-                    bot_instance=bot_instance,
-                    user_id=sub.user_id,
-                    ads_for_post=ads_for_post,
-                )
-                cnt += 1
-    return cnt
-
-
-async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Estate) -> None:
-    settings = storage.get_user_settings(user_id)
-    try:
-        await bot_instance.send_photo(
-            chat_id=user_id,
-            **presenter.get_estate_post_settings(ads_for_post, settings.lang),
-        )
-    except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError) as exc:
-        if 'chat not found' in exc.message:
-            logger.warning('disable user notification - chat not found')
-            storage.update_user_settings(user_id, enabled=False)
-            return
-        if 'bot was blocked by the user' in exc.message:
-            logger.warning('disable user notification - bot was blocked')
-            storage.update_user_settings(user_id, enabled=False)
-            return
-
-        logger.warning('sent to user error: {0}'.format(exc))
+    return count
 
 
 if __name__ == '__main__':

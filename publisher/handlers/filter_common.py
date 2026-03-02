@@ -68,7 +68,7 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
     counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
-            estate_settings = presenter.get_estate_post_settings(ads, filters.lang)
+            estate_settings = presenter.get_estate_as_post(ads, filters.lang)
             logger.info(f'publish {estate_settings=}')
             try:
                 await message.answer_photo(**estate_settings)

@@ -26,6 +26,8 @@ class AppSettings(BaseSettings, extra='ignore'):
     PUBLISH_CHANNEL_LEASE_ID: int = Field(default=-1002199845067)
     LOGS_CHANNEL_ID: int = Field(default=-1002376200898)
     PUBLISH_ADS_LIMIT: int = Field(default=100)
+    CHANNEL_ADS_LIMIT: int = Field(default=1000)
+    CHANNEL_ADS_SLIDING_WINDOW_HOURS: int = Field(default=1)
     FETCH_ADS_LIMIT: int = Field(default=500)
     SHOW_ADS_LIMIT: int = Field(default=3)
 

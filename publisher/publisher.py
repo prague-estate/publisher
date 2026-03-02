@@ -89,7 +89,7 @@ async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Es
     try:
         await bot_instance.send_photo(
             chat_id=user_id,
-            **presenter.get_estate_post_settings(ads_for_post, settings.lang),
+            **presenter.get_estate_as_post(ads_for_post, settings.lang),
         )
     except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError) as exc:
         if 'chat not found' in exc.message:
