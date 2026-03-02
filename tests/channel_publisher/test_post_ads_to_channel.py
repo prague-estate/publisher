@@ -1,4 +1,4 @@
-from publisher.publisher import _post_ads_to_channel
+from publisher.channel_publisher import _post_ads_to_channel
 from publisher.settings import app_settings
 
 
