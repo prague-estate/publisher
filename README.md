@@ -31,9 +31,14 @@ flake8 publisher/
 mypy publisher/
 ```
 
-### Run publisher
+### Run publisher for subs
 ```shell
 python -m publisher.publisher
+```
+
+### Run publisher for channels
+```shell
+python -m publisher.channel_publisher
 ```
 
 ### Run subscription downgrade session

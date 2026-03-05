@@ -62,13 +62,13 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
 
 
 async def _show_last_estate(filters: types.UserFilters, message: Message) -> None:
-    last_ads = await api_client.fetch_estates_all(limit=app_settings.FETCH_ADS_LIMIT)
+    last_ads = await api_client.fetch_estates(limit=app_settings.FETCH_ADS_LIMIT, without_duplicates=True)
     logger.info('_show_last_estate: got {0}'.format(len(last_ads)))
 
     counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
-            estate_settings = presenter.get_estate_post_settings(ads, filters.lang)
+            estate_settings = presenter.get_estate_as_post(ads, filters.lang)
             logger.info(f'publish {estate_settings=}')
             try:
                 await message.answer_photo(**estate_settings)

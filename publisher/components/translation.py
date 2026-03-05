@@ -243,6 +243,14 @@ _i8n = {
         'en': 'from {0}',
         'ru': 'источник {0}',
     },
+    'ads.duplicate': {
+        'en': 'd',
+        'ru': 'п',
+    },
+    'ads.new': {
+        'en': '',
+        'ru': '',
+    },
     'error.unknown_button': {
         'en': 'unknown command',
         'ru': 'неизвестная команда',

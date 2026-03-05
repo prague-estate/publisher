@@ -1,1 +1,2 @@
 00 12 * * * flock -n subs_downgrade.lock venv/bin/python -m publisher.subs_downgrade >> logs/subs_downgrade.log 2>&1
+00 * * * * flock -n channel_publisher.lock venv/bin/python -m publisher.channel_publisher >> logs/channel_publisher.log 2>&1

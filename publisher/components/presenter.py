@@ -565,8 +565,8 @@ def get_filters_representation(user_filters: UserFilters) -> str:
     return '\n'.join(messages)
 
 
-def get_estate_post_settings(ads_for_post: Estate, lang: str) -> dict[str, Any]:
-    """Set up estate message settings."""
+def get_estate_as_post(ads_for_post: Estate, lang: str) -> dict[str, Any]:
+    """Set up estate message settings for sending to customer."""
     ads_link_btn = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text='Go to advertisement', url=ads_for_post.page_url)],
@@ -635,6 +635,28 @@ def _get_estate_description(ads: Estate, lang: str) -> str:
         )),
     )
     return markdown.text(*output_messages, sep='\n')
+
+
+def get_estate_description_short(ads: Estate, lang: str) -> str:
+    """
+    Create an estate string for channel.
+
+    ex: 4 190 000Kč | 34m² 1+kk | Michelská 371, Praha | duplicate
+    """
+    parts = [
+        '{0}{1}'.format(
+            get_price_human_value(ads.price, lang),
+            get_i8n_text('currency', lang),
+        ),
+        '{0}{1} {2}'.format(
+            ads.usable_area,
+            get_i8n_text('filters.description.area_currency', lang),
+            get_i8n_text('filters.button.layout.{0}.disabled'.format(ads.layout), lang),
+        ),
+        _get_link_without_quote(ads.address, ads.page_url),
+        get_i8n_text('ads.duplicate' if ads.is_duplicate else 'ads.new', lang)
+    ]
+    return markdown.text(*parts, sep=' ')
 
 
 def get_price_human_value(price: int | None, lang: str) -> str:
