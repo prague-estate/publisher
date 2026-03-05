@@ -659,7 +659,6 @@ def get_estate_description_short(ads: Estate, lang: str) -> str:
     return markdown.text(*parts, sep=' ')
 
 
-
 def get_price_human_value(price: int | None, lang: str) -> str:
     """Return human-friendly price string."""
     if not price or price < 0:

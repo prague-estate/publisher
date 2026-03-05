@@ -37,7 +37,7 @@ async def _publisher(limit: int) -> Counter:
     if not active_subs:
         return counter
 
-    for category in {'sale', 'lease'}:
+    for category in ('sale', 'lease'):
         ads_for_publish = await api_client.fetch_estates(category=category, limit=limit)
         logger.info('got {0} {1} ads'.format(len(ads_for_publish), category))
         counter[f'{category} total'] = len(ads_for_publish)

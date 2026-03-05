@@ -18,13 +18,13 @@ async def fetch_estates(
     sliding_window_hours: int | None = None,
 ) -> list[Estate]:
     """Fetch estates by API."""
-    request_params = {
+    request_params: dict[str, int | str] = {
         'limit': limit,
     }
-    if category:
+    if category is not None:
         request_params['category'] = category
-    if without_duplicates is not None:
-        request_params['without_duplicates'] = str(without_duplicates)
+    if without_duplicates:
+        request_params['without_duplicates'] = str(True)
     if sliding_window_hours is not None:
         request_params['sliding_window_hours'] = sliding_window_hours
 

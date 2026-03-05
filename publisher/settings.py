@@ -28,6 +28,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     PUBLISH_ADS_LIMIT: int = Field(default=100)
     CHANNEL_ADS_LIMIT: int = Field(default=1000)
     CHANNEL_ADS_SLIDING_WINDOW_HOURS: int = Field(default=1)
+    TELEGRAM_MAX_ROWS_PER_MESSAGE: int = Field(default=50)
     FETCH_ADS_LIMIT: int = Field(default=500)
     SHOW_ADS_LIMIT: int = Field(default=3)
 

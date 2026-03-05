@@ -16,13 +16,19 @@ logger = logging.getLogger(__file__)
 async def publish() -> None:
     """Fetch ads by API and post them to channels."""
     logger.info('publisher start')
-    counters: int = await _publish()
-    logger.info(f'publisher end {counters=}')
+    channels = {
+        'sale': app_settings.PUBLISH_CHANNEL_SALE_ID,
+        'lease': app_settings.PUBLISH_CHANNEL_LEASE_ID,
+    }
+    for category, destination in channels.items():
+        counters: int = await _publish(category, destination)
+        logger.info(f'publisher end {category=} {counters=}')
 
 
-async def _publish() -> int:
+async def _publish(category: str, destination: int) -> int:
     ads_for_publish = await api_client.fetch_estates(
         limit=app_settings.CHANNEL_ADS_LIMIT,
+        category=category,
         without_duplicates=False,
         sliding_window_hours=app_settings.CHANNEL_ADS_SLIDING_WINDOW_HOURS,
     )
@@ -33,13 +39,13 @@ async def _publish() -> int:
     precompiled_ads: list[str] = _prepare_ads_for_post(ads_for_publish)
     await _post_ads_to_channel(
         ads=precompiled_ads,
-        destination=app_settings.PUBLISH_CHANNEL_LEASE_ID,
+        destination=destination,
     )
     return len(ads_for_publish)
 
 
 def _prepare_ads_for_post(ads: list[Estate]) -> list[str]:
-    sorted_ads = sorted(ads, key=lambda item: (-item.price, item.is_duplicate))
+    sorted_ads = sorted(ads, key=lambda ads_item: (-ads_item.price, ads_item.is_duplicate))
     return [
         presenter.get_estate_description_short(ads_item, lang='en')
         for ads_item in sorted_ads
@@ -49,7 +55,7 @@ def _prepare_ads_for_post(ads: list[Estate]) -> list[str]:
 async def _post_ads_to_channel(ads: list[str], destination: int) -> int:
     count = 0
     async with Bot(app_settings.BOT_TOKEN) as bot_instance:
-        for batch in batched(ads, n=50):
+        for batch in batched(ads, n=app_settings.TELEGRAM_MAX_ROWS_PER_MESSAGE):
             try:
                 await bot_instance.send_message(
                     chat_id=destination,
