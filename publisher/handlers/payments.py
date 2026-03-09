@@ -36,6 +36,10 @@ async def got_trial(query: CallbackQuery) -> None:
     await query.message.answer(  # type: ignore
         text=translation.get_i8n_text('start.set_filters', settings.lang),
     )
+    await send_logs_notification('trial applied "trial" {0} {1}'.format(
+        query.from_user.id,
+        query.from_user.username,
+    ))
 
 
 @router.callback_query(lambda callback: callback.data and callback.data.startswith('buy:'))

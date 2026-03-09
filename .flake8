@@ -51,7 +51,7 @@ per-file-ignores =
     # WPS432 Found magic number
     # WPS462 Wrong multiline string usage
 
-    publisher/bot.py: WPS204, WPS347,
+    publisher/bot.py: WPS204, WPS213, WPS347,
     publisher/handlers/__init__.py: WPS213, WPS235,
     publisher/handlers/filter_price.py: WPS202,
     publisher/handlers/payments.py: WPS347,

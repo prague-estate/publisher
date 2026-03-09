@@ -10,6 +10,7 @@ from aiogram.utils.deep_linking import create_start_link
 
 from publisher import handlers
 from publisher.components import presenter, storage, translation
+from publisher.components.notifications import send_logs_notification
 from publisher.settings import app_settings
 
 logger = logging.getLogger(__file__)
@@ -48,6 +49,10 @@ async def start(message: Message, command: CommandObject) -> None:
         await message.answer(  # type: ignore
             text=translation.get_i8n_text('payment.accepted', lang).format(sub.expired_at.isoformat()),
         )
+        await send_logs_notification('trial applied "{0}" {1}'.format(
+            promo,
+            message.chat.id,
+        ))
 
     actual_sub = storage.get_subscription(message.chat.id)
     if actual_sub and actual_sub.is_active:
