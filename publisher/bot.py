@@ -160,18 +160,6 @@ async def user_subscription(message: Message) -> None:
     )
 
 
-@dp.message()
-async def error_handler(message: Message) -> None:
-    """Handle stale  and unknown buttons."""
-    logger.info('Error handler')
-    settings = storage.get_user_settings(message.chat.id)
-
-    await message.answer(
-        text=translation.get_i8n_text('error.unknown_button', settings.lang),
-        reply_markup=presenter.get_main_menu(message.chat.id),
-    )
-
-
 if __name__ == '__main__':
     logging.basicConfig(
         level=logging.DEBUG if app_settings.DEBUG else logging.INFO,
