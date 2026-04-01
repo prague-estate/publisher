@@ -11,7 +11,7 @@ package-mode = false
 python = ">=3.14,<3.15"
 pydantic = "^2.9.2"
 pydantic-settings = "^2.5.2"
-aiohttp = {extras = ["speedups"], version = "^3.13.3"}
+aiohttp = {extras = ["speedups"], version = "^3.13.4"}
 aiogram = "^3.24.0"
 redis = "^5.2.0"
 flask = "^3.1.2"
