@@ -234,6 +234,20 @@ def get_filters_property_type_menu(user_id: int) -> InlineKeyboardMarkup:
             callback_data='filters:property_type:house',
         ),
         InlineKeyboardButton(
+            text=get_i8n_text(
+                'filters.button.property_type.commercial.{0}'.format('enabled' if filters_config.property_type == 'commercial' else 'disabled'),
+                filters_config.lang,
+            ),
+            callback_data='filters:property_type:commercial',
+        ),
+        InlineKeyboardButton(
+            text=get_i8n_text(
+                'filters.button.property_type.parking.{0}'.format('enabled' if filters_config.property_type == 'parking' else 'disabled'),
+                filters_config.lang,
+            ),
+            callback_data='filters:property_type:parking',
+        ),
+        InlineKeyboardButton(
             text=get_i8n_text('filters.button.back', filters_config.lang),
             callback_data='filters:back',
         ),

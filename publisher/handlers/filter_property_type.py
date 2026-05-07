@@ -25,6 +25,8 @@ async def filter_change_property_type(query: CallbackQuery) -> None:
 
 @router.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:flat')
 @router.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:house')
+@router.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:parking')
+@router.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:commercial')
 @router.callback_query(lambda callback: callback.data and callback.data == 'filters:property_type:reset')
 async def filter_change_property_type_switch(query: CallbackQuery) -> None:
     """Process change property_type."""

@@ -44,8 +44,8 @@ _i8n = {
     'menu.lang.cz': {'en': 'Jazyk', 'ru': '🇨🇿 Jazyk'},
     'currency': {'en': 'Kč', 'ru': 'Kč'},
     'about': {
-        'en': 'Hello and welcome!\nHere is a bot that can check for you if there are new ads to find a flat in Prague. According to your preferences. To rent or to buy.\n\nTo keep an eye on all the ads, join these channels:\n@prague_estate_rent\n@prague_estate_sale\n\nFor any questions and bugs write direct to @esemiko',
-        'ru': 'Привет и добро пожаловать!\nЭтот бот проверяет за вас, нет ли новых объявлений о недвижимости в Праге. Соответственно вашим предпочтениям.Для аренды или покупки.\n\nЧтобы следить за всеми объявлениями, присоединяйтесь к каналам:\n@prague_estate_rent\n@prague_estate_sale\n\nПо всем вопросам и багам пишите @esemiko',
+        'en': 'Hello and welcome!\nHere is a bot that can check for you if there are new ads to find an estate in Prague. According to your preferences. To rent or to buy.\n\nTo keep an eye on all the ads, join these channels:\n@prague_estate_rent\n@prague_estate_sale\n\nFor any questions and bugs write direct to @esemiko',
+        'ru': 'Привет и добро пожаловать!\nЭтот бот проверяет за вас, нет ли новых объявлений о недвижимости в Праге. Соответственно вашим предпочтениям. Для аренды или покупки.\n\nЧтобы следить за всеми объявлениями, присоединяйтесь к каналам:\n@prague_estate_rent\n@prague_estate_sale\n\nПо всем вопросам и предложения пишите @esemiko',
     },
     'estates.example': {
         'en': "⬆️ Here's the latest advert for your criteria.",
@@ -158,6 +158,10 @@ _i8n = {
     'filters.button.property_type.house.disabled': {'en': 'House', 'ru': 'Дом'},
     'filters.button.property_type.flat.enabled': {'en': '✅ Flat', 'ru': '✅ Квартира'},
     'filters.button.property_type.flat.disabled': {'en': 'Flat', 'ru': 'Квартира'},
+    'filters.button.property_type.commercial.enabled': {'en': '✅ Commercial', 'ru': '✅ Коммерция'},
+    'filters.button.property_type.commercial.disabled': {'en': 'Commercial', 'ru': 'Коммерция'},
+    'filters.button.property_type.parking.enabled': {'en': '✅ Parking', 'ru': '✅ Паркинг'},
+    'filters.button.property_type.parking.disabled': {'en': 'Parking', 'ru': 'Паркинг'},
     'filters.name.min_usable_area': {'en': 'Min area', 'ru': 'Мин площадь'},
     'filters.button.min_usable_area.enabled': {'en': 'Min area ✅', 'ru': 'Мин площадь ✅'},
     'filters.button.min_usable_area.disabled': {'en': 'Min area ⚙', 'ru': 'Мин площадь ⚙'},
@@ -219,6 +223,14 @@ _i8n = {
         'en': 'New flat for sale:',
         'ru': 'Новая квартира в продаже:',
     },
+    'ads.title.parking.sale': {
+        'en': 'New parking for sale:',
+        'ru': 'Новый паркинг в продаже:',
+    },
+    'ads.title.commercial.sale': {
+        'en': 'New commercial for sale:',
+        'ru': 'Новое коммерческое помещение в продаже:',
+    },
     'ads.title.house.sale': {
         'en': 'New house for sale:',
         'ru': 'Новый дом на продажу:',
@@ -226,6 +238,14 @@ _i8n = {
     'ads.title.flat.lease': {
         'en': 'New flat for rent:',
         'ru': 'Новая квартира в аренду:',
+    },
+    'ads.title.parking.lease': {
+        'en': 'New parking for rent:',
+        'ru': 'Новый паркинг в аренду:',
+    },
+    'ads.title.commercial.lease': {
+        'en': 'New commercial for rent:',
+        'ru': 'Новое коммерческое помещение в аренду:',
     },
     'ads.title.house.lease': {
         'en': 'New house for rent:',

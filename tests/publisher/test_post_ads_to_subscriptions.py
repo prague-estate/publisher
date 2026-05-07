@@ -45,3 +45,15 @@ async def test_post_ads_to_subscriptions_house(fixture_estate_item_house, fixtur
     )
 
     assert res == 1
+
+
+async def test_post_ads_to_subscriptions_commercial(fixture_estate_item_commercial, fixture_estate_item):
+    sub = renew_subscription(user_id=1, days=1)
+    update_user_settings(user_id=1, property_type='commercial')
+
+    res = await _post_ads_to_subscriptions(
+        [fixture_estate_item_commercial, fixture_estate_item],
+        [sub],
+    )
+
+    assert res == 1
