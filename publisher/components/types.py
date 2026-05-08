@@ -25,6 +25,7 @@ class Estate:
     updated_at: str  # noqa: F841
     property_type: str = 'flat'
     is_duplicate: bool = False
+    district_name: str | None = None
 
 
 @dataclass
