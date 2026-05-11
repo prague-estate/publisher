@@ -508,7 +508,6 @@ def get_filters_max_price_internal_menu(user_id: int) -> InlineKeyboardMarkup:
 def get_filters_representation(user_filters: UserFilters) -> str:
     """Return user filters representation."""
     messages = []
-
     messages.append('{0}: `{1}`'.format(
         get_i8n_text('filters.name.category', user_filters.lang),
         get_i8n_text('filters.button.category.{0}.disabled'.format(user_filters.category or 'all'), user_filters.lang),

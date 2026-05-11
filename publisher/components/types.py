@@ -29,6 +29,14 @@ class Estate:
 
 
 @dataclass
+class District:
+    """District type."""
+
+    name: str
+    number: int
+
+
+@dataclass
 class Invoice:
     """Payment invoice."""
 

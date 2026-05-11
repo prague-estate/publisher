@@ -3,10 +3,11 @@ import logging
 
 import aiohttp
 
-from publisher.components.types import Estate
+from publisher.components.types import District, Estate
 from publisher.settings import app_settings
 
 BASIC_URL = f'{app_settings.API_URL}/v2/estates'
+DISTRICTS_URL = f'{app_settings.API_URL}/v2/districts'
 
 logger = logging.getLogger(__file__)
 
@@ -43,4 +44,23 @@ async def fetch_estates(
     return [
         Estate(**estate)
         for estate in raw_ads_list
+    ]
+
+
+async def fetch_districts() -> list[District]:
+    """Fetch districts by API."""
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(app_settings.TIMEOUT)) as session:
+        try:
+            async with session.get(
+                url=DISTRICTS_URL,
+                headers={'auth-token': app_settings.API_TOKEN},
+            ) as resp:
+                raw_districts = (await resp.json())['districts']
+
+        except Exception as fetch_exc:
+            logger.warning('fetch districts exception {0}'.format(fetch_exc))
+            return []
+    return [
+        District(**district)
+        for district in raw_districts
     ]
