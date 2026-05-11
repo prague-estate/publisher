@@ -11,6 +11,8 @@ def test_get_user_filters_not_found():
     assert response.enabled is False
     assert response.category is None
     assert response.max_price is None
+    assert response.district_names is None
+    assert response.districts is None
 
 
 def test_get_user_filters_happy_path():
@@ -35,6 +37,13 @@ def test_update_user_filter_category(payload, expected):
 
     response = get_user_settings(1)
     assert getattr(response, 'category') == expected
+
+
+def test_update_user_filter_district_names():
+    update_user_settings(1, district_names={'Andel', 'Bubenec'})
+
+    response = get_user_settings(1)
+    assert getattr(response, 'district_names') == {'Andel', 'Bubenec'}
 
 
 @pytest.mark.parametrize('payload, expected', [

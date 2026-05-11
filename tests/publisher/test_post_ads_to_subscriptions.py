@@ -57,3 +57,15 @@ async def test_post_ads_to_subscriptions_commercial(fixture_estate_item_commerci
     )
 
     assert res == 1
+
+
+async def test_post_ads_to_subscriptions_district_name_filtered(fixture_estate_item, fixture_estate_item_house):
+    sub = renew_subscription(user_id=1, days=1)
+    update_user_settings(user_id=1, district_names={'Letna'})
+
+    res = await _post_ads_to_subscriptions(
+        [fixture_estate_item, fixture_estate_item_house],
+        [sub],
+    )
+
+    assert res == 0

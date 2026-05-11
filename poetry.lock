@@ -447,6 +447,33 @@ files = [
 cffi = {version = ">=1.17.0", markers = "python_version >= \"3.13\""}
 
 [[package]]
+name = "cachetools"
+version = "7.1.1"
+description = "Extensible memoizing collections and decorators"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "cachetools-7.1.1-py3-none-any.whl", hash = "sha256:0335cd7a0952d2b22327441fb0628139e234c565559eeb91a8a4ac7551c5353d"},
+    {file = "cachetools-7.1.1.tar.gz", hash = "sha256:27bdf856d68fd3c71c26c01b5edc312124ed427524d1ddb31aa2b7746fe20d4b"},
+]
+
+[[package]]
+name = "cachetools-async"
+version = "0.0.5"
+description = "Provides decorators that are inspired by and work closely with cachetools' for caching asyncio functions and methods."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "cachetools_async-0.0.5-py3-none-any.whl", hash = "sha256:8f690c8bc291718a652395832e90afa797195c838e98d6a9e530dc1de66fbc34"},
+    {file = "cachetools_async-0.0.5.tar.gz", hash = "sha256:e99ec8f3a78e82b4f524e78f01d15b8746531481d862ac4f2d8af2a686e1c571"},
+]
+
+[package.dependencies]
+cachetools = ">=5"
+
+[[package]]
 name = "certifi"
 version = "2026.4.22"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -2345,4 +2372,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "b4295551965c9989d51ba64ec460bdfb4fa83672afd76a143beb845e94a6ee6a"
+content-hash = "ab695a5779d76cee65e94f40dc4a328db1ad2916fe933430b17bec7b45efd723"

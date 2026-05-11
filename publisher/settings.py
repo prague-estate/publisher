@@ -48,8 +48,6 @@ class AppSettings(BaseSettings, extra='ignore'):
     PROMO_CODES: dict[str, int] = {
         'vas3k': 14,
         'semrush': 14,
-        'github': 7,
-        'landing': 7,
         'tgads': 7,
         'selfchannel': 7,
         'muma': 14,
@@ -84,9 +82,9 @@ app_settings = AppSettings(
 )
 
 _raw_prices = [
-    Price(cost=99, cost_usdt=Decimal('2.49'), days=7, slug='price.week'),  # 45CZK
-    Price(cost=299, cost_usdt=Decimal('6.49'), days=31, slug='price.month'),  # ~125CZK
-    Price(cost=1499, cost_usdt=Decimal('18.49'), days=365, slug='price.year'),  # 629CZK
+    Price(cost=99, cost_usdt=Decimal('2.49'), days=7, slug='price.week'),
+    Price(cost=299, cost_usdt=Decimal('6.49'), days=31, slug='price.month'),
+    Price(cost=1499, cost_usdt=Decimal('18.49'), days=365, slug='price.year'),
 ]
 if app_settings.DEBUG:
     _raw_prices.append(
