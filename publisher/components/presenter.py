@@ -1,4 +1,5 @@
 """Bot message presenters."""
+import math
 import re
 from typing import Any, Generator
 
@@ -152,7 +153,13 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
             ),
             callback_data='filters:district:show',
         ),
-        # todo district names button
+        InlineKeyboardButton(
+            text=get_i8n_text(
+                'filters.button.district_name.{0}'.format('enabled' if filters_config.district_names else 'disabled'),
+                filters_config.lang,
+            ),
+            callback_data='filters:district_name:show:1',
+        ),
         InlineKeyboardButton(
             text=get_i8n_text('filters.button.close', filters_config.lang),
             callback_data='filters:close',
@@ -341,6 +348,69 @@ def get_filters_district_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
+async def get_filters_district_name_menu(user_id: int, page: int) -> InlineKeyboardMarkup:  # noqa: WPS210
+    """Return districts (by name) menu."""
+    available_names = await districts.get_district_names()
+    max_page: int = math.ceil(len(available_names) / app_settings.DISTRICTS_PER_PAGE)
+    if page > max_page:
+        page = max_page
+    if page < 1:
+        page = 1
+    offset = (page - 1) * app_settings.DISTRICTS_PER_PAGE
+    limit = page * app_settings.DISTRICTS_PER_PAGE
+
+    filters_config = storage.get_user_settings(user_id)
+    kb = [
+        [InlineKeyboardButton(
+            text=get_i8n_text(
+                'filters.button.district.all.{0}'.format(
+                    'enabled' if filters_config.district_names is None else 'disabled',
+                ),
+                filters_config.lang,
+            ),
+            callback_data='filters:district_name:reset',
+        )],
+    ]
+
+    for names_batch in _get_batches(available_names[offset:limit], size=3):
+        kb.append([
+            InlineKeyboardButton(
+                text=get_i8n_text(
+                    'filters.button.district.name.{0}'.format(
+                        'enabled' if filters_config.district_names and district_name in filters_config.district_names else 'disabled',
+                    ),
+                    filters_config.lang,
+                ).format(district_name),
+                callback_data=f'filters:district_name:switch:{page}:{district_name}',
+            )
+            for district_name in names_batch
+        ])
+
+    pagination_kb = []
+    if page > 1:
+        pagination_kb.append(InlineKeyboardButton(
+            text=get_i8n_text('filters.button.prev_page', filters_config.lang),
+            callback_data='filters:district_name:show:{0}'.format(page - 1),
+        ))
+    if page < max_page:
+        pagination_kb.append(InlineKeyboardButton(
+            text=get_i8n_text('filters.button.next_page', filters_config.lang),
+            callback_data='filters:district_name:show:{0}'.format(page + 1),
+        ))
+    kb.append(pagination_kb)
+
+    kb.append(
+        [InlineKeyboardButton(
+            text=get_i8n_text('filters.button.back', filters_config.lang),
+            callback_data='filters:back',
+        )],
+    )
+    return InlineKeyboardMarkup(
+        inline_keyboard=kb,
+        resize_keyboard=True,
+    )
+
+
 def get_filters_min_usable_area_menu(user_id: int) -> InlineKeyboardMarkup:
     """Return change min usable area dialog."""
     filters_config = storage.get_user_settings(user_id)
@@ -506,7 +576,7 @@ def get_filters_max_price_internal_menu(user_id: int) -> InlineKeyboardMarkup:
     )
 
 
-def get_filters_representation(user_filters: UserFilters) -> str:
+async def get_filters_representation(user_filters: UserFilters) -> str:
     """Return user filters representation."""
     messages = []
     messages.append('{0}: `{1}`'.format(
@@ -577,7 +647,7 @@ def get_filters_representation(user_filters: UserFilters) -> str:
                 get_i8n_text('filters.button.district.name.disabled', user_filters.lang).format(district_name),
             )
             for district_name in user_filters.district_names
-            if district_name in districts.get_district_names()
+            if district_name in await districts.get_district_names()
         ]
         messages.append('{0}: {1}'.format(
             get_i8n_text('filters.name.district', user_filters.lang),

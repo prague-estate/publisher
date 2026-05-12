@@ -66,6 +66,9 @@ class AppSettings(BaseSettings, extra='ignore'):
     ]
 
     ENABLED_DISTRICTS: list[int] = list(range(1, 11))
+    DISTRICTS_CACHE_SIZE: int = 2048
+    DISTRICTS_CACHE_TTL_SECONDS: int = 60 * 5
+    DISTRICTS_PER_PAGE: int = 6 * 3
     ENABLED_LANGUAGES: list[str] = [
         'en',  # default
         'ru',

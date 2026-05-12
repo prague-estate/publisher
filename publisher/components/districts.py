@@ -4,9 +4,10 @@ from cachetools_async import cached
 
 from publisher.components.api_client import fetch_districts
 from publisher.components.types import District
+from publisher.settings import app_settings
 
 
-@cached(cache=TTLCache(maxsize=2048, ttl=30))
+@cached(cache=TTLCache(maxsize=app_settings.DISTRICTS_CACHE_SIZE, ttl=app_settings.DISTRICTS_CACHE_TTL_SECONDS))
 async def get_district_names() -> list[str]:
     """Fetch districts and return only names."""
     districts: list[District] = await fetch_districts()

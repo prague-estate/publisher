@@ -123,6 +123,16 @@ def fixture_empty_storage():
     db_pool.flushdb()
 
 
+@pytest.fixture(autouse=True)
+def fixture_mock_district_names(monkeypatch):
+    async def _names():
+        return ['Smíchov', 'Vinohrady', 'Žižkov']
+    monkeypatch.setattr(
+        'publisher.components.districts.get_district_names',
+        _names,
+    )
+
+
 @pytest.fixture()
 def fixture_prefilled_posted_ads_id() -> list[int]:
     ads_ids = [1, 2, 3]
