@@ -1,5 +1,5 @@
 """Common filters buttons."""
-
+import asyncio
 import logging
 
 from aiogram import Router
@@ -74,6 +74,7 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
                 await message.answer_photo(**estate_settings)
             except Exception as exc:
                 logger.error(f'Exception {exc=}')
+                await asyncio.sleep(1)
             counter += 1
 
         if counter >= app_settings.SHOW_ADS_LIMIT:

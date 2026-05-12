@@ -14,7 +14,7 @@ router = Router()
 
 @router.callback_query(lambda callback: callback.data and callback.data == 'filters:district:show')
 async def filter_change_district(query: CallbackQuery) -> None:
-    """Show change district."""
+    """Show change district (by numbers)."""
     logger.info('filter_change_district')
     settings = storage.get_user_settings(query.from_user.id)
 
@@ -27,7 +27,7 @@ async def filter_change_district(query: CallbackQuery) -> None:
 @router.callback_query(lambda callback: callback.data and callback.data == 'filters:district:reset')
 @router.callback_query(lambda callback: callback.data and callback.data.startswith('filters:district:switch:'))
 async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: WPS213
-    """Process change district."""
+    """Process change district (by numbers)."""
     filters_config = storage.get_user_settings(query.from_user.id)
     logger.info(f'filter_change_district_switch {query.data=} {filters_config.districts=}')
     district_for_switch = query.data.split(':')[-1]  # type: ignore
@@ -49,6 +49,7 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
         storage.update_user_settings(
             user_id=query.from_user.id,
             districts={district_for_switch},
+            district_names=None,
         )
         return await filter_change_district(query)
 
@@ -58,6 +59,7 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
         storage.update_user_settings(
             user_id=query.from_user.id,
             districts=new_value,
+            district_names=None,
         )
         return await filter_change_district(query)
 
@@ -66,5 +68,6 @@ async def filter_change_district_switch(query: CallbackQuery) -> None:  # noqa: 
     storage.update_user_settings(
         user_id=query.from_user.id,
         districts=new_value,
+        district_names=None,
     )
     return await filter_change_district(query)

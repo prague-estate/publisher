@@ -213,6 +213,8 @@ _i8n = {
     'filters.button.district.all.disabled': {'en': 'All', 'ru': 'Все'},
     'filters.button.district.number.enabled': {'en': '✅ Praha {0}', 'ru': '✅ Прага {0}'},
     'filters.button.district.number.disabled': {'en': 'Praha {0}', 'ru': 'Прага {0}'},
+    'filters.button.district.name.enabled': {'en': '✅ {0}', 'ru': '✅ {0}'},
+    'filters.button.district.name.disabled': {'en': '{0}', 'ru': '{0}'},
 
     'price.week': {'en': 'Week access', 'ru': 'Неделя доступа'},
     'price.month': {'en': 'Month access 🌟', 'ru': 'Месяц доступа 🌟'},

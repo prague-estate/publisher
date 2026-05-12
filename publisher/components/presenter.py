@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardBu
 from aiogram.utils import markdown
 from aiogram.utils.text_decorations import markdown_decoration
 
-from publisher.components import storage
+from publisher.components import districts, storage
 from publisher.components.translation import get_i8n_text
 from publisher.components.types import Estate, UserFilters
 from publisher.settings import app_settings, prices_settings
@@ -152,6 +152,7 @@ def get_filters_menu(user_id: int) -> InlineKeyboardMarkup:
             ),
             callback_data='filters:district:show',
         ),
+        # todo district names button
         InlineKeyboardButton(
             text=get_i8n_text('filters.button.close', filters_config.lang),
             callback_data='filters:close',
@@ -558,7 +559,7 @@ def get_filters_representation(user_filters: UserFilters) -> str:
         ))
 
     if user_filters.districts:
-        districts = [
+        districts_messages = [
             '`{0}`'.format(
                 get_i8n_text('filters.button.district.number.disabled', user_filters.lang).format(district_number),
             )
@@ -567,8 +568,22 @@ def get_filters_representation(user_filters: UserFilters) -> str:
         ]
         messages.append('{0}: {1}'.format(
             get_i8n_text('filters.name.district', user_filters.lang),
-            ', '.join(districts),
+            ', '.join(districts_messages),
         ))
+
+    elif user_filters.district_names:
+        districts_messages = [
+            '`{0}`'.format(
+                get_i8n_text('filters.button.district.name.disabled', user_filters.lang).format(district_name),
+            )
+            for district_name in user_filters.district_names
+            if district_name in districts.get_district_names()
+        ]
+        messages.append('{0}: {1}'.format(
+            get_i8n_text('filters.name.district', user_filters.lang),
+            ', '.join(districts_messages),
+        ))
+
     else:
         messages.append('{0}: `{1}`'.format(
             get_i8n_text('filters.name.district', user_filters.lang),
