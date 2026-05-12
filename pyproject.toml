@@ -16,6 +16,8 @@ aiogram = "^3.24.0"
 redis = "^5.2.0"
 flask = "^3.1.2"
 gunicorn = "^24.1.1"
+cachetools = "^7.1.1"
+cachetools-async = "^0.0.5"
 
 [tool.poetry.group.dev.dependencies]
 mypy = ">=1.11.2"

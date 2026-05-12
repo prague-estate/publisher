@@ -30,7 +30,7 @@ class AppSettings(BaseSettings, extra='ignore'):
     CHANNEL_ADS_SLIDING_WINDOW_HOURS: int = Field(default=1)
     TELEGRAM_MAX_ROWS_PER_MESSAGE: int = Field(default=50)
     FETCH_ADS_LIMIT: int = Field(default=500)
-    SHOW_ADS_LIMIT: int = Field(default=3)
+    SHOW_ADS_LIMIT: int = Field(default=1)
 
     API_TOKEN: str = Field(default='dev-token')
     API_URL: str = Field(default='http://127.0.0.1:9001')
@@ -48,8 +48,6 @@ class AppSettings(BaseSettings, extra='ignore'):
     PROMO_CODES: dict[str, int] = {
         'vas3k': 14,
         'semrush': 14,
-        'github': 7,
-        'landing': 7,
         'tgads': 7,
         'selfchannel': 7,
         'muma': 14,
@@ -68,6 +66,9 @@ class AppSettings(BaseSettings, extra='ignore'):
     ]
 
     ENABLED_DISTRICTS: list[int] = list(range(1, 11))
+    DISTRICTS_CACHE_SIZE: int = 2048
+    DISTRICTS_CACHE_TTL_SECONDS: int = 60 * 5
+    DISTRICTS_PER_PAGE: int = 6 * 3
     ENABLED_LANGUAGES: list[str] = [
         'en',  # default
         'ru',
@@ -84,9 +85,9 @@ app_settings = AppSettings(
 )
 
 _raw_prices = [
-    Price(cost=99, cost_usdt=Decimal('2.49'), days=7, slug='price.week'),  # 45CZK
-    Price(cost=299, cost_usdt=Decimal('6.49'), days=31, slug='price.month'),  # ~125CZK
-    Price(cost=1499, cost_usdt=Decimal('18.49'), days=365, slug='price.year'),  # 629CZK
+    Price(cost=99, cost_usdt=Decimal('2.49'), days=7, slug='price.week'),
+    Price(cost=299, cost_usdt=Decimal('6.49'), days=31, slug='price.month'),
+    Price(cost=1499, cost_usdt=Decimal('18.49'), days=365, slug='price.year'),
 ]
 if app_settings.DEBUG:
     _raw_prices.append(

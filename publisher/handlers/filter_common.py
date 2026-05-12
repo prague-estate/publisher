@@ -1,5 +1,5 @@
 """Common filters buttons."""
-
+import asyncio
 import logging
 
 from aiogram import Router
@@ -29,7 +29,7 @@ async def filter_go_back(query: CallbackQuery, state: FSMContext | None = None) 
 
 
 @router.callback_query(lambda callback: callback.data and callback.data == 'filters:close')
-async def filter_close(query: CallbackQuery, state: FSMContext | None = None) -> None:
+async def filter_close(query: CallbackQuery, state: FSMContext | None = None) -> None:  # noqa: WPS217
     """Close filters."""
     logger.info('filter_close')
     settings = storage.get_user_settings(query.from_user.id)
@@ -54,7 +54,7 @@ async def filter_close(query: CallbackQuery, state: FSMContext | None = None) ->
 
     await query.message.answer(  # type: ignore
         text=translation.get_i8n_text('notify.enabled', settings.lang).format(
-            presenter.get_filters_representation(settings),
+            await presenter.get_filters_representation(settings),
         ),
         reply_markup=presenter.get_main_menu(query.from_user.id),
         parse_mode='Markdown',
@@ -74,6 +74,7 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
                 await message.answer_photo(**estate_settings)
             except Exception as exc:
                 logger.error(f'Exception {exc=}')
+                await asyncio.sleep(1)
             counter += 1
 
         if counter >= app_settings.SHOW_ADS_LIMIT:

@@ -100,8 +100,11 @@ async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Es
             logger.warning('disable user notification - bot was blocked')
             storage.update_user_settings(user_id, enabled=False)
             return
-
         logger.warning('sent to user error: {0}'.format(exc))
+
+    except exceptions.TelegramNetworkError as timeout_exc:
+        logger.warning('sent to user error: {0}'.format(timeout_exc))
+        await asyncio.sleep(1)
 
 
 if __name__ == '__main__':

@@ -92,6 +92,9 @@ def get_user_settings(user_id: int) -> UserFilters:
             for number in saved_data.get('districts', '').split(':')
         }
 
+    if saved_data.get('district_names') is not None:
+        default_data['district_names'] = set(saved_data.get('district_names', '').split(':'))
+
     if saved_data.get('layouts') is not None:
         default_data['layouts'] = set(saved_data.get('layouts', '').split(':'))
 

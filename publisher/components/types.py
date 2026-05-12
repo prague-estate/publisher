@@ -29,6 +29,14 @@ class Estate:
 
 
 @dataclass
+class District:
+    """District type."""
+
+    name: str
+    number: int
+
+
+@dataclass
 class Invoice:
     """Payment invoice."""
 
@@ -75,6 +83,7 @@ class UserFilters:
     layouts: set[str] | None = None
     min_usable_area: int | None = None
     districts: set[int] | None = None
+    district_names: set[str] | None = None
 
     @property
     def is_enabled_notifications(self) -> bool:
@@ -102,6 +111,9 @@ class UserFilters:
             return False
 
         if self.districts and estate.district_number not in self.districts:  # noqa: WPS531
+            return False
+
+        if self.district_names and estate.district_name not in self.district_names:  # noqa: WPS531
             return False
 
         if self.layouts and estate.layout not in self.layouts:  # noqa: WPS531

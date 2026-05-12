@@ -39,6 +39,7 @@ def fixture_estate_item():
         price=8999000,
         usable_area=35,
         district_number=5,
+        district_name='Andel',
         energy_rating='G',
         image_url='https://www.expats.cz/go/image/re-small/3561064.webp?t=1738306047',
         page_url='https://www.expats.cz/praguerealestate/for-rent/apartments/287289-1-plus-1-studio-in-prague',
@@ -59,6 +60,7 @@ def fixture_estate_item_house():
         price=8999000,
         usable_area=35,
         district_number=5,
+        district_name=None,
         energy_rating='G',
         image_url='https://www.expats.cz/go/image/re-small/3561064.webp?t=1738306047',
         page_url='https://www.expats.cz/praguerealestate/for-rent/apartments/287289-1-plus-1-studio-in-prague',
@@ -119,6 +121,16 @@ def fixture_empty_storage():
     db_pool.flushdb()
     yield
     db_pool.flushdb()
+
+
+@pytest.fixture(autouse=True)
+def fixture_mock_district_names(monkeypatch):
+    async def _names():
+        return ['Smíchov', 'Vinohrady', 'Žižkov']
+    monkeypatch.setattr(
+        'publisher.components.districts.get_district_names',
+        _names,
+    )
 
 
 @pytest.fixture()
