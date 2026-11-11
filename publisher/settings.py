@@ -85,9 +85,9 @@ app_settings = AppSettings(
 )
 
 _raw_prices = [
-    Price(cost=99, cost_usdt=Decimal('2.49'), days=7, slug='price.week'),
-    Price(cost=299, cost_usdt=Decimal('6.49'), days=31, slug='price.month'),
-    Price(cost=1499, cost_usdt=Decimal('18.49'), days=365, slug='price.year'),
+    Price(cost=99, cost_usdt=Decimal('3.0'), days=7, slug='price.week'),
+    Price(cost=299, cost_usdt=Decimal('8.0'), days=31, slug='price.month'),
+    Price(cost=1499, cost_usdt=Decimal('49.0'), days=365, slug='price.year'),
 ]
 if app_settings.DEBUG:
     _raw_prices.append(
