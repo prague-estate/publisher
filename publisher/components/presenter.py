@@ -777,6 +777,8 @@ def _get_source_name_link(source_name: str) -> str:
         'ulovdomov': 'ulovdomov.cz',
         'idealninajemce': 'idealninajemce.cz',
         'ceskereality': 'ceskereality.cz',
+        'dumrealit': 'dumrealit.cz',
+        'viareality': 'viareality.cz',
     }
     return mapa.get(source_name, 'other')
 
