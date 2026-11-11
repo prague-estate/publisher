@@ -1,12 +1,13 @@
 """Get estates and publish them to customers."""
 import asyncio
+import functools
 import logging
 import signal
 from collections import Counter
 
 from aiogram import Bot, exceptions
 
-from publisher.components import api_client, presenter, storage, reload
+from publisher.components import api_client, notifications, storage, reload
 from publisher.components.types import Estate, Subscription
 from publisher.settings import app_settings
 
@@ -87,9 +88,10 @@ async def _post_ads_to_subscriptions(ads: list[Estate], subs: list[Subscription]
 async def _send_notify_to_user(bot_instance: Bot, user_id: int, ads_for_post: Estate) -> None:
     settings = storage.get_user_settings(user_id)
     try:
-        await bot_instance.send_photo(
-            chat_id=user_id,
-            **presenter.get_estate_as_post(ads_for_post, settings.lang),
+        await notifications.send_estate(
+            functools.partial(bot_instance.send_photo, chat_id=user_id),
+            ads_for_post,
+            settings.lang,
         )
     except (exceptions.TelegramBadRequest, exceptions.TelegramForbiddenError) as exc:
         if 'chat not found' in exc.message:

@@ -6,7 +6,7 @@ from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from publisher.components import presenter, storage, translation, types, api_client
+from publisher.components import api_client, notifications, presenter, storage, translation, types
 from publisher.settings import app_settings
 
 logger = logging.getLogger(__file__)
@@ -68,10 +68,8 @@ async def _show_last_estate(filters: types.UserFilters, message: Message) -> Non
     counter = 0
     for ads in last_ads:
         if filters.is_compatible(ads):
-            estate_settings = presenter.get_estate_as_post(ads, filters.lang)
-            logger.info(f'publish {estate_settings=}')
             try:
-                await message.answer_photo(**estate_settings)
+                await notifications.send_estate(message.answer_photo, ads, filters.lang)
             except Exception as exc:
                 logger.error(f'Exception {exc=}')
                 await asyncio.sleep(1)
