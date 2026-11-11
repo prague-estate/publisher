@@ -16,6 +16,7 @@ from publisher.components.presenter import _get_source_name_link
     ('ceskereality', 'ceskereality.cz'),
     ('dumrealit', 'dumrealit.cz'),
     ('viareality', 'viareality.cz'),
+    ('bazos', 'reality.bazos.cz'),
     ('unknown-source', 'other'),
 ])
 def test_get_source_name_link(payload, expected):
